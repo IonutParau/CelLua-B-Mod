@@ -448,7 +448,7 @@ end
 
 
 
-local function DoTriple(x,y,dir,side)
+local function DoTriple(x,y,dir)
 	local direction = (dir+2)%4
 	local cx = x
 	local cy = y
@@ -488,9 +488,19 @@ local function DoTriple(x,y,dir,side)
 	local storedtype = cells[cy][cx].ctype
 	local storedrot = (cells[cy][cx].rot+addedrot)%4
 	local gennedrot = storedrot
+	DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,-1,x,y,storedtype)
+	DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,0,x,y,storedtype)
+	DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,1,x,y,storedtype)
+end
+
+
+
+
+function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 	if storedtype ~= 0 then
 		local lasttype = cells[cy][cx].ctype
 		local lastrot = (cells[cy][cx].rot+addedrot)%4
+		local direction
 		if side == -1 then
 			direction = (dir - 1)
 			if direction == -1 then
@@ -686,9 +696,7 @@ local function UpdateTriples()
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
 			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 0 then
-				DoTriple(x,y,0,0)
-				DoTriple(x,y,0,1)
-				DoTriple(x,y,0,-1)
+				DoTriple(x,y,0)
 				updatekey = updatekey + 1
 			end
 		end
@@ -696,9 +704,7 @@ local function UpdateTriples()
 	for y=1,height-2 do
 		for x=1,width-2 do
 			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 2 then
-				DoTriple(x,y,2,0)
-				DoTriple(x,y,2,1)
-				DoTriple(x,y,2,-1)
+				DoTriple(x,y,2)
 				updatekey = updatekey + 1
 			end
 		end
@@ -706,9 +712,7 @@ local function UpdateTriples()
 	for y=1,height-2 do
 		for x=1,width-2 do
 			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 3 then
-				DoTriple(x,y,3,0)
-				DoTriple(x,y,3,1)
-				DoTriple(x,y,3,-1)
+				DoTriple(x,y,3)
 				updatekey = updatekey + 1
 			end
 		end
@@ -716,9 +720,7 @@ local function UpdateTriples()
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
 			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 1 then
-				DoTriple(x,y,1,0)
-				DoTriple(x,y,1,1)
-				DoTriple(x,y,1,-1)
+				DoTriple(x,y,1)
 				updatekey = updatekey + 1
 			end
 		end

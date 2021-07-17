@@ -11,6 +11,7 @@ tex[13],tex[14],tex[15] = love.graphics.newImage("puller.png"),love.graphics.new
 tex[16],tex[17],tex[18] = love.graphics.newImage("redirector.png"),love.graphics.newImage("gear_cw.png"),love.graphics.newImage("gear_ccw.png")
 tex[19],tex[20],tex[21] = love.graphics.newImage("mold.png"),love.graphics.newImage("repulse.png"),love.graphics.newImage("weight.png")
 tex[22],tex[23],tex[24] = love.graphics.newImage("triplegenerator.png"),love.graphics.newImage("doubleenemy.png"),love.graphics.newImage("bomb.png")
+tex[25] = love.graphics.newImage("crossmirror.png")
 local bgsprites
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
@@ -223,7 +224,7 @@ local function UpdateMirrors()
 	for y=1,height-2 do
 		for x=2,width-2 do
 			if cells[y][x].ctype == 14 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) then
-				if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 then
+				if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
 					local oldcell = cells[y][x-1].ctype
 					local oldrot = cells[y][x-1].rot
 					local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
@@ -240,7 +241,7 @@ local function UpdateMirrors()
 	for x=1,width-2 do
 		for y=1,height-2 do
 			if cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) then
-				if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 then
+				if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 and cells[y-1][x].ctype ~= 25 and cells[y+1][x].ctype ~= 25 then
 					local oldcell = cells[y-1][x].ctype
 					local oldrot = cells[y-1][x].rot
 					local oldvars = {cells[y-1][x].lastvars[1],cells[y-1][x].lastvars[2],cells[y-1][x].lastvars[3]}
@@ -254,6 +255,34 @@ local function UpdateMirrors()
 			end
 		end
 	end
+	for x=1,height-2 do
+        for y=2,width-2 do
+            if cells[y][x].ctype == 25 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) then
+                if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
+                    local oldcellx = cells[y][x-1].ctype
+                    local oldrotx = cells[y][x-1].rot
+                    local oldvarsx = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
+                    cells[y][x-1].ctype = cells[y][x+1].ctype
+                    cells[y][x-1].rot = cells[y][x+1].rot
+                    cells[y][x-1].lastvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+                    cells[y][x+1].ctype = oldcellx
+                    cells[y][x+1].rot = oldrotx
+                    cells[y][x+1].lastvars = oldvarsx
+				end
+				if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 and cells[y-1][x].ctype ~= 25 and cells[y+1][x].ctype ~= 25 then
+                    local oldcelly = cells[y-1][x].ctype
+                    local oldroty = cells[y-1][x].rot
+                    local oldvarsy = {cells[y-1][x].lastvars[1],cells[y-1][x].lastvars[2],cells[y-1][x].lastvars[3]}
+                    cells[y-1][x].ctype = cells[y+1][x].ctype
+                    cells[y-1][x].rot = cells[y+1][x].rot
+                    cells[y-1][x].lastvars = {cells[y+1][x].lastvars[1],cells[y+1][x].lastvars[2],cells[y+1][x].lastvars[3]}
+                    cells[y+1][x].ctype = oldcelly
+                    cells[y+1][x].rot = oldroty
+                    cells[y+1][x].lastvars = oldvarsy
+                end
+            end
+        end
+    end
 end
 
 local function DoGenerator(x,y,dir)
@@ -1122,7 +1151,7 @@ local function DoRepulser(x,y,dir)
 					addedrot = 0
 				end
 			else
-				local oldtype = cells[cy][cx].ctype 
+				local oldtype = cells[cy][cx].ctype
 				local oldrot = cells[cy][cx].rot
 				local oldupdated = cells[cy][cx].updated
 				local oldvars = {cells[cy][cx].lastvars[1],cells[cy][cx].lastvars[2],cells[cy][cx].lastvars[3]}
@@ -1773,7 +1802,7 @@ function love.draw()
 		if currentstate == i-2 then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i-2],25+(775-25)*i/15,575,currentrot*math.pi/2,2,2,10,10)
 	end
-	for i=14,24 do
+	for i=14,25 do
 		if currentstate == i then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i],25+(775-25)*(i-14)/15,525,currentrot*math.pi/2,2,2,10,10)
 	end
@@ -1793,7 +1822,7 @@ function love.draw()
 		love.graphics.rectangle("fill",100,75,600,450)
 		love.graphics.setColor(1,1,1,1)
 		love.graphics.print("this is the menu",300,120,0,2,2)
-		love.graphics.print("CelLua B-Mod v1.4.0",330,90,0,1,1)
+		love.graphics.print("CelLua B-Mod v1.5.0",330,90,0,1,1)
 		love.graphics.print("by lieve_blendi",365,105,0,1,1)
 		love.graphics.print("Update delay: "..string.sub(delay,1,4).."s",150,175,0,1,1)
 		love.graphics.print("Ticks per update: "..tpu,150,225,0,1,1)
@@ -1885,7 +1914,7 @@ function love.mousepressed(x,y,b)
 			end
 		end
 	elseif y > 505 and y < 545 then
-		for i=14,24 do
+		for i=14,25 do
 			if x > 5+(775-25)*(i-14)/15 and x < 45+(775-25)*(i-14)/15 then
 				currentstate = i
 				placecells = false
@@ -1914,7 +1943,7 @@ function love.keypressed(key)
 	elseif key == "z" then
 		currentstate = math.max(currentstate-1,-1)
 	elseif key == "c" then
-		currentstate = math.min(currentstate+1,24)
+		currentstate = math.min(currentstate+1,25)
 	elseif key == "up" then
 		if zoom < 160 then
 			zoom = zoom*2

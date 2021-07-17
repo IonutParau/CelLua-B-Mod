@@ -10,7 +10,7 @@ tex[10],tex[11],tex[12] = love.graphics.newImage("rotator_180.png"),love.graphic
 tex[13],tex[14],tex[15] = love.graphics.newImage("puller.png"),love.graphics.newImage("mirror.png"),love.graphics.newImage("diverger.png")
 tex[16],tex[17],tex[18] = love.graphics.newImage("redirector.png"),love.graphics.newImage("gear_cw.png"),love.graphics.newImage("gear_ccw.png")
 tex[19],tex[20],tex[21] = love.graphics.newImage("mold.png"),love.graphics.newImage("repulse.png"),love.graphics.newImage("weight.png")
-tex[22],tex[23] = love.graphics.newImage("triplegenerator.png"),love.graphics.newImage("doubleenemy.png")
+tex[22],tex[23],tex[24] = love.graphics.newImage("triplegenerator.png"),love.graphics.newImage("doubleenemy.png"),love.graphics.newImage("bomb.png")
 local bgsprites
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
@@ -74,7 +74,6 @@ V3Cells["f"] = {12,0,true} V3Cells["x"] = {12,1,true} V3Cells["P"] = {12,2,true}
 V3Cells["g"] = {11,0,false} V3Cells["y"] = {11,1,false} V3Cells["Q"] = {11,2,false} V3Cells["?"] = {11,3,false}
 V3Cells["h"] = {11,0,true} V3Cells["z"] = {11,1,true} V3Cells["R"] = {11,2,true} V3Cells["^"] = {11,3,true} 
 V3Cells["{"] = {0,0,false} V3Cells["}"] = {0,0,true}
-
 local function DecodeV3(code)
 	local currentspot = 0
 	local currentcharacter = 3 --start right after V3;
@@ -358,7 +357,7 @@ local function DoGenerator(x,y,dir)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -395,6 +394,11 @@ local function DoGenerator(x,y,dir)
 					break
 				elseif cells[cy][cx].ctype == 23 then
 					cells[cy][cx].ctype = 12
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 24 then
+					DoBomb(cx,cy)
+					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
 				elseif cells[cy][cx].ctype == 15 then
@@ -494,8 +498,6 @@ local function DoTriple(x,y,dir)
 end
 
 
-
-
 function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 	if storedtype ~= 0 then
 		local lasttype = cells[cy][cx].ctype
@@ -591,7 +593,7 @@ function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -643,6 +645,11 @@ function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 					cells[cy][cx].ctype = 12
 					love.audio.play(destroysound)
 					break
+				elseif cells[cy][cx].ctype == 24 then
+					DoBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
 				elseif cells[cy][cx].ctype == 15 then
 					local olddir = direction
 					if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
@@ -688,6 +695,15 @@ function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 					addedrot = 0
 				end
 			until storedtype == 0
+		end
+	end
+end
+
+
+local function DoBomb(cx,cy)
+	for y = (cy-2), (cy+2),1 do
+		for x = (cx-2), (cx+2),1 do
+			cells[y][x].ctype = 0
 		end
 	end
 end
@@ -1027,7 +1043,7 @@ local function DoRepulser(x,y,dir)
 			totalforce = 0
 		end
 		cells[cy][cx].updatekey = updatekey
-	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23
+	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
 	--movement time
 	cells[cy][cx].testvar = "end"
 	if totalforce > 0 then
@@ -1058,6 +1074,11 @@ local function DoRepulser(x,y,dir)
 				break
 			elseif cells[cy][cx].ctype == 23 then
 				cells[cy][cx].ctype = 12
+				love.audio.play(destroysound)
+				break
+			elseif cells[cy][cx].ctype == 24 then
+				DoBomb(cx,cy)
+				cells[cy][cx].ctype = 0
 				love.audio.play(destroysound)
 				break
 			elseif cells[cy][cx].ctype == 15 then
@@ -1140,7 +1161,7 @@ local function DoPuller(x,y,dir)
 		elseif direction == 1 then
 			cy = cy + 1
 		end
-		if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 then
+		if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or cells[cy][cx].ctype == 24 then
 			break
 		elseif cells[cy][cx].ctype == 15 then
 			if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
@@ -1241,7 +1262,7 @@ local function DoPuller(x,y,dir)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until (totalforce <= 0 and checkedtype ~= 15) or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23
+		until (totalforce <= 0 and checkedtype ~= 15) or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -1276,11 +1297,21 @@ local function DoPuller(x,y,dir)
 					cells[lastcy][lastcx].ctype = 12
 					lastcx = cx
 					lastcy = cy
+				elseif cells[cy][cx].ctype == 24 then
+					DoBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
 				elseif cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 then
 					cells[lastcy][lastcx].ctype = 0
 					break
 				elseif cells[cy][cx].ctype == 23  then
 					cells[lastcy][lastcx].ctype = 12
+					break
+				elseif cells[cy][cx].ctype == 24 then
+					DoBomb(lastcx,lastcy)
+					cells[lastcy][lastcx].ctype = 0
+					love.audio.play(destroysound)
 					break
 				elseif cells[cy][cx].ctype == 15 then
 					local olddir = direction
@@ -1449,7 +1480,7 @@ local function DoMover(x,y,dir)
 			break
 		end
 		cells[cy][cx].updatekey = updatekey
-	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23
+	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
 	--movement time
 	cells[cy][cx].testvar = "end"
 	if totalforce > 0 then
@@ -1484,6 +1515,11 @@ local function DoMover(x,y,dir)
 			elseif cells[cy][cx].ctype == 23 then
 				love.audio.play(destroysound)
 				cells[cy][cx].ctype = 12
+				break
+			elseif cells[cy][cx].ctype == 24 then
+				DoBomb(cx,cy)
+				cells[cy][cx].ctype = 0
+				love.audio.play(destroysound)
 				break
 			elseif cells[cy][cx].ctype == 15 then
 				local olddir = direction
@@ -1589,6 +1625,7 @@ local function DoTick()
 end
 
 function love.load()
+	--love.window.setFullscreen(true,"exclusive") -- remove "--" at the beginning to get a sort of full screen
 	love.window.setTitle("CelLua Machine B-Mod")
 	love.window.setIcon(love.image.newImageData("icon.png"))
 	bgsprites = love.graphics.newSpriteBatch(tex[0])
@@ -1725,7 +1762,7 @@ function love.draw()
 		if currentstate == i-2 then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i-2],25+(775-25)*i/15,575,currentrot*math.pi/2,2,2,10,10)
 	end
-	for i=14,23 do
+	for i=14,24 do
 		if currentstate == i then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i],25+(775-25)*(i-14)/15,525,currentrot*math.pi/2,2,2,10,10)
 	end
@@ -1837,7 +1874,7 @@ function love.mousepressed(x,y,b)
 			end
 		end
 	elseif y > 505 and y < 545 then
-		for i=14,23 do
+		for i=14,24 do
 			if x > 5+(775-25)*(i-14)/15 and x < 45+(775-25)*(i-14)/15 then
 				currentstate = i
 				placecells = false
@@ -1866,7 +1903,7 @@ function love.keypressed(key)
 	elseif key == "z" then
 		currentstate = math.max(currentstate-1,-1)
 	elseif key == "c" then
-		currentstate = math.min(currentstate+1,23)
+		currentstate = math.min(currentstate+1,24)
 	elseif key == "up" then
 		if zoom < 160 then
 			zoom = zoom*2

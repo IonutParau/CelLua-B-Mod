@@ -1,5 +1,5 @@
 # CelLua B-Mod
-Its like CelLua except its my mod of it
+Its like CelLua except its my mod of it.
 
 ## Running
 Install Love2d game engine here: https://love2d.org

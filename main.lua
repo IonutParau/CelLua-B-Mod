@@ -12,6 +12,7 @@ tex[16],tex[17],tex[18] = love.graphics.newImage("redirector.png"),love.graphics
 tex[19],tex[20],tex[21] = love.graphics.newImage("mold.png"),love.graphics.newImage("repulse.png"),love.graphics.newImage("weight.png")
 tex[22],tex[23],tex[24] = love.graphics.newImage("triplegenerator.png"),love.graphics.newImage("doubleenemy.png"),love.graphics.newImage("bomb.png")
 tex[25],tex[26],tex[27] = love.graphics.newImage("crossmirror.png"),love.graphics.newImage("blackhole.png"),love.graphics.newImage("splitter.png")
+tex[28] = love.graphics.newImage("randomizer.png")
 local bgsprites
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
@@ -257,7 +258,7 @@ local function UpdateMirrors()
 	end
 	for x=1,height-2 do
         for y=2,width-2 do
-            if cells[y][x].ctype == 25 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) then
+            if cells[y][x].ctype == 25 then
                 if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
                     local oldcellx = cells[y][x-1].ctype
                     local oldrotx = cells[y][x-1].rot
@@ -1742,6 +1743,45 @@ local function DoPuller(x,y,dir)
 	end
 end
 
+local function UpdateRandom()
+	for x=width-2,1,-1 do
+		for y=height-2,1,-1 do
+			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 0 then
+				cells[y][x].ctype = math.random(1,28)
+				cells[y][x].rot = math.random(0,3)
+				updatekey = updatekey + 1
+			end
+		end
+	end
+	for x=1,width-2 do
+		for y=1,height-2 do
+			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 2 then
+				cells[y][x].ctype = math.random(1,28)
+				cells[y][x].rot = math.random(0,3)
+				updatekey = updatekey + 1
+			end
+		end
+	end
+	for y=1,height-2 do
+		for x=1,width-2 do
+			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 3 then
+				cells[y][x].ctype = math.random(1,28)
+				cells[y][x].rot = math.random(0,3)
+				updatekey = updatekey + 1
+			end
+		end
+	end
+	for y=height-2,1,-1 do
+		for x=width-2,1,-1 do
+			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 1 then
+				cells[y][x].ctype = math.random(1,28)
+				cells[y][x].rot = math.random(0,3)
+				updatekey = updatekey + 1
+			end
+		end
+	end
+end
+
 local function UpdatePullers()
 	for x=width-2,1,-1 do
 		for y=height-2,1,-1 do
@@ -1996,6 +2036,7 @@ local function DoTick()
 			cells[y][x].testvar = ""
 		end
 	end
+	UpdateRandom()
 	UpdateMirrors()
 	UpdateGenerators()
 	UpdateSplitters()
@@ -2148,7 +2189,7 @@ function love.draw()
 		if currentstate == i-2 then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i-2],25+(775-25)*i/15,575,currentrot*math.pi/2,2,2,10,10)
 	end
-	for i=14,27 do
+	for i=14,28 do
 		if currentstate == i then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i],25+(775-25)*(i-14)/15,525,currentrot*math.pi/2,2,2,10,10)
 	end
@@ -2168,7 +2209,7 @@ function love.draw()
 		love.graphics.rectangle("fill",100,75,600,450)
 		love.graphics.setColor(1,1,1,1)
 		love.graphics.print("this is the menu",300,120,0,2,2)
-		love.graphics.print("CelLua B-Mod v1.6.0",330,90,0,1,1)
+		love.graphics.print("CelLua B-Mod v1.7.0",330,90,0,1,1)
 		love.graphics.print("by lieve_blendi",365,105,0,1,1)
 		love.graphics.print("Update delay: "..string.sub(delay,1,4).."s",150,175,0,1,1)
 		love.graphics.print("Ticks per update: "..tpu,150,225,0,1,1)
@@ -2260,7 +2301,7 @@ function love.mousepressed(x,y,b)
 			end
 		end
 	elseif y > 505 and y < 545 then
-		for i=14,27 do
+		for i=14,28 do
 			if x > 5+(775-25)*(i-14)/15 and x < 45+(775-25)*(i-14)/15 then
 				currentstate = i
 				placecells = false
@@ -2289,7 +2330,7 @@ function love.keypressed(key)
 	elseif key == "z" then
 		currentstate = math.max(currentstate-1,-1)
 	elseif key == "c" then
-		currentstate = math.min(currentstate+1,27)
+		currentstate = math.min(currentstate+1,28)
 	elseif key == "up" then
 		if zoom < 160 then
 			zoom = zoom*2

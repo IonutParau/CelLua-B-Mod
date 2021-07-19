@@ -14,6 +14,7 @@ Randomizer Cell: Turns into a random cell at the start of the tick.
 Mirror Cell: It switches the cell at its arrows around.
 Generator Cell: Duplicates the cell behind it to its front.
 Sideways Generator Cell: Duplicates the cell behind it to its side.
+Tunnel Cell: Takes the cell behind it and puts it infront of it
 Splitter Cell: Takes a cell at the back and turns it into 2 at its sides.
 Triple Generator Cell: Duplicates the cell behind it into all 3 other directions.
 Mold Cell: If duplicated it doesnt appear but still pushes.
@@ -26,3 +27,11 @@ Puller Cell: Moves forward and pulls things behind it along with it.
 Slow Puller Cell: Puller Cell except it goes forward every other tick.
 Mover Cell: Goes forward and pushes cells infront of it aswell.
 Slow Mover Cell: Mover Cell except it goes forward every other tick.
+Trash Hole Cell: Deletes a 3x3 area around it constantly.
+
+####Not in subticking.
+Time Stop Cell: Makes cells next to it stop doing stuff.
+Enemy Cell: Can get hit by a single cell but after that it dissapears and the cell that hit it does too.
+Double Enemy Cell: Enemy but can get hit twice.
+Bomb Cell: Acts as an enemy but when it gets hits it explodes a 5x5 area around it.
+Mini Bomb Cell: Bomb but it explodes a 3x3 area.

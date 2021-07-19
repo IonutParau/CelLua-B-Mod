@@ -13,7 +13,9 @@ tex[19],tex[20],tex[21] = love.graphics.newImage("mold.png"),love.graphics.newIm
 tex[22],tex[23],tex[24] = love.graphics.newImage("triplegenerator.png"),love.graphics.newImage("doubleenemy.png"),love.graphics.newImage("bomb.png")
 tex[25],tex[26],tex[27] = love.graphics.newImage("crossmirror.png"),love.graphics.newImage("blackhole.png"),love.graphics.newImage("splitter.png")
 tex[28],tex[29],tex[30] = love.graphics.newImage("randomizer.png"),love.graphics.newImage("slowmover.png"),love.graphics.newImage("slowpuller.png")
-tex[31],tex[32] = love.graphics.newImage("90degreegeneratorleft.png"),love.graphics.newImage("90degreegeneratorright.png")
+tex[31],tex[32],tex[33] = love.graphics.newImage("90degreegeneratorleft.png"),love.graphics.newImage("90degreegeneratorright.png"),love.graphics.newImage("trashhole.png")
+tex[34],tex[35],tex[36] = love.graphics.newImage("tunnel.png"),love.graphics.newImage("minibomb.png"),love.graphics.newImage("timestop.png")
+--tex[37] = love.graphics.newImage("inverted.png")
 local bgsprites
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
@@ -28,6 +30,26 @@ end
 local function DoBomb(cx,cy)
 	for y = (cy-2), (cy+2),1 do
 		for x = (cx-2), (cx+2),1 do
+			if y > 0 then
+				if x > 0 then
+					if y < (height) then
+						if x < (width) then
+							if cells[y][x].ctype ~= -1 then
+								if cells[y][x].ctype ~= 0 then
+									cells[y][x].ctype = 0
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+local function DoMiniBomb(cx,cy)
+	for y = (cy-1), (cy+1),1 do
+		for x = (cx-1), (cx+1),1 do
 			if y > 0 then
 				if x > 0 then
 					if y < (height) then
@@ -226,64 +248,70 @@ end
 local function UpdateMirrors()
 	for y=1,height-2 do
 		for x=2,width-2 do
-			if cells[y][x].ctype == 14 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) then
-				if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
-					local oldcell = cells[y][x-1].ctype
-					local oldrot = cells[y][x-1].rot
-					local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
-					cells[y][x-1].ctype = cells[y][x+1].ctype
-					cells[y][x-1].rot = cells[y][x+1].rot
-					cells[y][x-1].lastvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
-					cells[y][x+1].ctype = oldcell
-					cells[y][x+1].rot = oldrot
-					cells[y][x+1].lastvars = oldvars
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 14 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) then
+					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
+						local oldcell = cells[y][x-1].ctype
+						local oldrot = cells[y][x-1].rot
+						local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
+						cells[y][x-1].ctype = cells[y][x+1].ctype
+						cells[y][x-1].rot = cells[y][x+1].rot
+						cells[y][x-1].lastvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+						cells[y][x+1].ctype = oldcell
+						cells[y][x+1].rot = oldrot
+						cells[y][x+1].lastvars = oldvars
+					end
 				end
 			end
 		end
 	end
 	for x=1,width-2 do
 		for y=1,height-2 do
-			if cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) then
-				if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 and cells[y-1][x].ctype ~= 25 and cells[y+1][x].ctype ~= 25 then
-					local oldcell = cells[y-1][x].ctype
-					local oldrot = cells[y-1][x].rot
-					local oldvars = {cells[y-1][x].lastvars[1],cells[y-1][x].lastvars[2],cells[y-1][x].lastvars[3]}
-					cells[y-1][x].ctype = cells[y+1][x].ctype
-					cells[y-1][x].rot = cells[y+1][x].rot
-					cells[y-1][x].lastvars = {cells[y+1][x].lastvars[1],cells[y+1][x].lastvars[2],cells[y+1][x].lastvars[3]}
-					cells[y+1][x].ctype = oldcell
-					cells[y+1][x].rot = oldrot
-					cells[y+1][x].lastvars = oldvars
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) then
+					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 and cells[y-1][x].ctype ~= 25 and cells[y+1][x].ctype ~= 25 then
+						local oldcell = cells[y-1][x].ctype
+						local oldrot = cells[y-1][x].rot
+						local oldvars = {cells[y-1][x].lastvars[1],cells[y-1][x].lastvars[2],cells[y-1][x].lastvars[3]}
+						cells[y-1][x].ctype = cells[y+1][x].ctype
+						cells[y-1][x].rot = cells[y+1][x].rot
+						cells[y-1][x].lastvars = {cells[y+1][x].lastvars[1],cells[y+1][x].lastvars[2],cells[y+1][x].lastvars[3]}
+						cells[y+1][x].ctype = oldcell
+						cells[y+1][x].rot = oldrot
+						cells[y+1][x].lastvars = oldvars
+					end
 				end
 			end
 		end
 	end
 	for x=1,height-2 do
         for y=2,width-2 do
-            if cells[y][x].ctype == 25 then
-                if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
-                    local oldcellx = cells[y][x-1].ctype
-                    local oldrotx = cells[y][x-1].rot
-                    local oldvarsx = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
-                    cells[y][x-1].ctype = cells[y][x+1].ctype
-                    cells[y][x-1].rot = cells[y][x+1].rot
-                    cells[y][x-1].lastvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
-                    cells[y][x+1].ctype = oldcellx
-                    cells[y][x+1].rot = oldrotx
-                    cells[y][x+1].lastvars = oldvarsx
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 25 then
+					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 14 and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 14 and cells[y][x-1].ctype ~= 25 and cells[y][x+1].ctype ~= 25 then
+						local oldcellx = cells[y][x-1].ctype
+						local oldrotx = cells[y][x-1].rot
+						local oldvarsx = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
+						cells[y][x-1].ctype = cells[y][x+1].ctype
+						cells[y][x-1].rot = cells[y][x+1].rot
+						cells[y][x-1].lastvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+						cells[y][x+1].ctype = oldcellx
+						cells[y][x+1].rot = oldrotx
+						cells[y][x+1].lastvars = oldvarsx
+					end
+					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 and cells[y-1][x].ctype ~= 25 and cells[y+1][x].ctype ~= 25 then
+						local oldcelly = cells[y-1][x].ctype
+						local oldroty = cells[y-1][x].rot
+						local oldvarsy = {cells[y-1][x].lastvars[1],cells[y-1][x].lastvars[2],cells[y-1][x].lastvars[3]}
+						cells[y-1][x].ctype = cells[y+1][x].ctype
+						cells[y-1][x].rot = cells[y+1][x].rot
+						cells[y-1][x].lastvars = {cells[y+1][x].lastvars[1],cells[y+1][x].lastvars[2],cells[y+1][x].lastvars[3]}
+						cells[y+1][x].ctype = oldcelly
+						cells[y+1][x].rot = oldroty
+						cells[y+1][x].lastvars = oldvarsy
+					end
 				end
-				if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 14 and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 14 and cells[y-1][x].ctype ~= 25 and cells[y+1][x].ctype ~= 25 then
-                    local oldcelly = cells[y-1][x].ctype
-                    local oldroty = cells[y-1][x].rot
-                    local oldvarsy = {cells[y-1][x].lastvars[1],cells[y-1][x].lastvars[2],cells[y-1][x].lastvars[3]}
-                    cells[y-1][x].ctype = cells[y+1][x].ctype
-                    cells[y-1][x].rot = cells[y+1][x].rot
-                    cells[y-1][x].lastvars = {cells[y+1][x].lastvars[1],cells[y+1][x].lastvars[2],cells[y+1][x].lastvars[3]}
-                    cells[y+1][x].ctype = oldcelly
-                    cells[y+1][x].rot = oldroty
-                    cells[y+1][x].lastvars = oldvarsy
-                end
-            end
+			end
         end
     end
 end
@@ -409,7 +437,7 @@ local function DoGenerator(x,y,dir)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -450,6 +478,11 @@ local function DoGenerator(x,y,dir)
 					break
 				elseif cells[cy][cx].ctype == 24 then
 					DoBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
@@ -645,7 +678,7 @@ function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -702,6 +735,11 @@ function DoTripleGen(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
 				elseif cells[cy][cx].ctype == 15 then
 					local olddir = direction
 					if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
@@ -754,33 +792,41 @@ end
 local function UpdateTriples()
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 0 then
-				DoTriple(x,y,0)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 0 then
+					DoTriple(x,y,0)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 2 then
-				DoTriple(x,y,2)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 2 then
+					DoTriple(x,y,2)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 3 then
-				DoTriple(x,y,3)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 3 then
+					DoTriple(x,y,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 1 then
-				DoTriple(x,y,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 22 and cells[y][x].rot == 1 then
+					DoTriple(x,y,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
@@ -919,7 +965,7 @@ local function DoSideGenerator(x,y,dir,side)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 
 		
 
@@ -977,6 +1023,11 @@ local function DoSideGenerator(x,y,dir,side)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
 				elseif cells[cy][cx].ctype == 15 then
 					local olddir = direction
 					if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
@@ -1029,65 +1080,81 @@ end
 local function UpdateSidewaysGens()
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 0 then
-				DoSideGenerator(x,y,0,-1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 0 then
+					DoSideGenerator(x,y,0,-1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 2 then
-				DoSideGenerator(x,y,2,-1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 2 then
+					DoSideGenerator(x,y,2,-1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 3 then
-				DoSideGenerator(x,y,3,-1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 3 then
+					DoSideGenerator(x,y,3,-1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 1 then
-				DoSideGenerator(x,y,1,-1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 31 and cells[y][x].rot == 1 then
+					DoSideGenerator(x,y,1,-1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 0 then
-				DoSideGenerator(x,y,0,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 0 then
+					DoSideGenerator(x,y,0,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 2 then
-				DoSideGenerator(x,y,2,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 2 then
+					DoSideGenerator(x,y,2,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 3 then
-				DoSideGenerator(x,y,3,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 3 then
+					DoSideGenerator(x,y,3,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 1 then
-				DoSideGenerator(x,y,1,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 32 and cells[y][x].rot == 1 then
+					DoSideGenerator(x,y,1,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
@@ -1096,39 +1163,319 @@ end
 local function UpdateGenerators()
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 0 then
-				DoGenerator(x,y,0)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 0 then
+					DoGenerator(x,y,0)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 2 then
-				DoGenerator(x,y,2)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 2 then
+					DoGenerator(x,y,2)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 3 then
-				DoGenerator(x,y,3)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 3 then
+					DoGenerator(x,y,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 1 then
-				DoGenerator(x,y,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 2 and cells[y][x].rot == 1 then
+					DoGenerator(x,y,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 end
 
+local function DoTunnel(x,y,dir)
+	local direction = (dir+2)%4
+	local cx = x
+	local cy = y
+	local addedrot = 0
+	while true do							--what cell to copy?
+		if direction == 0 then
+			cx = cx + 1	
+		elseif direction == 2 then
+			cx = cx - 1
+		elseif direction == 3 then
+			cy = cy - 1
+		elseif direction == 1 then
+			cy = cy + 1
+		end
+		if cells[cy][cx].ctype == 15 then
+			local olddir = direction
+			if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
+				direction = 1
+				addedrot = addedrot - (direction - olddir)
+			elseif direction == 1 and cells[cy][cx].rot == 3 or direction == 3 and cells[cy][cx].rot == 0 then
+				direction = 0
+				addedrot = addedrot - (direction - olddir)
+			elseif direction == 2 and cells[cy][cx].rot == 3 or direction == 0 and cells[cy][cx].rot == 2 then
+				direction = 3
+				addedrot = addedrot - (direction - olddir)
+			elseif direction == 3 and cells[cy][cx].rot == 1 or direction == 1 and cells[cy][cx].rot == 2 then
+				direction = 2
+				addedrot = addedrot - (direction - olddir)
+			else
+				break
+			end
+		else
+			break
+		end
+	end 
+	cells[cy][cx].testvar = "gen'd"
+	local storedtype = cells[cy][cx].ctype
+	local storedrot = (cells[cy][cx].rot+addedrot)%4
+	local gennedrot = storedrot
+	if storedtype ~= 0 then
+		local lasttype = cells[cy][cx].ctype
+		local lastrot = (cells[cy][cx].rot+addedrot)%4
+		direction = dir
+		cx = x
+		cy = y
+		addedrot = 0
+		local totalforce = 1
+		local pushingdiverger = false
+		cells[cy][cx].updated = true
+		repeat							--check for forces or blockages before doing movement
+			if direction == 0 then
+				cx = cx + 1	
+			elseif direction == 2 then
+				cx = cx - 1
+			elseif direction == 3 then
+				cy = cy - 1
+			elseif direction == 1 then
+				cy = cy + 1
+			end
+			local checkedtype = (cells[cy][cx].updatekey == updatekey and cells[cy][cx].projectedtype) or cells[cy][cx].ctype
+			local checkedrot = (cells[cy][cx].updatekey == updatekey and cells[cy][cx].projectedrot) or cells[cy][cx].rot
+			if checkedtype == 1 then
+				if not pushingdiverger then
+					if checkedrot == direction then
+						totalforce = totalforce + 1
+					elseif checkedrot == (direction+2)%4 then
+						totalforce = totalforce - 1
+					end
+				end
+				cells[cy][cx].projectedtype = lasttype
+				cells[cy][cx].projectedrot = (lastrot+addedrot)%4
+				lasttype = checkedtype
+				lastrot = checkedrot
+				addedrot = 0
+			elseif checkedtype == -1 or checkedtype == 4 and direction%2 ~= checkedrot%2
+			or checkedtype == 5 and direction ~= checkedrot
+			or checkedtype == 6 and (direction ~= checkedrot and direction ~= (checkedrot-1)%4)
+			or checkedtype == 7 and direction == (checkedrot+2)%4 then
+				totalforce = 0
+			elseif checkedtype == 15 then
+				local lastdir = direction
+				if direction == 0 and checkedrot == 1 or direction == 2 and checkedrot == 0 then
+					direction = 1
+					addedrot = addedrot + (direction-lastdir)
+				elseif direction == 1 and checkedrot == 3 or direction == 3 and checkedrot == 0 then
+					direction = 0
+					addedrot = addedrot + (direction-lastdir)
+				elseif direction == 2 and checkedrot == 3 or direction == 0 and checkedrot == 2 then
+					direction = 3
+					addedrot = addedrot + (direction-lastdir)
+				elseif direction == 3 and checkedrot == 1 or direction == 1 and checkedrot == 2 then
+					direction = 2
+					addedrot = addedrot + (direction-lastdir)
+				else
+					pushingdiverger = true
+					cells[cy][cx].projectedtype = lasttype
+					cells[cy][cx].projectedrot = (lastrot+addedrot)%4
+					lasttype = checkedtype
+					lastrot = checkedrot
+					addedrot = 0
+				end
+			elseif checkedtype == 20 or checkedtype == 21 then
+				totalforce = totalforce - 1 
+				cells[cy][cx].projectedtype = lasttype
+				cells[cy][cx].projectedrot = (lastrot+addedrot)%4
+				lasttype = checkedtype
+				lastrot = checkedrot
+				addedrot = 0
+			else
+				cells[cy][cx].projectedtype = lasttype
+				cells[cy][cx].projectedrot = (lastrot+addedrot)%4
+				lasttype = checkedtype
+				lastrot = checkedrot
+				addedrot = 0
+			end
+			cells[cy][cx].crosses = ((cells[cy][cx].updatekey == updatekey and cells[cy][cx].crosses) or 0) + 1
+			if cells[cy][cx].crosses >= 3 then		--a cell being checked 3 times in one subtick means it's in an infinite loop
+				totalforce = 0
+			end
+			cells[cy][cx].updatekey = updatekey
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
+		--movement time
+		cells[cy][cx].testvar = "end"
+		if totalforce > 0 then
+			local direction = dir
+			local cx = x
+			local cy = y
+			local storedupdated = false
+			local storedvars = {cx,cy,gennedrot}
+			if storedtype == 19 then
+				storedupdated = true
+			else
+				storedupdated = false
+			end
+			local addedrot = 0
+			local reps = 0
+			repeat
+				reps = reps + 1
+				if reps > 100000 then cells[cy][cx].ctype = 11 break end
+				if direction == 0 then
+					cx = cx + 1	
+				elseif direction == 2 then
+					cx = cx - 1
+				elseif direction == 3 then
+					cy = cy - 1
+				elseif direction == 1 then
+					cy = cy + 1
+				end
+				if cells[cy][cx].ctype == 11 then
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 12 then
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 23 then
+					cells[cy][cx].ctype = 12
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 24 then
+					DoBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 15 then
+					local olddir = direction
+					if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
+						direction = 1
+						addedrot = addedrot + (direction - olddir)
+					elseif direction == 1 and cells[cy][cx].rot == 3 or direction == 3 and cells[cy][cx].rot == 0 then
+						direction = 0
+						addedrot = addedrot + (direction - olddir)
+					elseif direction == 2 and cells[cy][cx].rot == 3 or direction == 0 and cells[cy][cx].rot == 2 then
+						direction = 3
+						addedrot = addedrot + (direction - olddir)
+					elseif direction == 3 and cells[cy][cx].rot == 1 or direction == 1 and cells[cy][cx].rot == 2 then
+						direction = 2
+						addedrot = addedrot + (direction - olddir)
+					else
+						local oldtype = cells[cy][cx].ctype 
+						local oldrot = cells[cy][cx].rot
+						local oldupdated = cells[cy][cx].updated
+						local oldvars = {cells[cy][cx].lastvars[1],cells[cy][cx].lastvars[2],cells[cy][cx].lastvars[3]}
+						cells[cy][cx].ctype = storedtype
+						cells[cy][cx].rot =  (storedrot + addedrot)%4
+						cells[cy][cx].updated = storedupdated
+						cells[cy][cx].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+						storedtype = oldtype
+						storedrot = oldrot
+						storedupdated = oldupdated
+						storedvars = oldvars
+						addedrot = 0
+					end
+				else
+					local oldtype = cells[cy][cx].ctype 
+					local oldrot = cells[cy][cx].rot
+					local oldupdated = cells[cy][cx].updated
+					local oldvars = {cells[cy][cx].lastvars[1],cells[cy][cx].lastvars[2],cells[cy][cx].lastvars[3]}
+					cells[cy][cx].ctype = storedtype
+					cells[cy][cx].rot =  (storedrot + addedrot)%4
+					cells[cy][cx].updated = storedupdated
+					cells[cy][cx].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+					storedtype = oldtype
+					storedrot = oldrot
+					storedupdated = oldupdated
+					storedvars = oldvars
+					addedrot = 0
+				end
+			until storedtype == 0
+			cx = x
+			cy = y
+			if direction == 0 then
+				cx = cx - 1	
+			elseif direction == 2 then
+				cx = cx + 1
+			elseif direction == 3 then
+				cy = cy + 1
+			elseif direction == 1 then
+				cy = cy - 1
+			end
+			cells[cy][cx].ctype = 0
+		end
+	end
+end
 
+local function UpdateTunnels()
+	for y=height-2,1,-1 do
+		for x=width-2,1,-1 do
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 34 and cells[y][x].rot == 0 then
+					DoTunnel(x,y,0)
+					updatekey = updatekey + 1
+				end
+			end
+		end
+	end
+	for y=1,height-2 do
+		for x=1,width-2 do
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 34 and cells[y][x].rot == 2 then
+					DoTunnel(x,y,2)
+					updatekey = updatekey + 1
+				end
+			end
+		end
+	end
+	for y=1,height-2 do
+		for x=1,width-2 do
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 34 and cells[y][x].rot == 3 then
+					DoTunnel(x,y,3)
+					updatekey = updatekey + 1
+				end
+			end
+		end
+	end
+	for y=height-2,1,-1 do
+		for x=width-2,1,-1 do
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 34 and cells[y][x].rot == 1 then
+					DoTunnel(x,y,1)
+					updatekey = updatekey + 1
+				end
+			end
+		end
+	end
+end
 
 local function DoSplitterPlace(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,storedtype)
 	if storedtype ~= 0 then
@@ -1225,7 +1572,7 @@ local function DoSplitterPlace(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,s
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+		until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -1279,6 +1626,11 @@ local function DoSplitterPlace(cx,cy,addedrot,storedrot,gennedrot,dir,side,x,y,s
 					break
 				elseif cells[cy][cx].ctype == 24 then
 					DoBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
@@ -1380,33 +1732,41 @@ end
 local function UpdateSplitters()
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 0 then
-				DoSplitter(x,y,0)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 0 then
+					DoSplitter(x,y,0)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 2 then
-				DoSplitter(x,y,2)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 2 then
+					DoSplitter(x,y,2)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 3 then
-				DoSplitter(x,y,3)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 3 then
+					DoSplitter(x,y,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 1 then
-				DoSplitter(x,y,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 27 and cells[y][x].rot == 1 then
+					DoSplitter(x,y,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
@@ -1415,8 +1775,40 @@ end
 local function UpdateMold()
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if cells[y][x].ctype == 19 and cells[y][x].updated then
-				cells[y][x].ctype = 0
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 19 and cells[y][x].updated then
+					cells[y][x].ctype = 0
+				end
+			end
+		end
+	end
+end
+
+local function UpdateTrashHoles()
+	for y=1,height-2 do
+		for x=1,width-2 do
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 33 then
+					for cy = (y-1), (y+1),1 do
+						for cx = (x-1), (x+1),1 do
+							if cy > 0 then
+								if cx > 0 then
+									if cy < (height) then
+										if cx < (width) then
+											if cells[cy][cx].ctype ~= -1 then
+												if cells[cy][cx].ctype ~= 0 then
+													if cells[cy][cx].ctype ~= 33 then
+														cells[cy][cx].ctype = 0
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
 			end
 		end
 	end
@@ -1425,21 +1817,55 @@ end
 local function UpdateRotators()
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if cells[y][x].ctype == 8 then
-				cells[y][x-1].rot = (cells[y][x-1].rot + 1)%4
-				cells[y][x+1].rot = (cells[y][x+1].rot + 1)%4
-				cells[y-1][x].rot = (cells[y-1][x].rot + 1)%4
-				cells[y+1][x].rot = (cells[y+1][x].rot + 1)%4
-			elseif cells[y][x].ctype == 9 then
-				cells[y][x-1].rot = (cells[y][x-1].rot - 1)%4
-				cells[y][x+1].rot = (cells[y][x+1].rot - 1)%4
-				cells[y-1][x].rot = (cells[y-1][x].rot - 1)%4
-				cells[y+1][x].rot = (cells[y+1][x].rot - 1)%4
-			elseif cells[y][x].ctype == 10 then
-				cells[y][x-1].rot = (cells[y][x-1].rot - 2)%4
-				cells[y][x+1].rot = (cells[y][x+1].rot - 2)%4
-				cells[y-1][x].rot = (cells[y-1][x].rot - 2)%4
-				cells[y+1][x].rot = (cells[y+1][x].rot - 2)%4
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 8 then
+					if cells[y][x-1].ctype == 37 then
+						cells[y][x-1].rot = (cells[y][x-1].rot - 1)%4
+					else
+						cells[y][x-1].rot = (cells[y][x-1].rot + 1)%4
+					end
+					if cells[y][x+1].ctype == 37 then
+						cells[y][x+1].rot = (cells[y][x+1].rot - 1)%4
+					else
+						cells[y][x+1].rot = (cells[y][x+1].rot + 1)%4
+					end
+					if cells[y-1][x].ctype == 37 then
+						cells[y-1][x].rot = (cells[y-1][x].rot - 1)%4
+					else
+						cells[y-1][x].rot = (cells[y-1][x].rot + 1)%4
+					end
+					if cells[y+1][x].ctype == 37 then
+						cells[y+1][x].rot = (cells[y+1][x].rot - 1)%4
+					else
+						cells[y+1][x].rot = (cells[y+1][x].rot + 1)%4
+					end
+				elseif cells[y][x].ctype == 9 then
+					if cells[y][x-1].ctype == 37 then
+						cells[y][x-1].rot = (cells[y][x-1].rot + 1)%4
+					else
+						cells[y][x-1].rot = (cells[y][x-1].rot - 1)%4
+					end
+					if cells[y][x+1].ctype == 37 then
+						cells[y][x+1].rot = (cells[y][x+1].rot + 1)%4
+					else
+						cells[y][x+1].rot = (cells[y][x+1].rot - 1)%4
+					end
+					if cells[y-1][x].ctype == 37 then
+						cells[y-1][x].rot = (cells[y-1][x].rot + 1)%4
+					else
+						cells[y-1][x].rot = (cells[y-1][x].rot - 1)%4
+					end
+					if cells[y+1][x].ctype == 37 then
+						cells[y+1][x].rot = (cells[y+1][x].rot + 1)%4
+					else
+						cells[y+1][x].rot = (cells[y+1][x].rot - 1)%4
+					end
+				elseif cells[y][x].ctype == 10 then
+					cells[y][x-1].rot = (cells[y][x-1].rot - 2)%4
+					cells[y][x+1].rot = (cells[y][x+1].rot - 2)%4
+					cells[y-1][x].rot = (cells[y-1][x].rot - 2)%4
+					cells[y+1][x].rot = (cells[y+1][x].rot - 2)%4
+				end
 			end
 		end
 	end
@@ -1450,128 +1876,132 @@ local function UpdateGears()
 	local cy
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if cells[y][x].ctype == 17 then
-				local jammed = false
-				for i=0,8 do
-					if i ~= 4 then
-						cx = i%3-1
-						cy = math.floor(i/3)-1
-						if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 then
-							jammed = true
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 17 then
+					local jammed = false
+					for i=0,8 do
+						if i ~= 4 then
+							cx = i%3-1
+							cy = math.floor(i/3)-1
+							if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 then
+								jammed = true
+							end
 						end
 					end
-				end
-				if not jammed then
-					local storedtype = 0
-					local storedrot = 0
-					local storedvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
-					local oldtype = cells[y][x-1].ctype 
-					local oldrot = cells[y][x-1].rot
-					local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
-					cells[y][x-1].ctype = storedtype
-					cells[y][x-1].rot = (storedrot+1)%4
-					cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
-					storedtype = oldtype
-					storedrot = oldrot
-					storedvars = {oldvars[1],oldvars[2],oldvars[3]}
-					for i=-1,1 do
-						oldtype = cells[y-1][x+i].ctype 
-						oldrot = cells[y-1][x+i].rot
-						oldvars = {cells[y-1][x+i].lastvars[1],cells[y-1][x+i].lastvars[2],cells[y-1][x+i].lastvars[3]}
-						cells[y-1][x+i].ctype = storedtype
-						cells[y-1][x+i].rot = (storedrot+(i+1)%2)%4
-						cells[y-1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+					if not jammed then
+						local storedtype = 0
+						local storedrot = 0
+						local storedvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+						local oldtype = cells[y][x-1].ctype 
+						local oldrot = cells[y][x-1].rot
+						local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
+						cells[y][x-1].ctype = storedtype
+						cells[y][x-1].rot = (storedrot+1)%4
+						cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 						storedtype = oldtype
 						storedrot = oldrot
 						storedvars = {oldvars[1],oldvars[2],oldvars[3]}
-					end
-					oldtype = cells[y][x+1].ctype 
-					oldrot = cells[y][x+1].rot
-					oldvars = {cells[y][x-1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
-					cells[y][x+1].ctype = storedtype
-					cells[y][x+1].rot = (storedrot+1)%4
-					cells[y][x+1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
-					storedtype = oldtype
-					storedrot = oldrot
-					storedvars = {oldvars[1],oldvars[2],oldvars[3]}
-					for i=1,-1,-1 do
-						oldtype = cells[y+1][x+i].ctype 
-						oldrot = cells[y+1][x+i].rot
-						oldvars = {cells[y+1][x+i].lastvars[1],cells[y+1][x+i].lastvars[2],cells[y+1][x+i].lastvars[3]}
-						cells[y+1][x+i].ctype = storedtype
-						cells[y+1][x+i].rot = (storedrot+(i+1)%2)%4
-						cells[y+1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+						for i=-1,1 do
+							oldtype = cells[y-1][x+i].ctype 
+							oldrot = cells[y-1][x+i].rot
+							oldvars = {cells[y-1][x+i].lastvars[1],cells[y-1][x+i].lastvars[2],cells[y-1][x+i].lastvars[3]}
+							cells[y-1][x+i].ctype = storedtype
+							cells[y-1][x+i].rot = (storedrot+(i+1)%2)%4
+							cells[y-1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+							storedtype = oldtype
+							storedrot = oldrot
+							storedvars = {oldvars[1],oldvars[2],oldvars[3]}
+						end
+						oldtype = cells[y][x+1].ctype 
+						oldrot = cells[y][x+1].rot
+						oldvars = {cells[y][x-1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+						cells[y][x+1].ctype = storedtype
+						cells[y][x+1].rot = (storedrot+1)%4
+						cells[y][x+1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 						storedtype = oldtype
 						storedrot = oldrot
 						storedvars = {oldvars[1],oldvars[2],oldvars[3]}
+						for i=1,-1,-1 do
+							oldtype = cells[y+1][x+i].ctype 
+							oldrot = cells[y+1][x+i].rot
+							oldvars = {cells[y+1][x+i].lastvars[1],cells[y+1][x+i].lastvars[2],cells[y+1][x+i].lastvars[3]}
+							cells[y+1][x+i].ctype = storedtype
+							cells[y+1][x+i].rot = (storedrot+(i+1)%2)%4
+							cells[y+1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+							storedtype = oldtype
+							storedrot = oldrot
+							storedvars = {oldvars[1],oldvars[2],oldvars[3]}
+						end
+						cells[y][x-1].ctype = storedtype
+						cells[y][x-1].rot = (storedrot+1)%4
+						cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 					end
-					cells[y][x-1].ctype = storedtype
-					cells[y][x-1].rot = (storedrot+1)%4
-					cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=width-2,1,-1 do
-			if cells[y][x].ctype == 18 then
-				local jammed = false
-				for i=0,8 do
-					if i ~= 4 then
-						cx = i%3-1
-						cy = math.floor(i/3)-1
-						if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 then
-							jammed = true
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 18 then
+					local jammed = false
+					for i=0,8 do
+						if i ~= 4 then
+							cx = i%3-1
+							cy = math.floor(i/3)-1
+							if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 then
+								jammed = true
+							end
 						end
 					end
-				end
-				if not jammed then
-					local storedtype = 0
-					local storedrot = 0
-					local storedvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
-					local oldtype = cells[y][x-1].ctype 
-					local oldrot = cells[y][x-1].rot
-					local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
-					cells[y][x-1].ctype = storedtype
-					cells[y][x-1].rot = (storedrot-1)%4
-					cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
-					storedtype = oldtype
-					storedrot = oldrot
-					storedvars = {oldvars[1],oldvars[2],oldvars[3]}
-					for i=-1,1 do
-						oldtype = cells[y+1][x+i].ctype 
-						oldrot = cells[y+1][x+i].rot
-						oldvars = {cells[y+1][x+i].lastvars[1],cells[y+1][x+i].lastvars[2],cells[y+1][x+i].lastvars[3]}
-						cells[y+1][x+i].ctype = storedtype
-						cells[y+1][x+i].rot = (storedrot-(i+1)%2)%4
-						cells[y+1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+					if not jammed then
+						local storedtype = 0
+						local storedrot = 0
+						local storedvars = {cells[y][x+1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+						local oldtype = cells[y][x-1].ctype 
+						local oldrot = cells[y][x-1].rot
+						local oldvars = {cells[y][x-1].lastvars[1],cells[y][x-1].lastvars[2],cells[y][x-1].lastvars[3]}
+						cells[y][x-1].ctype = storedtype
+						cells[y][x-1].rot = (storedrot-1)%4
+						cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 						storedtype = oldtype
 						storedrot = oldrot
 						storedvars = {oldvars[1],oldvars[2],oldvars[3]}
-					end
-					oldtype = cells[y][x+1].ctype 
-					oldrot = cells[y][x+1].rot
-					oldvars = {cells[y][x-1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
-					cells[y][x+1].ctype = storedtype
-					cells[y][x+1].rot = (storedrot-1)%4
-					cells[y][x+1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
-					storedtype = oldtype
-					storedrot = oldrot
-					storedvars = {oldvars[1],oldvars[2],oldvars[3]}
-					for i=1,-1,-1 do
-						oldtype = cells[y-1][x+i].ctype 
-						oldrot = cells[y-1][x+i].rot
-						oldvars = {cells[y-1][x+i].lastvars[1],cells[y-1][x+i].lastvars[2],cells[y-1][x+i].lastvars[3]}
-						cells[y-1][x+i].ctype = storedtype
-						cells[y-1][x+i].rot = (storedrot-(i+1)%2)%4
-						cells[y-1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+						for i=-1,1 do
+							oldtype = cells[y+1][x+i].ctype 
+							oldrot = cells[y+1][x+i].rot
+							oldvars = {cells[y+1][x+i].lastvars[1],cells[y+1][x+i].lastvars[2],cells[y+1][x+i].lastvars[3]}
+							cells[y+1][x+i].ctype = storedtype
+							cells[y+1][x+i].rot = (storedrot-(i+1)%2)%4
+							cells[y+1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+							storedtype = oldtype
+							storedrot = oldrot
+							storedvars = {oldvars[1],oldvars[2],oldvars[3]}
+						end
+						oldtype = cells[y][x+1].ctype 
+						oldrot = cells[y][x+1].rot
+						oldvars = {cells[y][x-1].lastvars[1],cells[y][x+1].lastvars[2],cells[y][x+1].lastvars[3]}
+						cells[y][x+1].ctype = storedtype
+						cells[y][x+1].rot = (storedrot-1)%4
+						cells[y][x+1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 						storedtype = oldtype
 						storedrot = oldrot
 						storedvars = {oldvars[1],oldvars[2],oldvars[3]}
+						for i=1,-1,-1 do
+							oldtype = cells[y-1][x+i].ctype 
+							oldrot = cells[y-1][x+i].rot
+							oldvars = {cells[y-1][x+i].lastvars[1],cells[y-1][x+i].lastvars[2],cells[y-1][x+i].lastvars[3]}
+							cells[y-1][x+i].ctype = storedtype
+							cells[y-1][x+i].rot = (storedrot-(i+1)%2)%4
+							cells[y-1][x+i].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+							storedtype = oldtype
+							storedrot = oldrot
+							storedvars = {oldvars[1],oldvars[2],oldvars[3]}
+						end
+						cells[y][x-1].ctype = storedtype
+						cells[y][x-1].rot = (storedrot-1)%4
+						cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 					end
-					cells[y][x-1].ctype = storedtype
-					cells[y][x-1].rot = (storedrot-1)%4
-					cells[y][x-1].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
 				end
 			end
 		end
@@ -1582,10 +2012,12 @@ local function UpdateRedirectors()
 	for y=1,height-2 do
 		for x=1,width-2 do
 			if cells[y][x].ctype == 16 then
-				if cells[y][x-1].ctype ~= 16 then cells[y][x-1].rot = cells[y][x].rot end
-				if cells[y][x+1].ctype ~= 16 then cells[y][x+1].rot = cells[y][x].rot end
-				if cells[y-1][x].ctype ~= 16 then cells[y-1][x].rot = cells[y][x].rot end
-				if cells[y+1][x].ctype ~= 16 then cells[y+1][x].rot = cells[y][x].rot end
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if cells[y][x-1].ctype ~= 16 then cells[y][x-1].rot = cells[y][x].rot end
+					if cells[y][x+1].ctype ~= 16 then cells[y][x+1].rot = cells[y][x].rot end
+					if cells[y-1][x].ctype ~= 16 then cells[y-1][x].rot = cells[y][x].rot end
+					if cells[y+1][x].ctype ~= 16 then cells[y+1][x].rot = cells[y][x].rot end
+				end
 			end
 		end
 	end
@@ -1677,7 +2109,7 @@ local function DoRepulser(x,y,dir)
 			totalforce = 0
 		end
 		cells[cy][cx].updatekey = updatekey
-	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 	--movement time
 	cells[cy][cx].testvar = "end"
 	if totalforce > 0 then
@@ -1712,6 +2144,11 @@ local function DoRepulser(x,y,dir)
 				break
 			elseif cells[cy][cx].ctype == 24 then
 				DoBomb(cx,cy)
+				cells[cy][cx].ctype = 0
+				love.audio.play(destroysound)
+				break
+			elseif cells[cy][cx].ctype == 35 then
+				DoMiniBomb(cx,cy)
 				cells[cy][cx].ctype = 0
 				love.audio.play(destroysound)
 				break
@@ -1780,7 +2217,7 @@ local function DoBlackHole(x,y,dir)
 		if cx > 0 then
 			if cy < (height - 1) then
 				if cx < (width - 1) then
-					if cells[cy][cx].ctype ~= -1 and cells[cy][cx].ctype ~= 11 and cells[cy][cx].ctype ~= 12 or cells[cy][cx].ctype ~= 23 then
+					if cells[cy][cx].ctype ~= -1 and cells[cy][cx].ctype ~= 12 and cells[cy][cx].ctype ~= 23 then
 						local storedtype = cells[cy][cx].ctype
 						local storedrot = cells[cy][cx].rot
 						local storedupdated = cells[cy][cx].updaed
@@ -1797,11 +2234,21 @@ local function DoBlackHole(x,y,dir)
 							ccy = ccy - 1
 						end
 						if cells[ccy][ccx].ctype == 0 then
-							cells[cy][cx].ctype = 0
-							cells[ccy][ccx].ctype = storedtype
-							cells[ccy][ccx].rot = storedrot
-							cells[ccy][ccx].updated = storedupdated
-							cells[ccy][ccx].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+							if cells[cy][cx].ctype == 4 or cells[cy][cx].ctype == 5 or cells[cy][cx].ctype == 6 or cells[cy][cx].ctype == 7 then
+								if (cells[cy][cx].ctype == 4 and cells[cy][cx].rot == dir) or (cells[cy][cx].ctype == 4 and cells[cy][cx].rot == dir+2%4) or (cells[cy][cx].ctype == 5 and cells[cy][cx].rot == dir+2%4) or (cells[cy][cx].ctype == 6 and cells[cy][cx].rot == dir+2%4) or (cells[cy][cx].ctype == 6 and cells[cy][cx].rot == dir+3%4) or (cells[cy][cx].ctype == 7 and cells[cy][cx].rot == dir+2%4) or (cells[cy][cx].ctype == 7 and cells[cy][cx].rot == dir+3%4) or (cells[cy][cx].ctype == 7 and cells[cy][cx].rot == dir+1%4) then
+									cells[cy][cx].ctype = 0
+									cells[ccy][ccx].ctype = storedtype
+									cells[ccy][ccx].rot = storedrot
+									cells[ccy][ccx].updated = storedupdated
+									cells[ccy][ccx].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+								end
+							else
+								cells[cy][cx].ctype = 0
+								cells[ccy][ccx].ctype = storedtype
+								cells[ccy][ccx].rot = storedrot
+								cells[ccy][ccx].updated = storedupdated
+								cells[ccy][ccx].lastvars = {storedvars[1],storedvars[2],storedvars[3]}
+							end
 						end
 					end
 				end
@@ -1813,11 +2260,13 @@ end
 local function UpdateBlackHoles()
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if cells[y][x].ctype == 26 then
-				DoBlackHole(x,y,0)
-				DoBlackHole(x,y,2)
-				DoBlackHole(x,y,3)
-				DoBlackHole(x,y,1)
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 26 then
+					DoBlackHole(x,y,0)
+					DoBlackHole(x,y,2)
+					DoBlackHole(x,y,3)
+					DoBlackHole(x,y,1)
+				end
 			end
 		end
 	end
@@ -1826,15 +2275,17 @@ end
 local function UpdateRepulsers()
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if cells[y][x].ctype == 20 then
-				DoRepulser(x,y,0)
-				updatekey = updatekey + 1
-				DoRepulser(x,y,2)
-				updatekey = updatekey + 1
-				DoRepulser(x,y,3)
-				updatekey = updatekey + 1
-				DoRepulser(x,y,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if cells[y][x].ctype == 20 then
+					DoRepulser(x,y,0)
+					updatekey = updatekey + 1
+					DoRepulser(x,y,2)
+					updatekey = updatekey + 1
+					DoRepulser(x,y,3)
+					updatekey = updatekey + 1
+					DoRepulser(x,y,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
@@ -1855,7 +2306,7 @@ local function DoPuller(x,y,dir)
 		elseif direction == 1 then
 			cy = cy + 1
 		end
-		if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or cells[cy][cx].ctype == 24 then
+		if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or cells[cy][cx].ctype == 24 or cells[cy][cx].ctype == 35 then
 			break
 		elseif cells[cy][cx].ctype == 15 then
 			if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
@@ -1956,7 +2407,7 @@ local function DoPuller(x,y,dir)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until (totalforce <= 0 and checkedtype ~= 15) or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+		until (totalforce <= 0 and checkedtype ~= 15) or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -1996,6 +2447,11 @@ local function DoPuller(x,y,dir)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
 				elseif cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 then
 					cells[lastcy][lastcx].ctype = 0
 					break
@@ -2004,6 +2460,11 @@ local function DoPuller(x,y,dir)
 					break
 				elseif cells[cy][cx].ctype == 24 then
 					DoBomb(lastcx,lastcy)
+					cells[lastcy][lastcx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(lastcx,lastcy)
 					cells[lastcy][lastcx].ctype = 0
 					love.audio.play(destroysound)
 					break
@@ -2056,36 +2517,44 @@ local function UpdateRandom()
 	for x=width-2,1,-1 do
 		for y=height-2,1,-1 do
 			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 0 then
-				cells[y][x].ctype = math.random(1,28)
-				cells[y][x].rot = math.random(0,3)
-				updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					cells[y][x].ctype = math.random(1,28)
+					cells[y][x].rot = math.random(0,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for x=1,width-2 do
 		for y=1,height-2 do
 			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 2 then
-				cells[y][x].ctype = math.random(1,28)
-				cells[y][x].rot = math.random(0,3)
-				updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					cells[y][x].ctype = math.random(1,28)
+					cells[y][x].rot = math.random(0,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
 			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 3 then
-				cells[y][x].ctype = math.random(1,28)
-				cells[y][x].rot = math.random(0,3)
-				updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					cells[y][x].ctype = math.random(1,28)
+					cells[y][x].rot = math.random(0,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
 			if not cells[y][x].updated and cells[y][x].ctype == 28 and cells[y][x].rot == 1 then
-				cells[y][x].ctype = math.random(1,28)
-				cells[y][x].rot = math.random(0,3)
-				updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					cells[y][x].ctype = math.random(1,28)
+					cells[y][x].rot = math.random(0,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
@@ -2106,7 +2575,7 @@ local function DoHalfPuller(x,y,dir)
 		elseif direction == 1 then
 			cy = cy + 1
 		end
-		if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or cells[cy][cx].ctype == 24 then
+		if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or cells[cy][cx].ctype == 24 or cells[cy][cx].ctype == 35 then
 			break
 		elseif cells[cy][cx].ctype == 15 then
 			if direction == 0 and cells[cy][cx].rot == 1 or direction == 2 and cells[cy][cx].rot == 0 then
@@ -2207,7 +2676,7 @@ local function DoHalfPuller(x,y,dir)
 				totalforce = 0
 			end
 			cells[cy][cx].updatekey = updatekey
-		until (totalforce <= 0 and checkedtype ~= 15) or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+		until (totalforce <= 0 and checkedtype ~= 15) or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -2247,6 +2716,11 @@ local function DoHalfPuller(x,y,dir)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(cx,cy)
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					break
 				elseif cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 12 then
 					cells[lastcy][lastcx].ctype = 0
 					break
@@ -2255,6 +2729,11 @@ local function DoHalfPuller(x,y,dir)
 					break
 				elseif cells[cy][cx].ctype == 24 then
 					DoBomb(lastcx,lastcy)
+					cells[lastcy][lastcx].ctype = 0
+					love.audio.play(destroysound)
+					break
+				elseif cells[cy][cx].ctype == 35 then
+					DoMiniBomb(lastcx,lastcy)
 					cells[lastcy][lastcx].ctype = 0
 					love.audio.play(destroysound)
 					break
@@ -2306,33 +2785,41 @@ end
 local function UpdatePullers()
 	for x=width-2,1,-1 do
 		for y=height-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 0 then
-				DoPuller(x,y,0)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 0 then
+					DoPuller(x,y,0)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for x=1,width-2 do
 		for y=1,height-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 2 then
-				DoPuller(x,y,2)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 2 then
+					DoPuller(x,y,2)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 3 then
-				DoPuller(x,y,3)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 3 then
+					DoPuller(x,y,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 1 then
-				DoPuller(x,y,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 13 and cells[y][x].rot == 1 then
+					DoPuller(x,y,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
@@ -2342,33 +2829,41 @@ local function UpdateHalfPullers()
 	if halfdelay == true then
 		for x=width-2,1,-1 do
 			for y=height-2,1,-1 do
-				if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 0 then
-					DoHalfPuller(x,y,0)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 0 then
+						DoHalfPuller(x,y,0)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
 		for x=1,width-2 do
 			for y=1,height-2 do
-				if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 2 then
-					DoHalfPuller(x,y,2)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 2 then
+						DoHalfPuller(x,y,2)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
 		for y=1,height-2 do
 			for x=1,width-2 do
-				if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 3 then
-					DoHalfPuller(x,y,3)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 3 then
+						DoHalfPuller(x,y,3)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
 		for y=height-2,1,-1 do
 			for x=width-2,1,-1 do
-				if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 1 then
-					DoHalfPuller(x,y,1)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 30 and cells[y][x].rot == 1 then
+						DoHalfPuller(x,y,1)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
@@ -2462,7 +2957,7 @@ local function DoMover(x,y,dir)
 			break
 		end
 		cells[cy][cx].updatekey = updatekey
-	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24
+	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 12 or checkedtype == 23 or checkedtype == 24 or checkedtype == 35
 	--movement time
 	cells[cy][cx].testvar = "end"
 	if totalforce > 0 then
@@ -2500,6 +2995,11 @@ local function DoMover(x,y,dir)
 				break
 			elseif cells[cy][cx].ctype == 24 then
 				DoBomb(cx,cy)
+				cells[cy][cx].ctype = 0
+				love.audio.play(destroysound)
+				break
+			elseif cells[cy][cx].ctype == 35 then
+				DoMiniBomb(cx,cy)
 				cells[cy][cx].ctype = 0
 				love.audio.play(destroysound)
 				break
@@ -2554,74 +3054,86 @@ end
 local function UpdateMovers()
 	for x=1,width-2 do
 		for y=1,height-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 0 then
-				DoMover(x,y,0)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 0 then
+					DoMover(x,y,0)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for x=width-2,1,-1 do
 		for y=height-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 2 then
-				DoMover(x,y,2)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 2 then
+					DoMover(x,y,2)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=height-2,1,-1 do
 		for x=width-2,1,-1 do
-			if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 3 then
-				DoMover(x,y,3)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 3 then
+					DoMover(x,y,3)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	for y=1,height-2 do
 		for x=1,width-2 do
-			if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 1 then
-				DoMover(x,y,1)
-				updatekey = updatekey + 1
+			if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+				if not cells[y][x].updated and cells[y][x].ctype == 1 and cells[y][x].rot == 1 then
+					DoMover(x,y,1)
+					updatekey = updatekey + 1
+				end
 			end
 		end
 	end
 	--things will already be reset in next tick by love.update()
 end
 
-
-
-
-
 local function UpdateHalfMovers()
 	if halfdelay == true then
 		for x=1,width-2 do
 			for y=1,height-2 do
-				if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 0 then
-					DoMover(x,y,0)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 0 then
+						DoMover(x,y,0)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
 		for x=width-2,1,-1 do
 			for y=height-2,1,-1 do
-				if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 2 then
-					DoMover(x,y,2)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 2 then
+						DoMover(x,y,2)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
 		for y=height-2,1,-1 do
 			for x=width-2,1,-1 do
-				if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 3 then
-					DoMover(x,y,3)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 3 then
+						DoMover(x,y,3)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
 		for y=1,height-2 do
 			for x=1,width-2 do
-				if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 1 then
-					DoMover(x,y,1)
-					updatekey = updatekey + 1
+				if cells[y][x-1].ctype ~= 36 and cells[y][x+1].ctype ~= 36 and cells[y-1][x].ctype ~= 36 and cells[y+1][x].ctype ~= 36 then
+					if not cells[y][x].updated and cells[y][x].ctype == 29 and cells[y][x].rot == 1 then
+						DoMover(x,y,1)
+						updatekey = updatekey + 1
+					end
 				end
 			end
 		end
@@ -2633,11 +3145,7 @@ end
 
 
 local function DoTick()
-	if halfdelay == false then
-		halfdelay = true
-	else
-		halfdelay = false
-	end
+	halfdelay = not halfdelay
 	for y=0,height-1 do
 		for x=0,width-1 do
 			cells[y][x].updated = false
@@ -2648,6 +3156,7 @@ local function DoTick()
 	UpdateMirrors()
 	UpdateGenerators()
 	UpdateSidewaysGens()
+	UpdateTunnels()
 	UpdateSplitters()
 	UpdateTriples()
 	UpdateMold()
@@ -2660,6 +3169,7 @@ local function DoTick()
 	UpdateHalfPullers()
 	UpdateMovers()
 	UpdateHalfMovers()
+	UpdateTrashHoles()
 end
 
 function love.load()
@@ -2804,7 +3314,7 @@ function love.draw()
 		if currentstate == i then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i],25+(775-25)*(i-14)/15,525,currentrot*math.pi/2,2,2,10,10)
 	end
-	for i=30,32 do
+	for i=30,36 do
 		if currentstate == i then love.graphics.setColor(1,1,1,0.5) else love.graphics.setColor(1,1,1,0.25) end
 		love.graphics.draw(tex[i],25+(775-25)*(i-30)/15,475,currentrot*math.pi/2,2,2,10,10)
 	end
@@ -2824,7 +3334,7 @@ function love.draw()
 		love.graphics.rectangle("fill",100,75,600,450)
 		love.graphics.setColor(1,1,1,1)
 		love.graphics.print("this is the menu",300,120,0,2,2)
-		love.graphics.print("CelLua B-Mod v1.8.0",330,90,0,1,1)
+		love.graphics.print("CelLua B-Mod v1.9.0",330,90,0,1,1)
 		love.graphics.print("by lieve_blendi",365,105,0,1,1)
 		love.graphics.print("Update delay: "..string.sub(delay,1,4).."s",150,175,0,1,1)
 		love.graphics.print("Ticks per update: "..tpu,150,225,0,1,1)
@@ -2925,7 +3435,7 @@ function love.mousepressed(x,y,b)
 			end
 		end
 	elseif y > 455 and y < 495 then
-		for i=30,32 do
+		for i=30,36 do
 			if x > 5+(775-25)*(i-30)/15 and x < 45+(775-25)*(i-30)/15 then
 				currentstate = i
 				placecells = false
@@ -2954,7 +3464,7 @@ function love.keypressed(key)
 	elseif key == "z" then
 		currentstate = math.max(currentstate-1,-1)
 	elseif key == "c" then
-		currentstate = math.min(currentstate+1,30)
+		currentstate = math.min(currentstate+1,36)
 	elseif key == "up" then
 		if zoom < 160 then
 			zoom = zoom*2

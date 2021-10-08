@@ -108,8 +108,6 @@ local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
-	slowbirdID = addCell("BM slow-bird","bmod/bird.png",function() return true end) -- Added by UndefinedMonitor
-	unstoppabledrillID = addCell("BM unstoppable-drill","textures/driller.png", function() return true end) -- Added by UndefinedMonitor
 	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",function() return true end) -- Added by UndefinedMonitor
 	deadslowbirdID = addCell("BM deadbird","bmod/deadslowbird.png",function() return true end,"normal",true)
 	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return true end) -- Added by UndefinedMonitor

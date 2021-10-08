@@ -124,6 +124,7 @@ end
 
 fastdiamoverID = 0
 slowdiamoverID = 0
+slowerdiamoverID = 0
 
 function adddiamover()
     diamoverID = addCell("BM diamover","bmod/dmover.png",function() return true end)
@@ -132,4 +133,5 @@ end
 function adddiamovers()
     fastdiamoverID = addCell("BM fastdiamover","bmod/fastdmover.png",function() return true end)
     slowdiamoverID = addCell("BM slowdiamover","bmod/slowdmover.png",function() return true end)
+    slowerdiamoverID = addCell("BM slowerdiamover","bmod/slowerdmover.png",function() return true end)
 end

@@ -6,6 +6,8 @@ fastermoverID = 0
 fasterpullerID = 0
 fasteradvancerID = 0
 
+velocityID = 0
+
 function addfastcells()
     fastmoverID = addCell("BM fastmove","bmod/fastmover.png",function() return true end,"mover")
     fastpullerID = addCell("BM fastpull","bmod/fastpuller.png",function() return true end,"mover")
@@ -14,6 +16,15 @@ function addfastcells()
     fastermoverID = addCell("BM fastermove","bmod/fastermover.png",function() return true end,"mover")
     fasterpullerID = addCell("BM fasterpull","bmod/fasterpuller.png",function() return true end,"mover")
     --fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",function() return true end,"mover")
+
+    velocityID = addCell("BM velocity", "textures/mover.png", function() return true end, "mover")
+end
+
+function doVelocity(x, y, dir)
+    if not cells[y][x].vel then cells[y][x].vel = 1 end
+    cells[y][x].vel = cells[y][x].vel + 0.5
+
+    doSpecificMover(x, y, dir, math.floor(cells[y][x].vel))
 end
 
 function doFastMover(x,y,dir)
@@ -31,8 +42,8 @@ end
 
 function doSpecificMover(x,y,dir,amount)
     cells[y][x].updated = true
-    local cx = x
-    local cy = y
+    local cx, px = x, x
+    local cy, py = y, y
     if dir == 0 then cx = x - 1 elseif dir == 2 then cx = x + 1 else cx = x end
     if dir == 1 then cy = y - 1 elseif dir == 3 then cy = y + 1 else cy = y end
     for i = 1,amount,1 do
@@ -44,6 +55,7 @@ end
 
 function doSpecificPuller(x,y,dir,amount)
     local nx,ny = x,y
+    local px,py = x,y
     for i = 0,(amount-1) do
         local success
         if i ~= (amount-1) then success = PullCell(nx,ny,dir,nil,nil,nil,false) else success = PullCell(nx,ny,dir,nil,nil,nil,true) end

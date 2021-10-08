@@ -19,6 +19,7 @@ local isghostinitial = true
 local ghostcells = {}
 local ghostinitial = {}
 local ver = "2.0.0"
+local name = "B-Mod"
 
 for y=0,height-1 do
 	ghostinitial[y] = {}
@@ -107,7 +108,7 @@ local function init()
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
 	slowbirdID = addCell("BM slow-bird","bmod/bird.png",function() return true end) -- Added by UndefinedMonitor
-	unstoppabledrillID = addCell("BM unstoppable-drill") -- Added by UndefinedMonitor
+	unstoppabledrillID = addCell("BM unstoppable-drill","textures/driller.png", function() return true end) -- Added by UndefinedMonitor
 	adddiamover()
 	addfastcells()
 	adddiamovers()
@@ -1144,6 +1145,8 @@ local function update(id,x,y,dir)
 		doBird(x, y, dir)
 	elseif id == unstoppabledrillID then
 		DoUnstoppableDrill(x, y, dir)
+	elseif id == velocityID then
+		doVelocity(x, y, dir)
 	elseif id == slowerdiamoverID then
 		if delay4 == 0 then
 			DoForceDiaMover(x,y,dir)

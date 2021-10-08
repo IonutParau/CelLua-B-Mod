@@ -11,7 +11,7 @@ require("bmod/unstoppabledrill")
 local halfdelay = false
 
 local delay4 = 0
-local birdstate = 0
+local birdstate,slowbirdstate = 0,0
 local bluescreen = love.graphics.newImage("bmod/bluscren.png")
 local bluescreenenabled = false
 local bluescreendelay = 0
@@ -19,6 +19,7 @@ local isghostinitial = true
 local ghostcells = {}
 local ghostinitial = {}
 local ver = "2.0.0"
+local name = "B-Mod"
 
 for y=0,height-1 do
 	ghostinitial[y] = {}
@@ -58,6 +59,7 @@ bluescreenID = 0
 randomizerID = 0
 
 slowbirdID = 0
+deadslowbirdID = 0
 unstoppabledrillID = 0
 
 slowmayobottleID, slowmayomoveID = 0,0
@@ -106,8 +108,9 @@ local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
-	slowbirdID = addCell("BM slow-bird","bmod/bird.png",function() return true end) -- Added by UndefinedMonitor
-	unstoppabledrillID = addCell("BM unstoppable-drill") -- Added by UndefinedMonitor
+	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",function() return true end) -- Added by UndefinedMonitor
+	deadslowbirdID = addCell("BM deadbird","bmod/deadslowbird.png",function() return true end,"normal",true)
+	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return true end) -- Added by UndefinedMonitor
 	adddiamover()
 	addfastcells()
 	adddiamovers()
@@ -916,6 +919,9 @@ end
 local function tick()
 	halfdelay = not halfdelay
 	birdstate = (birdstate+1)%4
+	if halfdelay == true then
+		slowbirdstate = (slowbirdstate+1)%4
+	end
 	delay4 = (delay4+1)%4
 	for y=0,height-1 do
 		for x=0,width-1 do
@@ -923,8 +929,8 @@ local function tick()
 			ghostcells[y][x].lastvars = {x,y,ghostcells[y][x].rot}
 		end
 	end
-	local cellbackup = CopyTable(cells)
-	cells = CopyTable(ghostcells)
+	local cellbackup = cells
+	cells = ghostcells
 	for y=0,height-1 do
 		for x=0,width-1 do
 			if cells[y][x].ctype == ghostmoverID and cells[y][x].updated == false then
@@ -939,8 +945,8 @@ local function tick()
 			end
 		end
 	end
-	ghostcells = CopyTable(cells)
-	cells = CopyTable(cellbackup)
+	ghostcells = cells
+	cells = cellbackup
 end
 
 function DoForceMover(x,y,dir)
@@ -991,6 +997,43 @@ local function doBird(x,y,dir,state)
 		end
 	end
 	SetChunk(x,y,deadbirdID)
+end
+
+local function doSlowBird(x,y,dir,state)
+	if dir == 0 then
+		if state == 0 then
+			if not DoForceMover(x,y,dir) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		elseif state == 1 then
+			DoForceMover(x,y,(dir-1)%4)
+		elseif state == 2 then
+			if not DoForceMover(x,y,dir) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		elseif state == 3 then
+			DoForceMover(x,y,(dir+1)%4)
+		end
+	elseif dir == 2 then
+		if state == 0 then
+			if not DoForceMover(x,y,dir) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		elseif state == 1 then
+			DoForceMover(x,y,(dir+1)%4)
+		elseif state == 2 then
+			DoForceMover(x,y,dir)
+		elseif state == 3 then
+			if not DoForceMover(x,y,(dir-1)%4) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		end
+	else
+		if not DoForceMover(x,y,dir) then
+			cells[y][x].ctype = deadslowbirdID
+		end
+	end
+	SetChunk(x,y,deadslowbirdID)
 end
 
 local function DoRandomizer(x,y,dir)
@@ -1134,6 +1177,8 @@ local function update(id,x,y,dir)
 	--	doSpecificAdvancer(x,y,dir,4)
 	elseif id == deadbirdID then
 		DoForceMover(x,y,1)
+	elseif id == deadslowbirdID and halfdelay == true then
+		DoForceMover(x,y,1)
 	elseif id == bluescreenID then
 		cells[y][x].ctype = 0
 		bluescreenenabled = true
@@ -1141,7 +1186,7 @@ local function update(id,x,y,dir)
 	elseif id == randomizerID then
 		DoRandomizer(x,y,dir)
 	elseif id == slowbirdID and halfdelay == true then
-		doBird(x, y, dir)
+		doSlowBird(x, y, dir, slowbirdstate)
 	elseif id == unstoppabledrillID then
 		DoUnstoppableDrill(x, y, dir)
 	elseif id == slowerdiamoverID then
@@ -1300,6 +1345,6 @@ return {
 	onReset = onReset,
 	onClear = onClear,
 	onCellDraw = onCellDraw,
-	dependencies = {"B-Mod"},
+	dependencies = {"B-Mod",name,name2},
 	version = ver
 }

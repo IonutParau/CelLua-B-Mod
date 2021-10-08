@@ -1,8 +1,13 @@
+-- Cells by Blendi Goose#0414
 require("bmod/gates")
 require("bmod/electricstuffs")
 require("bmod/leds")
 require("bmod/fastcells")
 require("bmod/diag")
+
+-- Cells by UndefinedMonitor#1595
+require("bmod/unstoppabledrill")
+
 local halfdelay = true
 local delay4 = 0
 local birdstate = 0
@@ -12,23 +17,6 @@ local bluescreendelay = 0
 local isghostinitial = true
 local ghostcells = {}
 local ghostinitial = {}
-
-local function clonetable(table)
-	local newtable = {}
-	for k,v in pairs(table) do
-		newtable[k] = v
-	end
-	return newtable
-end
-
-local function deepclonetable(table)
-	local newtable = {}
-	for k,v in pairs(table) do
-		if type(v) == "table" then v = deepclonetable(v) end
-		newtable[k] = v
-	end
-	return newtable
-end
 
 for y=0,height-1 do
 	ghostinitial[y] = {}
@@ -66,6 +54,8 @@ sloweradvancerID = 0
 deadbirdID = 0
 bluescreenID = 0
 randomizerID = 0
+slowbirdID = 0
+unstoppabledrillID = 0
 local function init()
     triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",function() return true end)
     bombID = addCell("BM bom","bmod/bomb.png",function() return true end,"enemy")
@@ -100,6 +90,8 @@ local function init()
 	mayomoveID = addCell("BM mayomove","bmod/mayonnaisemover.png",function() return true end,"mover")
 	doleds()
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
+	slowbirdID = addCell("BM slow-bird","bmod/bird.png",function() return true end) -- Added by UndefinedMonitor
+	unstoppabledrillID = addCell("BM unstoppable-drill") -- Added by UndefinedMonitor
 	adddiamover()
 	addfastcells()
 	adddiamovers()
@@ -814,8 +806,8 @@ local function tick()
 			ghostcells[y][x].lastvars = {x,y,ghostcells[y][x].rot}
 		end
 	end
-	local cellbackup = clonetable(cells)
-	cells = clonetable(ghostcells)
+	local cellbackup = CopyTable(cells)
+	cells = CopyTable(ghostcells)
 	for y=0,height-1 do
 		for x=0,width-1 do
 			if cells[y][x].ctype == ghostmoverID and cells[y][x].updated == false then
@@ -830,8 +822,8 @@ local function tick()
 			end
 		end
 	end
-	ghostcells = clonetable(cells)
-	cells = clonetable(cellbackup)
+	ghostcells = CopyTable(cells)
+	cells = CopyTable(cellbackup)
 end
 
 function DoForceMover(x,y,dir)
@@ -1023,6 +1015,10 @@ local function update(id,x,y,dir)
 		bluescreendelay = 1
 	elseif id == randomizerID then
 		DoRandomizer(x,y,dir)
+	elseif id == slowbirdID and halfdelay then
+		doBird(x, y, dir)
+	elseif id == unstoppabledrillID then
+		DoUnstoppableDrill(x, y, dir)
 	end
 	--cells[y][x].testvar = tostring(halfdelay)
 	--cells[y][x].testvar = tostring(cells[y][x].ctype)

@@ -8,7 +8,8 @@ require("bmod/diag")
 -- Cells by UndefinedMonitor#1595
 require("bmod/unstoppabledrill")
 
-local halfdelay = true
+local halfdelay = false
+
 local delay4 = 0
 local birdstate = 0
 local bluescreen = love.graphics.newImage("bmod/bluscren.png")
@@ -17,6 +18,7 @@ local bluescreendelay = 0
 local isghostinitial = true
 local ghostcells = {}
 local ghostinitial = {}
+local ver = "2.0.0"
 
 for y=0,height-1 do
 	ghostinitial[y] = {}
@@ -54,9 +56,19 @@ sloweradvancerID = 0
 deadbirdID = 0
 bluescreenID = 0
 randomizerID = 0
+
 slowbirdID = 0
 unstoppabledrillID = 0
+
+slowmayobottleID, slowmayomoveID = 0,0
+pushmakerID = 0
+
+local ver2 = "2.0.0"
+local name2 = "B-Mod"
+
 local function init()
+	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	if not (name == name2) then error("stop being dumbass") end
     triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",function() return true end)
     bombID = addCell("BM bom","bmod/bomb.png",function() return true end,"enemy")
     minibombID = addCell("BM minibom","bmod/minibomb.png",function() return true end,"enemy")
@@ -86,9 +98,13 @@ local function init()
 	elecmoveID = addCell("BM elecmove","bmod/elecmover.png",function() return true end,"mover")
 	elecrotcwID = addCell("BM elecrot","bmod/elecrotcw.png",function() return true end)
 	elecrotccwID = addCell("BM elecrotccw","bmod/elecrotccw.png",function() return true end)
-	mayobottleID = addCell("BM mayobottle","bmod/mayonnaisebottle.png",function() return true end)
-	mayomoveID = addCell("BM mayomove","bmod/mayonnaisemover.png",function() return true end,"mover")
+	mayobottleID = addCell("BM mayobottle","bmod/mayobottle.png",function() return true end)
+	mayomoveID = addCell("BM mayomove","bmod/mayomover.png",function() return true end,"mover")
+	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",function() return true end)
+	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",function() return true end,"mover")
 	doleds()
+	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
 	slowbirdID = addCell("BM slow-bird","bmod/bird.png",function() return true end) -- Added by UndefinedMonitor
 	unstoppabledrillID = addCell("BM unstoppable-drill") -- Added by UndefinedMonitor
@@ -103,9 +119,12 @@ local function init()
 	randomizerID = addCell("BM randomizer","bmod/randomizer.png",function() return true end)
 	ghostmoverID = addCell("BM ghostmover","bmod/ghostmover.png",function() return true end,"mover")
 	ghostcellID = addCell("BM ghostcell","bmod/ghostcell.png",function() return true end)
+	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",function() return true end)
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
+	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	if not (name == name2) then error("stop being dumbass") end
 	gendir = gendir or dir
 	local direction = (dir+2)%4
 	local cx = x
@@ -152,6 +171,104 @@ function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
 	end 
 	addedrot = addedrot + (gendir-dir)
 	PushCell(x,y,gendir,false,1,mayomoveID,gendir,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],gendir},cells[cy][cx].protected,false)
+end
+
+function DoSlowMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
+	gendir = gendir or dir
+	local direction = (dir+2)%4
+	local cx = x
+	local cy = y
+	local addedrot = 0
+	if not dontupdate then cells[y][x].updated = true end
+	while true do							--what cell to copy?
+		if direction == 0 then
+			cx = cx + 1	
+		elseif direction == 2 then
+			cx = cx - 1
+		elseif direction == 3 then
+			cy = cy - 1
+		elseif direction == 1 then
+			cy = cy + 1
+		end
+		if cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
+			local olddir = direction
+			if (cells[cy][cx].rot+3)%4 == direction then
+				direction = (direction+1)%4
+			else
+				direction = (direction-1)%4
+			end
+			addedrot = addedrot - (direction-olddir)
+		elseif cells[cy][cx].ctype == 30 then
+			local olddir = direction
+			if (cells[cy][cx].rot+3)%2 == direction%2 then
+				direction = (direction+1)%4
+			else
+				direction = (direction-1)%4
+			end
+			addedrot = addedrot - (direction-olddir)
+		elseif (cells[cy][cx].ctype == 47 or cells[cy][cx].ctype == 48) and (cells[cy][cx].rot+2)%2 ~= direction%2 then
+			local olddir = direction
+			if (cells[cy][cx].rot+1)%4 == direction then
+				direction = (direction+1)%4
+			else
+				direction = (direction-1)%4
+			end
+			addedrot = addedrot - (direction-olddir)
+		elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38 or (cells[cy][cx].ctype == 48 and (cells[cy][cx].rot+2)%4 == direction)) then
+			break
+		end
+	end 
+	addedrot = addedrot + (gendir-dir)
+	PushCell(x,y,gendir,false,1,slowmayomoveID,gendir,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],gendir},cells[cy][cx].protected,false)
+end
+
+function DoPushMaker(x,y,dir,gendir,istwist,dontupdate)
+	gendir = gendir or dir
+	local direction = (dir+2)%4
+	local cx = x
+	local cy = y
+	local addedrot = 0
+	if not dontupdate then cells[y][x].updated = true end
+	while true do							--what cell to copy?
+		if direction == 0 then
+			cx = cx + 1	
+		elseif direction == 2 then
+			cx = cx - 1
+		elseif direction == 3 then
+			cy = cy - 1
+		elseif direction == 1 then
+			cy = cy + 1
+		end
+		if cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
+			local olddir = direction
+			if (cells[cy][cx].rot+3)%4 == direction then
+				direction = (direction+1)%4
+			else
+				direction = (direction-1)%4
+			end
+			addedrot = addedrot - (direction-olddir)
+		elseif cells[cy][cx].ctype == 30 then
+			local olddir = direction
+			if (cells[cy][cx].rot+3)%2 == direction%2 then
+				direction = (direction+1)%4
+			else
+				direction = (direction-1)%4
+			end
+			addedrot = addedrot - (direction-olddir)
+		elseif (cells[cy][cx].ctype == 47 or cells[cy][cx].ctype == 48) and (cells[cy][cx].rot+2)%2 ~= direction%2 then
+			local olddir = direction
+			if (cells[cy][cx].rot+1)%4 == direction then
+				direction = (direction+1)%4
+			else
+				direction = (direction-1)%4
+			end
+			addedrot = addedrot - (direction-olddir)
+		elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38 or (cells[cy][cx].ctype == 48 and (cells[cy][cx].rot+2)%4 == direction)) then
+			break
+		end
+	end 
+	addedrot = addedrot + (gendir-dir)
+	PushCell(x,y,gendir,false,1,3,gendir,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],gendir},cells[cy][cx].protected,false)
 end
 
 function SpreadRedElec(y,x)
@@ -497,7 +614,7 @@ local function DoSplitter(x,y,dir,gendir,istwist,type,dontupdate)
 	end 
 	addedrot = addedrot + (gendir-dir)
 	cells[cy][cx].testvar = "gen'd"
-	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 and cells[cy][cx].ctype ~= -1  and cells[cy][cx].ctype ~= 11  and cells[cy][cx].ctype ~= 50 then
+	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 and cells[cy][cx].ctype ~= -1  and cells[cy][cx].ctype ~= 11  and cells[cy][cx].ctype ~= 50 and (cells[cy][cx].ctype <= #cellsForIDManagement or canPushCell(cx,cy,x,y,"deleting generator")) then
 		if type == 2 then
 			if PushCell(x,y,(gendir-1)%4,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false) then
 				PushCell(x,y,(gendir+1)%4,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false)
@@ -961,6 +1078,14 @@ local function update(id,x,y,dir)
         end
 	elseif id == mayomoveID then
 		DoMover(x,y,dir)
+	elseif id == slowmayobottleID then
+		if halfdelay then
+            DoSlowMayoGenerator(x,y,dir,dir,cells[y][x].ctype == 39,cells[y][x].ctype == 22)
+        end
+	elseif id == slowmayomoveID then
+		if halfdelay then
+			DoMover(x,y,dir)
+		end
 	elseif id == redID or id == redoffID then
 		DoLed("red",x,y)
 	elseif id == greenID or id == greenoffID then
@@ -1015,10 +1140,16 @@ local function update(id,x,y,dir)
 		bluescreendelay = 1
 	elseif id == randomizerID then
 		DoRandomizer(x,y,dir)
-	elseif id == slowbirdID and halfdelay then
+	elseif id == slowbirdID and halfdelay == true then
 		doBird(x, y, dir)
 	elseif id == unstoppabledrillID then
 		DoUnstoppableDrill(x, y, dir)
+	elseif id == slowerdiamoverID then
+		if delay4 == 0 then
+			DoForceDiaMover(x,y,dir)
+		end
+	elseif id == pushmakerID then
+		DoPushMaker(x,y,dir)
 	end
 	--cells[y][x].testvar = tostring(halfdelay)
 	--cells[y][x].testvar = tostring(cells[y][x].ctype)
@@ -1146,7 +1277,7 @@ local function onPlace(id,x,y,rot,original,originalinit)
 		ghostcells[y][x].lastvars = {x,y,rot}
 		cells[y][x] = original
 		if isghostinitial then
-			ghostinitial[y][x].ctype = ghostmoverID
+			ghostinitial[y][x].ctype = ghostcellID
 			ghostinitial[y][x].rot = rot
 			ghostinitial[y][x].lastvars = {x,y,rot}
 		end
@@ -1164,8 +1295,11 @@ return {
 	tick = tick,
 	onPlace = onPlace,
 	onEnemyDies = onEnemyDies,
+	onSetInitial = onSetInitial,
 	onUnpause = onUnpause,
 	onReset = onReset,
 	onClear = onClear,
-	onCellDraw = onCellDraw
+	onCellDraw = onCellDraw,
+	dependencies = {"B-Mod"},
+	version = ver
 }

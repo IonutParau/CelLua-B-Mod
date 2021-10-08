@@ -1,0 +1,6 @@
+Special thanks to:
+- Blendi Goose#0414 for making B-Mod and 0.01% of the textures.
+
+- UndefinedMonitor#1595 for adding slow bird cell and unstoppable mover.
+
+- K_______#0086 for making 99.99% of the textures.

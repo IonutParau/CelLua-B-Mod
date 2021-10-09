@@ -33,18 +33,18 @@ local bmod_conditions = {
 
 B-Mod = {}
 
-function BMod.bind(category, id, func)
+function B-Mod.bind(category, id, func)
 	if not bmod_bindings[category] then bmod_bindings[category] = {} end
 	bmod_bindings[category][id] = func
 end
 
-function BMod.multiBind(category, bindings)
+function B-Mod.multiBind(category, bindings)
 	for id, func in pairs(bindings) do
-		BMod.bind(category, id, func) -- E
+		B-Mod.bind(category, id, func) -- E
 	end
 end
 
-function BMod.runBinding(category, id, ...)
+function B-Mod.runBinding(category, id, ...)
 	if not bmod_bindings[category] then bmod_bindings[category] = {} end
 	if type(bmod_bindings[category][id]) ~= "function" then return end
 	if not bmod_conditions[category] then bmod_conditions[category] = {} end
@@ -53,27 +53,27 @@ function BMod.runBinding(category, id, ...)
 	end
 end
 
-function BMod.setConditional(category, id, conditionalCallback)
+function B-Mod.setConditional(category, id, conditionalCallback)
 	if not bmod_conditions[category] then bmod_conditions[category] = {} end
 	bmod_conditions[category][id] = conditionalCallback
 end
 
 -- Higher-level binding system in case Blendi doesn't understand the low-level one (to be honest, it is a bit confusing)
 
-function BMod.bindUpdate(id, func)
-	BMod.bind("updates", id, func)
+function B-Mod.bindUpdate(id, func)
+	B-Mod.bind("updates", id, func)
 end
 
-function BMod.multiBindUpdate(bindings)
-	BMod.multiBind("updates", bindings)
+function B-Mod.multiBindUpdate(bindings)
+	B-Mod.multiBind("updates", bindings)
 end
 
-function BMod.updateCell(id, ...)
-	BMod.runBinding("updates", id, ...)
+function B-Mod.updateCell(id, ...)
+	B-Mod.runBinding("updates", id, ...)
 end
 
-function BMod.setConditionalUpdate(id, callback)
-	BMod.setConditional("updates", id, callback)
+function B-Mod.setConditionalUpdate(id, callback)
+	B-Mod.setConditional("updates", id, callback)
 end
 
 -- Helpers
@@ -172,7 +172,7 @@ local function init()
 	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",function() return true end)
 	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",function() return true end,"mover")
 	doleds()
-	BMod.multiBindUpdate(
+	B-Mod.multiBindUpdate(
 		{
 			elecoffID = UpdateElec,
 			eleconID = UpdateElec,
@@ -196,10 +196,10 @@ local function init()
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
 	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",function() return true end) -- Added by UndefinedMonitor
-	BMod.bindUpdate(slowbirdID, doSlowBird)
+	B-Mod.bindUpdate(slowbirdID, doSlowBird)
 	deadslowbirdID = addCell("BM deadbird","bmod/deadslowbird.png",function() return true end,"normal",true)
 	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return true end) -- Added by UndefinedMonitor
-	BMod.bindUpdate(unstoppabledrillID, DoUnstoppableDrill)
+	B-Mod.bindUpdate(unstoppabledrillID, DoUnstoppableDrill)
 	adddiamover()
 	addfastcells()
 	adddiamovers()
@@ -1137,7 +1137,7 @@ local function DoRandomizer(x,y,dir)
 end
 
 local function update(id,x,y,dir)
-	BMod.updateCell(id, x, y, dir) -- Binding system
+	B-Mod.updateCell(id, x, y, dir) -- Binding system
 
 	
     if id == triplegenID then

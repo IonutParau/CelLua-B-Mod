@@ -31,7 +31,7 @@ local bmod_conditions = {
 
 -- Low-level basic binding system
 
-B-Mod = {}
+BMod = {}
 
 function BMod.bind(category, id, func)
 	if not bmod_bindings[category] then bmod_bindings[category] = {} end

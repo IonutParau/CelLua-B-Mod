@@ -25,6 +25,10 @@ local bmod_bindings = {
 	updates = {}
 } -- Added for improvements in code quality
 
+local bmod_conditions = {
+	updates = {}
+} -- Added for improvements to bindings.
+
 -- Low-level basic binding system
 
 B-Mod = {}
@@ -34,9 +38,24 @@ function B-Mod.bind(category, id, func)
 	bmod_bindings[category][id] = func
 end
 
+function B-Mod.multiBind(category, bindings)
+	for id, func in pairs(bindings) do
+		B-Mod.bind(category, id, func) -- E
+	end
+end
+
 function B-Mod.runBinding(category, id, ...)
+	if not bmod_bindings[category] then bmod_bindings[category] = {} end
 	if type(bmod_bindings[category][id]) ~= "function" then return end
-	bmod_bindings[category][id](...)
+	if not bmod_conditions[category] then bmod_conditions[category] = {} end
+	if (bmod_conditions[category][id](...)) == true then
+		bmod_bindings[category][id](...)
+	end
+end
+
+function B-Mod.setConditional(category, id, conditionalCallback)
+	if not bmod_conditions[category] then bmod_conditions[category] = {} end
+	bmod_conditions[category][id] = conditionalCallback
 end
 
 -- Higher-level binding system in case Blendi doesn't understand the low-level one (to be honest, it is a bit confusing)
@@ -45,9 +64,29 @@ function B-Mod.bindUpdate(id, func)
 	B-Mod.bind("updates", id, func)
 end
 
+function B-Mod.multiBindUpdate(bindings)
+	B-Mod.multiBind("updates", bindings)
+end
+
 function B-Mod.updateCell(id, ...)
 	B-Mod.runBinding("updates", id, ...)
 end
+
+function B-Mod.setConditionalUpdate(id, callback)
+	B-Mod.setConditional("updates", id, callback)
+end
+
+-- Helpers
+
+function doSlowState()
+	return (halfdelay == true)
+end
+
+function doSlowerState()
+	return (delay4 == 0)
+end
+
+-- Rest of code
 
 for y=0,height-1 do
 	ghostinitial[y] = {}
@@ -133,6 +172,26 @@ local function init()
 	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",function() return true end)
 	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",function() return true end,"mover")
 	doleds()
+	B-Mod.multiBindUpdate(
+		{
+			elecoffID = UpdateElec,
+			eleconID = UpdateElec,
+			redelecoffID = UpdateRedElec,
+			redeleconID = UpdateRedElec,
+			batteryID = UpdateBatteries,
+			repeaterID = DoRepeater,
+			andID = andgate,
+			orID = orgate,
+			xorID = xorgate,
+			xnorID = xnorgate,
+			norID = norgate,
+			nandID = nandgate,
+			notID = notgate,
+			crosswireID = crosswire,
+			elecgenID = elecgen,
+			elecmoveID = elecmover
+		}
+	) -- Redid by UndefinedMonitor
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
@@ -1078,7 +1137,9 @@ local function DoRandomizer(x,y,dir)
 end
 
 local function update(id,x,y,dir)
-	B-Mod.updateCell(id, x, y, dir)
+	B-Mod.updateCell(id, x, y, dir) -- Binding system
+
+	
     if id == triplegenID then
         DoTripleGenerator(x,y,dir,dir,false,false,3)
     elseif id == triplesplitterID then
@@ -1114,36 +1175,6 @@ local function update(id,x,y,dir)
 		end
 	elseif id == doublegenID then
 		DoTripleGenerator(x,y,dir,dir,false,false,2)
-	elseif (id == elecoffID) or (id == eleconID) then
-		UpdateElec(x,y)
-		--cells[y][x].testvar = tostring(elecoffID)..tostring(eleconID)
-	elseif (id == redelecoffID) or (id == redeleconID) then
-		UpdateRedElec(x,y)
-		--cells[y][x].testvar = tostring(redelecoffID)..tostring(redeleconID)
-    elseif id == batteryID then
-		UpdateBatteries(x,y)
-	elseif id == repeaterID then
-		DoRepeater(x,y)
-	elseif id == andID then
-		andgate(x,y,dir)
-	elseif id == orID then
-		orgate(x,y,dir)
-	elseif id == xorID then
-		xorgate(x,y,dir)
-	elseif id == xnorID then
-		xnorgate(x,y,dir)
-	elseif id == norID then
-		norgate(x,y,dir)
-	elseif id == nandID then
-		nandgate(x,y,dir)
-	elseif id == notID then
-		notgate(x,y,dir)
-	elseif id == crosswireID then
-		crosswire(x,y)
-	elseif id == elecgenID then
-		elecgen(x,y,dir)
-	elseif id == elecmoveID then
-		elecmover(x,y,dir)
 	elseif id == elecrotccwID then
 		elecrot("ccw",x,y,dir)
 	elseif id == elecrotcwID then

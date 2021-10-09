@@ -21,6 +21,34 @@ local ghostinitial = {}
 local ver = "2.0.0"
 local name = "B-Mod"
 
+local bmod_bindings = {
+	updates = {}
+} -- Added for improvements in code quality
+
+-- Low-level basic binding system
+
+B-Mod = {}
+
+function B-Mod.bind(category, id, func)
+	if not bmod_bindings[category] then bmod_bindings[category] = {} end
+	bmod_bindings[category][id] = func
+end
+
+function B-Mod.runBinding(category, id, ...)
+	if type(bmod_bindings[category][id]) ~= "function" then return end
+	bmod_bindings[category][id](...)
+end
+
+-- Higher-level binding system in case Blendi doesn't understand the low-level one (to be honest, it is a bit confusing)
+
+function B-Mod.bindUpdate(id, func)
+	B-Mod.bind("updates", id, func)
+end
+
+function B-Mod.updateCell(id, ...)
+	B-Mod.runBinding("updates", id, ...)
+end
+
 for y=0,height-1 do
 	ghostinitial[y] = {}
 	ghostcells[y] = {}
@@ -109,8 +137,10 @@ local function init()
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
 	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",function() return true end) -- Added by UndefinedMonitor
+	B-Mod.bindUpdate(slowbirdID, doSlowBird)
 	deadslowbirdID = addCell("BM deadbird","bmod/deadslowbird.png",function() return true end,"normal",true)
 	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return true end) -- Added by UndefinedMonitor
+	B-Mod.bindUpdate(unstoppabledrillID, DoUnstoppableDrill)
 	adddiamover()
 	addfastcells()
 	adddiamovers()
@@ -999,7 +1029,9 @@ local function doBird(x,y,dir,state)
 	SetChunk(x,y,deadbirdID)
 end
 
-local function doSlowBird(x,y,dir,state)
+local function doSlowBird(x,y,dir)
+	local state = slowbirdstate
+	if not halfdelay then return end
 	if dir == 0 then
 		if state == 0 then
 			if not DoForceMover(x,y,dir) then
@@ -1046,6 +1078,7 @@ local function DoRandomizer(x,y,dir)
 end
 
 local function update(id,x,y,dir)
+	B-Mod.updateCell(id, x, y, dir)
     if id == triplegenID then
         DoTripleGenerator(x,y,dir,dir,false,false,3)
     elseif id == triplesplitterID then
@@ -1185,12 +1218,6 @@ local function update(id,x,y,dir)
 		bluescreendelay = 1
 	elseif id == randomizerID then
 		DoRandomizer(x,y,dir)
-	elseif id == slowbirdID and halfdelay == true then
-		doSlowBird(x, y, dir, slowbirdstate)
-	elseif id == unstoppabledrillID then
-		DoUnstoppableDrill(x, y, dir)
-	elseif id == velocityID then
-		doVelocity(x, y, dir)
 	elseif id == slowerdiamoverID then
 		if delay4 == 0 then
 			DoForceDiaMover(x,y,dir)

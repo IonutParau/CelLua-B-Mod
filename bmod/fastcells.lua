@@ -18,6 +18,7 @@ function addfastcells()
     --fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",function() return true end,"mover")
 
     velocityID = addCell("BM velocity", "textures/mover.png", function() return true end, "mover")
+    B-Mod.bindUpdate(velocityID, doVelocity)
 end
 
 function doVelocity(x, y, dir)

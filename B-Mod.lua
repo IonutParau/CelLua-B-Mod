@@ -4,6 +4,7 @@ require("bmod/electricstuffs")
 require("bmod/leds")
 require("bmod/fastcells")
 require("bmod/diag")
+require("bmod/AI")
 
 -- Cells by UndefinedMonitor#1595
 require("bmod/unstoppabledrill")
@@ -235,9 +236,10 @@ local function init()
 	ghostcellID = addCell("BM ghostcell","bmod/ghostcell.png",function() return true end)
 	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",function() return true end)
 
-
 	AddLasers()
 	AddLife()
+
+	addAI()
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
@@ -1273,6 +1275,8 @@ local function update(id,x,y,dir)
 		end
 	elseif id == pushmakerID then
 		DoPushMaker(x,y,dir)
+	elseif id == BModAIID then
+		DoAI(x,y,dir)
 	end
 	--cells[y][x].testvar = tostring(halfdelay)
 	--cells[y][x].testvar = tostring(cells[y][x].ctype)

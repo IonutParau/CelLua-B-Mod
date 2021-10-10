@@ -1,9 +1,9 @@
 local weakLaserID, stronkLaserID, stronkerLaserID
 
 function AddLasers()
-  weakLaserID = addCell("BM weak-laser", "textures/generator.png", function() return true end, "mover")
-  stronkLaserID = addCell("BM stronk-laser", "textures/generator.png", function() return true end, "mover")
-  stronkerLaserID = addCell("BM stronker-laser", "textures/generator.png", function() return true end, "mover")
+  weakLaserID = addCell("BM weak-laser", "bmod/laser.png", function() return true end, "mover")
+  stronkLaserID = addCell("BM stronk-laser", "bmod/laser2.png", function() return true end, "mover")
+  stronkerLaserID = addCell("BM stronker-laser", "bmod/laser3.png", function() return true end, "mover")
 end
 
 function UpdateLasers(id, x, y, dir)

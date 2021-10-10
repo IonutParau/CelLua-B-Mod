@@ -1160,7 +1160,7 @@ local function update(id,x,y,dir)
 		nandgate(x, y, dir)
 	elseif id == notID then
 		notgate(x, y, dir)
-	elseif id == crossworeID then
+	elseif id == crosswireID then
 		crosswire(x, y)
 	elseif id == elecgenID then
 		elecgen(x, y, dir)

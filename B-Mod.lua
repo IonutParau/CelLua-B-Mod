@@ -7,6 +7,9 @@ require("bmod/diag")
 
 -- Cells by UndefinedMonitor#1595
 require("bmod/unstoppabledrill")
+require("bmod/life")
+require("bmod/laser")
+-- Rest of code
 
 local halfdelay = false
 
@@ -48,7 +51,7 @@ function BMod.runBinding(category, id, ...)
 	if not bmod_bindings[category] then bmod_bindings[category] = {} end
 	if type(bmod_bindings[category][id]) ~= "function" then return end
 	if not bmod_conditions[category] then bmod_conditions[category] = {} end
-	if (bmod_conditions[category][id](...)) == true then
+	if (bmod_conditions[category][id] ~= nil and bmod_conditions[category][id](...) == true) or (bmod_conditions[category][id] == nil) then
 		bmod_bindings[category][id](...)
 	end
 end
@@ -135,6 +138,45 @@ pushmakerID = 0
 local ver2 = "2.0.0"
 local name2 = "B-Mod"
 
+local function doSlowBird(x,y,dir)
+	local state = slowbirdstate
+	if not halfdelay then return end
+	if dir == 0 then
+		if state == 0 then
+			if not DoForceMover(x,y,dir) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		elseif state == 1 then
+			DoForceMover(x,y,(dir-1)%4)
+		elseif state == 2 then
+			if not DoForceMover(x,y,dir) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		elseif state == 3 then
+			DoForceMover(x,y,(dir+1)%4)
+		end
+	elseif dir == 2 then
+		if state == 0 then
+			if not DoForceMover(x,y,dir) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		elseif state == 1 then
+			DoForceMover(x,y,(dir+1)%4)
+		elseif state == 2 then
+			DoForceMover(x,y,dir)
+		elseif state == 3 then
+			if not DoForceMover(x,y,(dir-1)%4) then
+				cells[y][x].ctype = deadslowbirdID
+			end
+		end
+	else
+		if not DoForceMover(x,y,dir) then
+			cells[y][x].ctype = deadslowbirdID
+		end
+	end
+	SetChunk(x,y,deadslowbirdID)
+end
+
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
@@ -172,33 +214,13 @@ local function init()
 	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",function() return true end)
 	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",function() return true end,"mover")
 	doleds()
-	BMod.multiBindUpdate(
-		{
-			elecoffID = UpdateElec,
-			eleconID = UpdateElec,
-			redelecoffID = UpdateRedElec,
-			redeleconID = UpdateRedElec,
-			batteryID = UpdateBatteries,
-			repeaterID = DoRepeater,
-			andID = andgate,
-			orID = orgate,
-			xorID = xorgate,
-			xnorID = xnorgate,
-			norID = norgate,
-			nandID = nandgate,
-			notID = notgate,
-			crosswireID = crosswire,
-			elecgenID = elecgen,
-			elecmoveID = elecmover
-		}
-	) -- Redid by UndefinedMonitor
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
 	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",function() return true end) -- Added by UndefinedMonitor
 	BMod.bindUpdate(slowbirdID, doSlowBird)
 	deadslowbirdID = addCell("BM deadbird","bmod/deadslowbird.png",function() return true end,"normal",true)
-	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return true end) -- Added by UndefinedMonitor
+	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return false end) -- Added by UndefinedMonitor
 	BMod.bindUpdate(unstoppabledrillID, DoUnstoppableDrill)
 	adddiamover()
 	addfastcells()
@@ -212,6 +234,10 @@ local function init()
 	ghostmoverID = addCell("BM ghostmover","bmod/ghostmover.png",function() return true end,"mover")
 	ghostcellID = addCell("BM ghostcell","bmod/ghostcell.png",function() return true end)
 	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",function() return true end)
+
+
+	AddLasers()
+	AddLife()
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
@@ -1088,45 +1114,6 @@ local function doBird(x,y,dir,state)
 	SetChunk(x,y,deadbirdID)
 end
 
-local function doSlowBird(x,y,dir)
-	local state = slowbirdstate
-	if not halfdelay then return end
-	if dir == 0 then
-		if state == 0 then
-			if not DoForceMover(x,y,dir) then
-				cells[y][x].ctype = deadslowbirdID
-			end
-		elseif state == 1 then
-			DoForceMover(x,y,(dir-1)%4)
-		elseif state == 2 then
-			if not DoForceMover(x,y,dir) then
-				cells[y][x].ctype = deadslowbirdID
-			end
-		elseif state == 3 then
-			DoForceMover(x,y,(dir+1)%4)
-		end
-	elseif dir == 2 then
-		if state == 0 then
-			if not DoForceMover(x,y,dir) then
-				cells[y][x].ctype = deadslowbirdID
-			end
-		elseif state == 1 then
-			DoForceMover(x,y,(dir+1)%4)
-		elseif state == 2 then
-			DoForceMover(x,y,dir)
-		elseif state == 3 then
-			if not DoForceMover(x,y,(dir-1)%4) then
-				cells[y][x].ctype = deadslowbirdID
-			end
-		end
-	else
-		if not DoForceMover(x,y,dir) then
-			cells[y][x].ctype = deadslowbirdID
-		end
-	end
-	SetChunk(x,y,deadslowbirdID)
-end
-
 local function DoRandomizer(x,y,dir)
 	local type = listorder[math.random(1,#listorder)]
 	while type == -2 or type == 0 do
@@ -1139,17 +1126,48 @@ end
 local function update(id,x,y,dir)
 	BMod.updateCell(id, x, y, dir) -- Binding system
 
-	
-    if id == triplegenID then
-        DoTripleGenerator(x,y,dir,dir,false,false,3)
-    elseif id == triplesplitterID then
-        DoSplitter(x,y,dir,dir,cells[y][x].ctype == 39,3,cells[y][x].ctype == 22)
-    elseif id == splitterID then
-        DoSplitter(x,y,dir,dir,cells[y][x].ctype == 39,2,cells[y][x].ctype == 22)
-    elseif id == tunnelID then
-        DoSplitter(x,y,dir,dir,cells[y][x].ctype == 39,1,cells[y][x].ctype == 22)
-    elseif id == trashholeID then
-		trashhole(x,y)
+	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
+
+	if id == karlID then
+		DoKarl(x, y)
+	elseif id == elecoffID or id == eleconID then
+		UpdateElec(x, y)	
+	elseif id == redeleconID or id == redelecoffID then
+		UpdateRedElec(x, y)
+	elseif id == batteryID then
+		UpdateBatteries(x, y)
+	elseif id == repeaterID then
+		DoRepeater(x, y)
+	elseif id == andID then
+		andgate(x, y, dir)
+	elseif id == orID then
+		orgate(x, y, dir)
+	elseif id == xorID then
+		xorgate(x, y, dir)
+	elseif id == xnorID then
+		xnorgate(x, y, dir)
+	elseif id == norID then
+		norgate(x, y, dir)
+	elseif id == nandID then
+		nandgate(x, y, dir)
+	elseif id == notID then
+		notgate(x, y, dir)
+	elseif id == crossworeID then
+		crosswire(x, y)
+	elseif id == elecgenID then
+		elecgen(x, y, dir)
+	elseif elecmoveID == id then
+		elecmover(x, y, dir)
+	elseif id == triplegenID then
+			DoTripleGenerator(x,y,dir,dir,false,false,3)
+	elseif id == triplesplitterID then
+			DoSplitter(x,y,dir,dir,cells[y][x].ctype == 39,3,cells[y][x].ctype == 22)
+	elseif id == splitterID then
+			DoSplitter(x,y,dir,dir,cells[y][x].ctype == 39,2,cells[y][x].ctype == 22)
+	elseif id == tunnelID then
+			DoSplitter(x,y,dir,dir,cells[y][x].ctype == 39,1,cells[y][x].ctype == 22)
+	elseif id == trashholeID then
+	trashhole(x,y)
 	elseif id == slowadvancerID then
 		if halfdelay then
 			local cx
@@ -1393,6 +1411,12 @@ local function onPlace(id,x,y,rot,original,originalinit)
 	end
 end
 
+function onTrashEats(id, x, y, food, foodx, foody)
+	if id == karlID then
+		FeedKarl(x, y, 15)
+	end
+end
+
 return {
     update = update,
     init = init,
@@ -1405,6 +1429,7 @@ return {
 	onReset = onReset,
 	onClear = onClear,
 	onCellDraw = onCellDraw,
+	onTrashEats = onTrashEats, 
 	dependencies = {"B-Mod",name,name2},
 	version = ver
 }

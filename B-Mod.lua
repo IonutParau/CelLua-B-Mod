@@ -7,6 +7,7 @@ require("bmod/diag")
 
 -- Cells by UndefinedMonitor#1595
 require("bmod/unstoppabledrill")
+require("bmod/life")
 require("bmod/laser")
 -- Rest of code
 
@@ -236,6 +237,7 @@ local function init()
 
 
 	AddLasers()
+	AddLife()
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
@@ -1126,7 +1128,9 @@ local function update(id,x,y,dir)
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
 
-	if id == elecoffID or id == eleconID then
+	if id == karlID then
+		DoKarl(x, y)
+	elseif id == elecoffID or id == eleconID then
 		UpdateElec(x, y)	
 	elseif id == redeleconID or id == redelecoffID then
 		UpdateRedElec(x, y)
@@ -1407,6 +1411,12 @@ local function onPlace(id,x,y,rot,original,originalinit)
 	end
 end
 
+function onTrashEats(id, x, y, food, foodx, foody)
+	if id == karlID then
+		FeedKarl(x, y, 15)
+	end
+end
+
 return {
     update = update,
     init = init,
@@ -1419,6 +1429,7 @@ return {
 	onReset = onReset,
 	onClear = onClear,
 	onCellDraw = onCellDraw,
+	onTrashEats = onTrashEats, 
 	dependencies = {"B-Mod",name,name2},
 	version = ver
 }

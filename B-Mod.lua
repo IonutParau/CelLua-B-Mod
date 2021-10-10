@@ -136,6 +136,8 @@ unstoppabledrillID = 0
 slowmayobottleID, slowmayomoveID = 0,0
 pushmakerID = 0
 
+spawnerID = 0
+
 local ver2 = "2.0.0"
 local name2 = "B-Mod"
 
@@ -240,6 +242,8 @@ local function init()
 	AddLife()
 
 	addAI()
+
+	spawnerID = addCell("BM spawner", "bmod/spawner.png", function() return true end, "trash")
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
@@ -1130,7 +1134,9 @@ local function update(id,x,y,dir)
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
 
-	if id == karlID then
+	if id == spawnerID then
+		DoSpawner(x, y, dir)
+	elseif id == karlID then
 		DoKarl(x, y)
 	elseif id == elecoffID or id == eleconID then
 		UpdateElec(x, y)	
@@ -1383,10 +1389,15 @@ end
 
 local function onPlace(id,x,y,rot,original,originalinit)
 	cells[y][x].elec = 0
-	if id == randomizerID then
+	if original.ctype == spawnerID and id ~= 0 and id ~= spawnerID then
+		cells[y][x] = original
+		cells[y][x].spawner_current = id
+		if isinitial then
+			initial[y][x] = originalinit
+		end
+	elseif id == randomizerID then
 		DoRandomizer(x,y,rot)
-	end
-	if id == ghostmoverID then
+	elseif id == ghostmoverID then
 		ghostcells[y][x].ctype = ghostmoverID
 		ghostcells[y][x].rot = rot
 		ghostcells[y][x].lastvars = {x,y,rot}
@@ -1397,8 +1408,7 @@ local function onPlace(id,x,y,rot,original,originalinit)
 			ghostinitial[y][x].lastvars = {x,y,rot}
 		end
 		initial[y][x] = originalinit
-	end
-	if id == ghostcellID then
+	elseif id == ghostcellID then
 		ghostcells[y][x].ctype = ghostcellID
 		ghostcells[y][x].rot = rot
 		ghostcells[y][x].lastvars = {x,y,rot}
@@ -1409,15 +1419,53 @@ local function onPlace(id,x,y,rot,original,originalinit)
 			ghostinitial[y][x].lastvars = {x,y,rot}
 		end
 		initial[y][x] = originalinit
-	end
-	if id == 0 then
+	elseif id == 0 then
 		ghostcells[y][x].ctype = 0
 	end
 end
 
+function DoSpawner(x, y, dir)
+	if not cells[y][x].spawner_current then return end
+
+	local spawnX = x
+	local spawnY = y
+
+	if dir == 0 then spawnX = x + 1 elseif dir == 2 then spawnX = x - 1 end
+	if dir == 1 then spawnY = y + 1 elseif dir == 3 then spawnY = y - 1 end
+
+	local useGhost = false
+	if cells[y][x].spawner_current == ghostcellID or cells[y][x].spawner_current == ghostmoverID then
+		useGhost = true
+		return
+	end
+
+	local cellBackup
+	if useGhost then
+		cellBackup = cells
+		cells = ghostcells
+	end
+
+	PushCell(x,y,dir,false,1,cells[y][x].spawner_current,dir,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(dir)},false,false)
+
+	if useGhost then
+		ghostcells = cells
+		cells = cellBackup
+	end
+
+	rotateCell(x, y, 1)
+end
+
+function SetSpawner(x, y, food)
+	if not cells[y][x].spawner_current then
+		cells[y][x].spawner_current = food.ctype
+		return
+	end
+	cells[y][x].spawner_current = food.ctype
+end
+
 function onTrashEats(id, x, y, food, foodx, foody)
-	if id == karlID then
-		FeedKarl(x, y, 15)
+	if id == spawnerID then
+		SetSpawner(x, y, food)
 	end
 end
 

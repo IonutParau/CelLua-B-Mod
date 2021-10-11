@@ -125,6 +125,7 @@ diamoverID = 0
 slowermoverID = 0
 slowerpullerID = 0
 sloweradvancerID = 0
+electunnelID = 0
 deadbirdID = 0
 bluescreenID = 0
 randomizerID = 0
@@ -213,6 +214,7 @@ local function init()
 	elecmoveID = addCell("BM elecmove","bmod/elecmover.png",function() return true end,"mover")
 	elecrotcwID = addCell("BM elecrot","bmod/elecrotcw.png",function() return true end)
 	elecrotccwID = addCell("BM elecrotccw","bmod/elecrotccw.png",function() return true end)
+	electunnelID = addCell("BM electunnel","bmod/electunnel.png",function() return true end)
 	mayobottleID = addCell("BM mayobottle","bmod/mayobottle.png",function() return true end)
 	mayomoveID = addCell("BM mayomove","bmod/mayomover.png",function() return true end,"mover")
 	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",function() return true end)
@@ -786,7 +788,7 @@ local function UpdateElec(x,y)
 					cells[y][x].elec = 0
 				end
 				local elec = cells[y][x].elec
-				if elec >= 1 then
+				if elec >= 2 then
 					if cells[y][x-1].ctype == elecoffID then
 						cells[y][x-1].ctype = eleconID
 						SetChunk(x-1,y,eleconID)
@@ -854,7 +856,7 @@ local function UpdateRedElec(x,y)
 					cells[y][x].elec = 0
 				end
 				local elec = cells[y][x].elec
-				if elec >= 1 then
+				if elec >= 2 then
 					if cells[y][x-1].ctype == redelecoffID then
 						cells[y][x-1].ctype = redeleconID
 						SetChunk(x-1,y,redeleconID)
@@ -1285,6 +1287,8 @@ local function update(id,x,y,dir)
 		DoPushMaker(x,y,dir)
 	elseif id == BModAIID then
 		DoAI(x,y,dir)
+	elseif id == electunnelID then
+		electunnel(x,y,dir)
 	end
 	--cells[y][x].testvar = tostring(halfdelay)
 	--cells[y][x].testvar = tostring(cells[y][x].ctype)

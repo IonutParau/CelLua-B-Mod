@@ -27,7 +27,7 @@ function DoForceFastDiaMover(x,y,dir)
 	local cy
 	if dir == 0 then cx = x - 1 elseif dir == 2 then cx = x + 1 else cx = x end
 	if dir == 1 then cy = y - 1 elseif dir == 3 then cy = y + 1 else cy = y end
-	if PushCell(cx,cy,dir,true,1) then
+	if cells[cy] ~= nil and cells[cy][cx] ~= nil and cells[cy][cx].ctype ~= nil and PushCell(cx,cy,dir,true,1) then
 		local ccx,ccy
 		if dir == 0 then ccx = x + 1 elseif dir == 2 then ccx = x - 1 else ccx = x end
 		if dir == 1 then ccy = y + 1 elseif dir == 3 then ccy = y - 1 else ccy = y end
@@ -35,27 +35,31 @@ function DoForceFastDiaMover(x,y,dir)
 		local cccx,cccy
 		if newdir == 0 then cccx = ccx - 1 elseif newdir == 2 then cccx = ccx + 1 else cccx = ccx end
 		if newdir == 1 then cccy = ccy - 1 elseif newdir == 3 then cccy = ccy + 1 else cccy = ccy end
-		if PushCell(cccx,cccy,newdir,true,1) then
+		if cells[cccy] ~= nil and cells[cccy][cccx] ~= nil and cells[cccy][cccx].ctype ~= nil and PushCell(cccx,cccy,newdir,true,1) then
             cx = cccx
             cy = cccy
             if newdir == 0 then cx = cx + 2 elseif newdir == 2 then cx = cx - 2 else cx = cx end
             if newdir == 1 then cy = cy + 2 elseif newdir == 3 then cy = cy - 2 else cy = cy end
             if dir == 0 then cx = cx - 1 elseif dir == 2 then cx = cx + 1 else cx = cx end
             if dir == 1 then cy = cy - 1 elseif dir == 3 then cy = cy + 1 else cy = cy end
-            if PushCell(cx,cy,dir,true,1) then
+            if cells[cy] ~= nil and cells[cy][cx] ~= nil and cells[cy][cx].ctype ~= nil and PushCell(cx,cy,dir,true,1) then
                 if dir == 0 then cx = cx + 2 elseif dir == 2 then cx = cx - 2 else cx = cx end
                 if dir == 1 then cy = cy + 2 elseif dir == 3 then cy = cy - 2 else cy = cy end
                 newdir = (dir-1)%4
                 if newdir == 0 then cx = cx - 1 elseif newdir == 2 then cx = cx + 1 else cx = cx end
                 if newdir == 1 then cy = cy - 1 elseif newdir == 3 then cy = cy + 1 else cy = cy end
-                PushCell(cx,cy,newdir,true,1)
+                if cells[cy] ~= nil and cells[cy][cx] ~= nil and cells[cy][cx].ctype ~= nil then
+                    PushCell(cx,cy,newdir,true,1)
+                end
             else
                 if dir == 0 then cx = cx + 1 elseif dir == 2 then cx = cx - 1 else cx = cx end
                 if dir == 1 then cy = cy + 1 elseif dir == 3 then cy = cy - 1 else cy = cy end
                 newdir = (dir-1)%4
                 if newdir == 0 then cx = cx - 1 elseif newdir == 2 then cx = cx + 1 else cx = cx end
                 if newdir == 1 then cy = cy - 1 elseif newdir == 3 then cy = cy + 1 else cy = cy end
-                PushCell(cx,cy,newdir,true,1)
+                if cells[cy] ~= nil and cells[cy][cx] ~= nil and cells[cy][cx].ctype ~= nil then
+                    PushCell(cx,cy,newdir,true,1)
+                end
             end
         else
             cx = cccx

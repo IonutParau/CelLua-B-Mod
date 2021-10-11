@@ -134,7 +134,7 @@ function DoKarl(x, y)
   for i=1,3 do
     if cells[y+movement.y][x+movement.x].ctype == 0 or cells[y+movement.y][x+movement.x].ctype == -1 then
       local replicating = false
-      if cells[y+movement.y][x+movement.x].ctype == -1 and cells[y][x].karl_age < 20 then
+      if cells[y+movement.y][x+movement.x].ctype == -1 then
         cells[y+movement.y][x+movement.x].ctype = 0
         replicating = true
       end

@@ -644,6 +644,10 @@ local function DoTripleGenerator(x,y,dir,gendir,istwist,dontupdate,type)
 				direction = (direction-1)%4
 			end
 			addedrot = addedrot - (direction-olddir)
+		elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
+			local olddir = direction
+			direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
+			addedrot = addedrot - (direction-olddir)
 		elseif (cells[cy][cx].ctype == 47 or cells[cy][cx].ctype == 48) and (cells[cy][cx].rot+2)%2 ~= direction%2 then
 			local olddir = direction
 			if (cells[cy][cx].rot+1)%4 == direction then
@@ -727,6 +731,10 @@ local function DoSplitter(x,y,dir,gendir,istwist,type,dontupdate)
 			else
 				direction = (direction-1)%4
 			end
+			addedrot = addedrot - (direction-olddir)
+		elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
+			local olddir = direction
+			direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
 			addedrot = addedrot - (direction-olddir)
 		elseif (cells[cy][cx].ctype == 47 or cells[cy][cx].ctype == 48) and (cells[cy][cx].rot+2)%2 ~= direction%2 then
 			local olddir = direction

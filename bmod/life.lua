@@ -136,9 +136,7 @@ function DoKarl(x, y)
       local replicating = false
       if cells[y+movement.y][x+movement.x].ctype == -1 and cells[y][x].karl_age < 20 then
         cells[y+movement.y][x+movement.x].ctype = 0
-        if love.math.random(1, 100) <= 95 then
-          replicating = true
-        end
+        replicating = true
       end
       local karl = CopyTable(cells[y][x])
       if not replicating then
@@ -173,5 +171,5 @@ end
 function AddLife()
   karlID = addCell("BM life karl", "bmod/karl.png", function() return true end, "trash")
   meanKarlID = addCell("BM life karl-mean", "bmod/karl-mean.png", function() return true end, "trash", true)
-  healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash")
+  healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash", true)
 end

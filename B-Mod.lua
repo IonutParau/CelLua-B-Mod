@@ -137,6 +137,7 @@ slowmayobottleID, slowmayomoveID = 0,0
 pushmakerID = 0
 
 spawnerID = 0
+rotateSpawnerID = 0
 
 local ver2 = "2.0.0"
 local name2 = "B-Mod"
@@ -244,6 +245,7 @@ local function init()
 	addAI()
 
 	spawnerID = addCell("BM spawner", "bmod/spawner.png", function() return true end, "trash")
+	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png", function() return true end, "trash")
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
@@ -1134,7 +1136,7 @@ local function update(id,x,y,dir)
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
 
-	if id == spawnerID then
+	if id == spawnerID or id == rotateSpawnerID then
 		DoSpawner(x, y, dir)
 	elseif id == karlID then
 		DoKarl(x, y)
@@ -1389,7 +1391,7 @@ end
 
 local function onPlace(id,x,y,rot,original,originalinit)
 	cells[y][x].elec = 0
-	if original.ctype == spawnerID and id ~= 0 and id ~= spawnerID then
+	if (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
 		cells[y][x] = original
 		cells[y][x].spawner_current = id
 		if isinitial then
@@ -1421,17 +1423,16 @@ local function onPlace(id,x,y,rot,original,originalinit)
 		initial[y][x] = originalinit
 	elseif id == 0 then
 		ghostcells[y][x].ctype = 0
+		cells[y][x] = {
+			ctype = 0,
+			rot = 0,
+			lastvars = cells[y][x].lastvars
+		}
 	end
 end
 
 function DoSpawner(x, y, dir)
 	if not cells[y][x].spawner_current then return end
-
-	local spawnX = x
-	local spawnY = y
-
-	if dir == 0 then spawnX = x + 1 elseif dir == 2 then spawnX = x - 1 end
-	if dir == 1 then spawnY = y + 1 elseif dir == 3 then spawnY = y - 1 end
 
 	local useGhost = false
 	if cells[y][x].spawner_current == ghostcellID or cells[y][x].spawner_current == ghostmoverID then
@@ -1452,7 +1453,9 @@ function DoSpawner(x, y, dir)
 		cells = cellBackup
 	end
 
-	rotateCell(x, y, 1)
+	if cells[y][x].ctype == rotateSpawnerID then
+		rotateCell(x, y, 1)
+	end
 end
 
 function SetSpawner(x, y, food)
@@ -1464,7 +1467,7 @@ function SetSpawner(x, y, food)
 end
 
 function onTrashEats(id, x, y, food, foodx, foody)
-	if id == spawnerID then
+	if id == spawnerID or id == rotateSpawnerID then
 		SetSpawner(x, y, food)
 	end
 end

@@ -171,5 +171,5 @@ end
 function AddLife()
   karlID = addCell("BM life karl", "bmod/karl.png", function() return true end, "trash")
   meanKarlID = addCell("BM life karl-mean", "bmod/karl-mean.png", function() return true end, "trash", true)
-  healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash")
+  healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash", true)
 end

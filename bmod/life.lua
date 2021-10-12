@@ -219,6 +219,9 @@ function DoKarlMovement(x, y)
         if love.math.random(1, 100) <= karlbonMutationChance then
           cells[y][x].ctype = karlbonID
         end
+        if love.math.random(1, 100) <= karlpulsorMutationChance then
+          cells[y][x].ctype = karlpulsorID
+        end
       end
       if cells[y][x].ctype == 0 then cells[y][x].movement = nil end
       cells[y+movement.y][x+movement.x] = CopyTable(karl)

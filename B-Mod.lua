@@ -387,6 +387,9 @@ local function init()
 			:SetAlias("NOT")
 		Elct:AddItem("BM wirecross", "Connect electricity top to bottom and left to right")
 			:SetAlias("Cross Wire")
+		local lifecat = EdTweaks:GetCategory("Life")
+		lifecat:AddItem("BM AI", "AI robot that does smort stuff")
+			:SetAlias("AI Car")
 	end
 end
 

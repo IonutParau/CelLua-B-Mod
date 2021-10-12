@@ -1,13 +1,64 @@
 -- Code by UndefinedMonitor
 
+function clamp(n, min, max)
+  return math.min(math.max(n, min), max)
+end
+
 local karl_charge_default = 1000
-local evilKarlMutationChance = 85
-local goodKarlMutationChance = 85
+local evilKarlMutationChance = 2
+local goodKarlMutationChance = 3
+local karlbonMutationChance = 1
 local karl_mean_fail = 50
 
 meanKarlID = 0
 karlID = 0
 healKarlID = 0
+karlbonID = 0
+
+function offgrid(x, y)
+  return (x < 0 or x > width-1) or (y < 0 or y > height-1)
+end
+
+function applyKarlForce(x, y, force)
+  local movement = cells[y][x].movement or {x = 0, y = 0}
+  movement.x = clamp(movement.x + force.x, -1, 1)
+  movement.y = clamp(movement.y + force.y, -1, 1)
+  cells[y][x].movement = movement
+end
+
+-- Karl-bon is gonna allow for more complex karloids.
+-- A karloid is a structure made of karls.
+function DoKarlbon(x, y)
+  local forces = {
+    {
+      x = 2,
+      y = 0
+    },
+    {
+      x = -2,
+      y = 0
+    },
+    {
+      x = 0,
+      y = 2
+    },
+    {
+      x = 0,
+      y = -2
+    }
+  }
+  for _, force in ipairs(forces) do
+    local pos = {x = (x - force.x), y = (y - force.y)}
+    if not offgrid(pos.x, pos.y) then
+      local label = getCellLabelById(cells[pos.y][pos.x].ctype) -- Using label to make it work on all karls automatically
+      if string.sub(label, 0, string.len("BM life karl")) == "BM life karl" then
+        applyKarlForce(pos.x, pos.y, force)
+      end
+    end
+  end
+  
+  DoKarl(x, y)
+end
 
 -- Mean karl too mean so we must stonp him
 function DoHealKarl(x, y)
@@ -100,30 +151,11 @@ function DoKarl(x, y)
 
   -- Movement time
 
-  local movement = cells[y][x].movement
+  DoKarlMovement(x, y)
+end
 
-  -- if cells[y][x].karl_age > 75 and love.math.random(1, 100) > 90 then
-  --   local movements = {
-  --     {
-  --       x = 1,
-  --       y = 0,
-  --     },
-  --     {
-  --       x = -1,
-  --       y = 0,
-  --     },
-  --     {
-  --       x = 0,
-  --       y = 1,
-  --     },
-  --     {
-  --       x = 0,
-  --       y = -1,
-  --     },
-  --   }
-
-  --   movement = movements[love.math.random(1, #movements)]
-  -- end
+function DoKarlMovement(x, y)
+  local movement = cells[y][x].movement or {x = 0, y = 0}
 
   if y+movement.y < 0 or x+movement.x < 0 or movement.x + x > width-1 or movement.y + y > height-1 then
     return
@@ -150,6 +182,9 @@ function DoKarl(x, y)
         if love.math.random(1, 100) <= evilKarlMutationChance then
           cells[y][x].ctype = meanKarlID
         end
+        if love.math.random(1, 100) <= karlbonMutationChance then
+          cells[y][x].ctype = karlbonID
+        end
       end
       if cells[y][x].ctype == 0 then cells[y][x].movement = nil end
       cells[y+movement.y][x+movement.x] = CopyTable(karl)
@@ -170,6 +205,18 @@ end
 
 function AddLife()
   karlID = addCell("BM life karl", "bmod/karl.png", function() return true end, "trash")
-  meanKarlID = addCell("BM life karl-mean", "bmod/karl-mean.png", function() return true end, "trash", true)
-  healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash", true)
+  meanKarlID = addCell("BM life karl-mean", "bmod/karl-mean.png", function() return true end, "trash")
+  healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash")
+  karlbonID = addCell("BM life karl-bon", "bmod/karl-bon.png", function() return true end, "trash")
+
+  if EdTweaks then
+    -- Add editor tweaks support
+    local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use simple rules to exist and might even self-replicate (Karls only)", true, "bmod/karl")
+
+    -- Add items
+    LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates."):SetAlias("Karl")
+    LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
+    LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
+    LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
+  end
 end

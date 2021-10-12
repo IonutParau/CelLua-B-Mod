@@ -1148,6 +1148,8 @@ local function update(id,x,y,dir)
 
 	if id == spawnerID or id == rotateSpawnerID then
 		DoSpawner(x, y, dir)
+	elseif id == karlbonID then
+		DoKarlbon(x, y)
 	elseif id == healKarlID then
 		DoHealKarl(x, y)
 	elseif id == meanKarlID then

@@ -256,13 +256,13 @@ local function init()
 			:SetAlias("Fast Mover")
 		Move:AddItem("BM fastermove", "Moves and pushes four times every tick.")
 			:SetAlias("Faster Mover")
-		Move:AddItem("BM slowpush", "This cell moves once every two ticks, pushing whatever is in front of it.")
+		Move:AddItem("BM slowpush", "Moves and pushes every two ticks.")
 			:SetAlias("Slow Mover")
-		Move:AddItem("BM slowermove", "Moves and pushes cells once per four ticks.")
+		Move:AddItem("BM slowermove", "Moves and pushes every four ticks.")
 			:SetAlias("Slower Mover")
-		Move:AddItem("BM velocity", "Moves and pushes a slowly increasing number of cells every tick.")
+		Move:AddItem("BM velocity", "Moves and pushes a linearly increasing number of cells every tick.")
 			:SetAlias("Velocity Mover")
-		Move:AddItem("BM acceleration", "Moves and pushes an increasing number of cells every tick.")
+		Move:AddItem("BM acceleration", "Moves and pushes an exponentially increasing number of cells every tick.")
 			:SetAlias("Accelerator Mover")
 		Move:AddItem("BM diamover", "Same as Mover, but also moves in a second direction every tick.")
 			:SetAlias("Diagonal Mover")
@@ -276,15 +276,17 @@ local function init()
 			:SetAlias("Fast Puller")
 		Move:AddItem("BM fasterpull", "Moves and pulls four times every tick.")
 			:SetAlias("Faster Puller")
-		Move:AddItem("BM slowpull", "This cell moves once every two ticks, pulling whatever is behind it.")
+		Move:AddItem("BM slowpull", "Moves and pulls every two ticks.")
 			:SetAlias("Slow Puller")
-		Move:AddItem("BM slowerpull", "Moves and pushes cells once per four ticks.")
+		Move:AddItem("BM slowerpull", "Moves and pulls every four ticks.")
 			:SetAlias("Slower Puller")
 		Move:AddItem("BM fastadvance", "Pushes and pulls twice every tick.")
 			:SetAlias("Fast Advancer")
-		Move:AddItem("BM slowpullsh", "This cell moves once every two ticks, pulling AND pushing whatever is in front of and behind it.")
+		Move:AddItem("BM fasteradvance", "Pushes and pulls four times every tick.")
+			:SetAlias("Faster Puller")
+		Move:AddItem("BM slowpullsh", "Pushes and pulls once every two ticks")
 			:SetAlias("Slow Advancer")
-		Move:AddItem("BM slowerpullsh", "Moves, pushes AND pulls cells once per four ticks.")
+		Move:AddItem("BM slowerpullsh", "Pushes and pulls cells every four ticks.")
 			:SetAlias("Slower Advancer")
 		Move:AddItem("BM unstoppable-drill", "This cell acts as a drill, but its effect takes priority over most others.")
 			:SetAlias("Unstoppable Drill")
@@ -1577,6 +1579,11 @@ local function onPlace(id,x,y,rot,original,originalinit)
 		initial[y][x] = originalinit
 	elseif id == 0 then
 		ghostcells[y][x].ctype = 0
+		if isghostinitial then
+			ghostinitial[y][x].ctype = 0
+			ghostinitial[y][x].rot = 0
+			ghostinitial[y][x].lastvars = {x,y,0}
+		end
 		cells[y][x] = {
 			ctype = 0,
 			rot = 0,

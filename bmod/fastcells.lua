@@ -19,7 +19,7 @@ function addfastcells()
 
     fastermoverID = addCell("BM fastermove","bmod/fastermover.png",function() return true end,"mover")
     fasterpullerID = addCell("BM fasterpull","bmod/fasterpuller.png",function() return true end,"mover")
-    --fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",function() return true end,"mover")
+    fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",function() return true end,"mover")
 
     velocityID = addCell("BM velocity", "textures/mover.png", function() return true end, "mover")
     BMod.bindUpdate(velocityID, doVelocity)
@@ -87,7 +87,26 @@ function doSpecificPuller(x,y,dir,amount)
 end
 
 function doSpecificAdvancer(x,y,dir,amount)
-    -- Blendi needs to code this, I did enough, bye
+    cells[y][x].updated = true
+    local cx = x
+    local cy = y
+    if dir == 0 then cx = x - 1 elseif dir == 2 then cx = x + 1 else cx = x end
+    if dir == 1 then cy = y - 1 elseif dir == 3 then cy = y + 1 else cy = y end
+    for i = 1,amount,1 do
+        if not PushCell(cx,cy,dir,true,0) then return end
+        if dir == 0 then cx = cx + 1 elseif dir == 2 then cx = cx - 1 else cx = cx end
+        if dir == 1 then cy = cy + 1 elseif dir == 3 then cy = cy - 1 else cy = cy end
+        if i ~= amount then PullCell(cx,cy,dir,true,1,true,false,true) elseif i == amount then PullCell(cx,cy,dir,true,1,true,true,true) end
+        local fx, fy = cx, cy
+        if dir == 0 then fx = fx + 1 elseif dir == 2 then fx = fx - 1 else fx = fx end
+        if dir == 1 then fy = fy + 1 elseif dir == 3 then fy = fy - 1 else fy = fy end
+        local pos = walkDivergedPath(cx, cy, fx, fy)
+        cx = pos.x
+        cy = pos.y
+        dir = pos.dir
+        if dir == 0 then cx = cx - 1 elseif dir == 2 then cx = cx + 1 else cx = cx end
+        if dir == 1 then cy = cy - 1 elseif dir == 3 then cy = cy + 1 else cy = cy end
+    end
 end
 
 function doFastPuller(x,y,dir)

@@ -4,16 +4,17 @@ function clamp(n, min, max)
   return math.min(math.max(n, min), max)
 end
 
-local karl_charge_default = 1000
 local evilKarlMutationChance = 2
 local goodKarlMutationChance = 3
 local karlbonMutationChance = 1
+local karlpulsorMutationChance = 1
 local karl_mean_fail = 50
 
 meanKarlID = 0
 karlID = 0
 healKarlID = 0
 karlbonID = 0
+karlpulsorID = 0
 
 function offgrid(x, y)
   return (x < 0 or x > width-1) or (y < 0 or y > height-1)
@@ -24,6 +25,39 @@ function applyKarlForce(x, y, force)
   movement.x = clamp(movement.x + force.x, -1, 1)
   movement.y = clamp(movement.y + force.y, -1, 1)
   cells[y][x].movement = movement
+end
+
+-- Karl but transports kinetic energy
+function DoKarlpulsor(x, y)
+  local forces = {
+    {
+      x = 1,
+      y = 0
+    },
+    {
+      x = -1,
+      y = 0
+    },
+    {
+      x = 0,
+      y = 1
+    },
+    {
+      x = 0,
+      y = -1
+    }
+  }
+  for _, force in ipairs(forces) do
+    local pos = {x = (x + force.x), y = (y + force.y)}
+    if not offgrid(pos.x, pos.y) then
+      local label = getCellLabelById(cells[pos.y][pos.x].ctype) -- Using label to make it work on all karls automatically
+      if string.sub(label, 0, string.len("BM life karl")) == "BM life karl" then
+        applyKarlForce(pos.x, pos.y, force)
+      end
+    end
+  end
+  
+  DoKarl(x, y)
 end
 
 -- Karl-bon is gonna allow for more complex karloids.
@@ -185,6 +219,9 @@ function DoKarlMovement(x, y)
         if love.math.random(1, 100) <= karlbonMutationChance then
           cells[y][x].ctype = karlbonID
         end
+        if love.math.random(1, 100) <= karlpulsorMutationChance then
+          cells[y][x].ctype = karlpulsorID
+        end
       end
       if cells[y][x].ctype == 0 then cells[y][x].movement = nil end
       cells[y+movement.y][x+movement.x] = CopyTable(karl)
@@ -208,6 +245,7 @@ function AddLife()
   meanKarlID = addCell("BM life karl-mean", "bmod/karl-mean.png", function() return true end, "trash")
   healKarlID = addCell("BM life karl-heal", "bmod/karl-heal.png", function() return true end, "trash")
   karlbonID = addCell("BM life karl-bon", "bmod/karl-bon.png", function() return true end, "trash")
+  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karl-pulsor.png", function() return true end, "trash")
 
   if EdTweaks then
     -- Add editor tweaks support
@@ -218,5 +256,6 @@ function AddLife()
     LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
     LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
     LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
+    LifeCategory:AddItem("BM life karl-pulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon."):SetAlias("Karlpulsor")
   end
 end

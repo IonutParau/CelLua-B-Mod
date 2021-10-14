@@ -35,6 +35,7 @@ meanKarlID = 0
 healKarlID = 0
 karlbonID = 0
 karlpulsorID = 0
+
 thunderKarlID = 0
 
 -- Karlbon Mutations
@@ -243,6 +244,18 @@ function DoKarlMovement(x, y)
       else
         -- Reproduction tiem
         DoKarlReproduction(x, y)
+        if love.math.random(1, 100) <= goodKarlMutationChance then
+          cells[y][x].ctype = healKarlID
+        end
+        if love.math.random(1, 100) <= evilKarlMutationChance then
+          cells[y][x].ctype = meanKarlID
+        end
+        if love.math.random(1, 100) <= karlbonMutationChance then
+          cells[y][x].ctype = karlbonID
+        end
+        if love.math.random(1, 100) <= karlpulsorMutationChance then
+          cells[y][x].ctype = karlpulsorID
+        end
       end
       if cells[y][x].ctype == 0 then cells[y][x].movement = nil end
       cells[y+movement.y][x+movement.x] = CopyTable(karl)
@@ -521,6 +534,7 @@ function AddLife()
     LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
     LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
     LifeCategory:AddItem("BM life karl-pulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon."):SetAlias("Karlpulsor")
+
     if showKarls then
       
     end

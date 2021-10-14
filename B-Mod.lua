@@ -10,6 +10,7 @@ require("bmod/AI")
 require("bmod/unstoppabledrill")
 require("bmod/life")
 require("bmod/laser")
+require("bmod.plant.plant")
 -- Rest of code
 
 local halfdelay = false
@@ -243,6 +244,7 @@ local function init()
 
 	AddLasers()
 	AddLife()
+	AddPlant()
 
 	addAI()
 
@@ -1289,7 +1291,11 @@ local function update(id,x,y,dir)
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
 
-	if id == spawnerID or id == rotateSpawnerID then
+	if id == plantID then
+		DoPlant(x, y)
+	elseif id == waterID then
+		Hidrate(x, y)
+	elseif id == spawnerID or id == rotateSpawnerID then
 		DoSpawner(x, y, dir)
 	elseif id == karlpulsorID then
 		DoKarlpulsor(x, y)
@@ -1554,7 +1560,11 @@ end
 
 local function onPlace(id,x,y,rot,original,originalinit)
 	cells[y][x].elec = 0
-	if (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
+	if id == waterID then
+		Hidrate(x, y)
+	elseif id == plantID and (original.ctype ~= soilID) then
+		cells[y][x] = original
+	elseif (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
 		cells[y][x] = original
 		cells[y][x].spawner_current = id
 		if isinitial then

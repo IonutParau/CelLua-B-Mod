@@ -11,6 +11,7 @@ require("bmod/unstoppabledrill")
 require("bmod/life")
 require("bmod/laser")
 require("bmod.plant.plant")
+require("bmod.heater")
 -- Rest of code
 
 local halfdelay = false
@@ -141,6 +142,8 @@ pushmakerID = 0
 spawnerID = 0
 rotateSpawnerID = 0
 
+heaterID = 0
+
 local ver2 = "2.0.0"
 local name2 = "B-Mod"
 
@@ -250,6 +253,8 @@ local function init()
 
 	spawnerID = addCell("BM spawner", "bmod/spawner.png", function() return true end, "trash")
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png", function() return true end, "trash")
+
+	heaterID = addCell("BM heater", "textures/freezer.png", function() return true end)
 
 	if EdTweaks ~= nil then
 		local Base = EdTweaks:GetCategory("Base")
@@ -1291,7 +1296,9 @@ local function update(id,x,y,dir)
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
 
-	if id == plantID then
+	if id == heaterID then
+		DoHeater(x, y)
+	elseif id == plantID then
 		DoPlant(x, y)
 	elseif id == waterID then
 		Hidrate(x, y)

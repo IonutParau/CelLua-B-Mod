@@ -1,5 +1,6 @@
 *
 !bmod/*
+!bmod/*/*
 !bmod
 !B-Mod.lua
 !README.md

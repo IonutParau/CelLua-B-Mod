@@ -1,7 +1,7 @@
 BModAIID = 0
 
 function addAI()
-    BModAIID = addCell("BM AI","bmod/AI.png",function() return true end,"mover")
+    BModAIID = addCell("BM AI","bmod/AI.png",{type = "mover"})
 end
 
 function DoAI(x,y,dir)

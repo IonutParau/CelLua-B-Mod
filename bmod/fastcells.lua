@@ -13,18 +13,18 @@ velocity = 0.5
 acceleration = 0.5
 
 function addfastcells()
-    fastmoverID = addCell("BM fastmove","bmod/fastmover.png",function() return true end,"mover")
-    fastpullerID = addCell("BM fastpull","bmod/fastpuller.png",function() return true end,"mover")
-    fastadvancerID = addCell("BM fastadvance","bmod/fastadvancer.png",function() return true end,"mover")
+    fastmoverID = addCell("BM fastmove","bmod/fastmover.png",{type = "mover"})
+    fastpullerID = addCell("BM fastpull","bmod/fastpuller.png",{type = "mover"})
+    fastadvancerID = addCell("BM fastadvance","bmod/fastadvancer.png",{type = "mover"})
 
-    fastermoverID = addCell("BM fastermove","bmod/fastermover.png",function() return true end,"mover")
-    fasterpullerID = addCell("BM fasterpull","bmod/fasterpuller.png",function() return true end,"mover")
-    fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",function() return true end,"mover")
+    fastermoverID = addCell("BM fastermove","bmod/fastermover.png",{type = "mover"})
+    fasterpullerID = addCell("BM fasterpull","bmod/fasterpuller.png",{type = "mover"})
+    fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",{type = "mover"})
 
-    velocityID = addCell("BM velocity", "textures/mover.png", function() return true end, "mover")
+    velocityID = addCell("BM velocity", "textures/mover.png",{type = "mover"})
     BMod.bindUpdate(velocityID, doVelocity)
 
-    accelerationID = addCell("BM acceleration", "textures/mover.png", function() return true end, "mover")
+    accelerationID = addCell("BM acceleration", "textures/mover.png",{type = "mover"})
     BMod.bindUpdate(accelerationID, doAcceleration)
 end
 

@@ -4,10 +4,10 @@ function AddPlant()
   -- Cells stuffs
   local pushability = function() return true end
 
-  plantID = addCell("BM plant", "bmod/plant/plant.png", pushability)
-  soilID = addCell("BM soil", "bmod/plant/soil.png", pushability)
-  dead_soilID = addCell("BM dead-soil", "bmod/plant/dead_soil.png", pushability)
-  waterID = addCell("BM water", "bmod/plant/water.png", pushability)
+  plantID = addCell("BM plant", "bmod/plant/plant.png",{move = pushability})
+  soilID = addCell("BM soil", "bmod/plant/soil.png",{move = pushability})
+  dead_soilID = addCell("BM dead-soil", "bmod/plant/dead_soil.png",{move = pushability})
+  waterID = addCell("BM water", "bmod/plant/water.png",{move = pushability})
 end
 
 function Hidrate(x, y)

@@ -95,10 +95,12 @@ function electunnel(x,y,dir)
         if cells[outy][outx].ctype == eleconID or cells[outy][outx].ctype == elecoffID then
             cells[cy][cx].ctype = 0
             cells[outy][outx].elec = 11
+            cells[outy][outx].ctype = eleconID
             SpreadElec(outy,outx)
         elseif cells[outy][outx].ctype == redeleconID or cells[outy][outx].ctype == redelecoffID then
             cells[cy][cx].ctype = 0
             cells[outy][outx].elec = 11
+            cells[outy][outx].ctype = redeleconID
             SpreadRedElec(outy,outx)
         end
 	end

@@ -553,6 +553,7 @@ function SpreadRedElec(y,x)
 	local elec = cells[y][x].elec
 	if not elec then cells[y][x].elec = 0 elec = 0 end
 	if elec >= 1 then
+		cells[y][x].ctype = redeleconID
 		if cells[y][x-1].ctype == redelecoffID then
 			if not cells[y][x-1].elec then cells[y][x-1].elec = 0 end
 			cells[y][x-1].ctype = redeleconID
@@ -612,6 +613,7 @@ function SpreadElec(y,x)
 	local elec = cells[y][x].elec
 	if not elec then cells[y][x].elec = 0 elec = 0 end
 	if elec >= 1 then
+		cells[y][x].ctype = eleconID
 		if cells[y][x-1].ctype == elecoffID then
 			if not cells[y][x-1].elec then cells[y][x-1].elec = 0 end
 			cells[y][x-1].ctype = eleconID

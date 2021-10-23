@@ -1,15 +1,16 @@
 -- Cells by Blendi Goose#0414
-require("bmod/gates")
-require("bmod/electricstuffs")
-require("bmod/leds")
-require("bmod/fastcells")
-require("bmod/diag")
-require("bmod/AI")
+require("bmod.gates")
+require("bmod.electricstuffs")
+require("bmod.leds")
+require("bmod.fastcells")
+require("bmod.diag")
+require("bmod.AI")
+require("bmod.nuke")
 
 -- Cells by UndefinedMonitor#1595
-require("bmod/unstoppabledrill")
-require("bmod/life")
-require("bmod/laser")
+require("bmod.unstoppabledrill")
+require("bmod.life")
+require("bmod.laser")
 require("bmod.plant.plant")
 require("bmod.heater")
 -- Rest of code
@@ -246,6 +247,7 @@ local function init()
 	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",{})
 
 	AddLasers()
+	AddNukes()
 	AddLife()
 	AddPlant()
 
@@ -331,6 +333,14 @@ local function init()
 			:SetAlias("Laser (Stronk)")
 		Gntr:AddItem("BM stronker-laser", "Creates 4 copies of itself each tick.")
 			:SetAlias("Laser (Stronker)")
+		Gntr:AddItem("BM nuke1", "Creates a copy of itself in all directions each tick.")
+			:SetAlias("Nuke (Weak)")
+		Gntr:AddItem("BM nuke2", "Creates 2 copies of itself in all directions each tick.")
+			:SetAlias("Nuke (Average)")
+		Gntr:AddItem("BM nuke3", "Creates 5 copies of itself in all directions each tick.")
+			:SetAlias("Nuke (Strong)")
+		Gntr:AddItem("BM nuke4", "Creates 10 copies of itself in all directions each tick.")
+			:SetAlias("Nuke (POWERRR)")
 		Gntr:AddItem("BM mayobottle", "Creates moving Mayonnaise cells in front every other tick, 2 cells away from the output face.")
 			:SetAlias("Mayonnaise Bottle")
 		Gntr:AddItem("BM slowmayobottle", "Creates moving Slow Mayonnaise cells in front every other tick, 2 cells away from the output face.")
@@ -1297,6 +1307,8 @@ local function update(id,x,y,dir)
 	BMod.updateCell(id, x, y, dir) -- Binding system
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
+	
+	UpdateNukes(id,x,y,dir)
 
 	if id == heaterID then
 		DoHeater(x, y)

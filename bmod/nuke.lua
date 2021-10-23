@@ -4,10 +4,10 @@ local nuke3ID
 local nuke4ID
 
 function AddNukes()
-    nuke1ID = addCell("N nuke1","nuke/nuke.png",{})
-    nuke2ID = addCell("N nuke2","nuke/nuke2.png",{})
-    nuke3ID = addCell("N nuke3","nuke/nuke3.png",{})
-    nuke4ID = addCell("N nuke4","nuke/nuke4.png",{})
+    nuke1ID = addCell("BM nuke1","bmod/nuke.png",{})
+    nuke2ID = addCell("BM nuke2","bmod/nuke2.png",{})
+    nuke3ID = addCell("BM nuke3","bmod/nuke3.png",{})
+    nuke4ID = addCell("BM nuke4","bmod/nuke4.png",{})
 end
 
 local function DoNuke(x,y,id,power)

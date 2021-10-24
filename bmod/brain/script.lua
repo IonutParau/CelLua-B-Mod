@@ -115,7 +115,27 @@ function DoBrain(x, y)
   if dir == 0 then cy = y - 1 elseif dir == 2 then cy = y + 1 end
   if cells[cy][cx].ctype == plantID then
     cells[cy][cx] = CopyTable(cells[y][x])
+    if love.math.random(1, 100) <= 1 then
+      cells[cy][cx].ctype = cancerbrainID
+    end
   else
     PushCell(x, y, dir)
+  end
+end
+
+function DoBrainCancer(x, y)
+  local offs = {
+    {x=1,y=0},
+    {x=-1,y=0},
+    {x=0,y=1},
+    {x=0,y=-1},
+  }
+  for _, off in ipairs(offs) do
+    local ox = x + off.x
+    local oy = y + off.y
+    if cells[oy][ox].ctype == brainID then
+      cells[oy][ox].ctype = cancerbrainID
+      cells[oy][ox].brain_nn = nil
+    end
   end
 end

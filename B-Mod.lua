@@ -14,6 +14,9 @@ require("bmod.laser")
 require("bmod.plant.plant")
 require("bmod.heater")
 require("bmod.brain.script")
+
+-- Cells by K_______#0086
+require("bmod.kai")
 -- Rest of code
 
 local halfdelay = false
@@ -253,6 +256,8 @@ local function init()
 	AddPlant()
 
 	addAI()
+
+	kaiID = addCell("BM kai","bmod/kai.png",{type = "mover"})
 
 	spawnerID = addCell("BM spawner", "bmod/spawner.png",{type = "trash"})
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
@@ -1319,6 +1324,8 @@ local function update(id,x,y,dir)
 		DoPlant(x, y)
 	elseif id == waterID then
 		Hidrate(x, y)
+	elseif id == kaiID then
+		DoKAI(x,y,dir)
 	elseif id == spawnerID or id == rotateSpawnerID then
 		DoSpawner(x, y, dir)
 	elseif id == karlpulsorID then

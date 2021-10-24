@@ -21,10 +21,10 @@ function addfastcells()
     fasterpullerID = addCell("BM fasterpull","bmod/fasterpuller.png",{type = "mover"})
     fasteradvancerID = addCell("BM fasteradvance","bmod/fasteradvancer.png",{type = "mover"})
 
-    velocityID = addCell("BM velocity", "textures/mover.png",{type = "mover"})
+    velocityID = addCell("BM velocity", "bmod/velocity.png",{type = "mover"})
     BMod.bindUpdate(velocityID, doVelocity)
 
-    accelerationID = addCell("BM acceleration", "textures/mover.png",{type = "mover"})
+    accelerationID = addCell("BM acceleration", "bmod/acceleration.png",{type = "mover"})
     BMod.bindUpdate(accelerationID, doAcceleration)
 end
 

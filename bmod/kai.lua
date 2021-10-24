@@ -22,6 +22,22 @@ function DoKAI(x, y, dir)
     if dir == 0 then ry = y + 1 elseif dir == 2 then ry = y - 1 else ry = y end
     if dir == 1 then rx = x - 1 elseif dir == 3 then rx = x + 1 else rx = x end
 
+    if cells[y][x].kaiFOOD >= 75 and cells[by][bx].ctype == 0 then --I LOVE REPRODUCING ON A FULL STOMACH!
+        cells[by][bx] = {
+            ctype = kaiID,
+            rot = 0,
+            lastvars = cells[by][bx].lastvars,
+            kaiFOOD = 69
+        }
+        cells[y][x].kaiFOOD = 50
+        return
+    end
+    
+    if cells[fy][fx].ctype == brainID then
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 1
+        return
+    end
+
     if cells[fy][fx].ctype == karlID or cells[fy][fx].ctype == waterID then
         cells[fy][fx] = {
             ctype = 0,
@@ -31,7 +47,8 @@ function DoKAI(x, y, dir)
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
     end
 
-    if cells[fy][fx].ctype ~= 0 then
+
+    if cells[fy][fx].ctype ~= 0 and cells[fy][fx].ctype ~= brainID then
         if cells[ly][lx].ctype ~= 0 and cells[ry][rx].ctype == 0 then
             rotateCell(x, y, 1)
         elseif cells[ry][rx].ctype ~= 0 and cells[ly][lx].ctype == 0 then
@@ -53,17 +70,6 @@ function DoKAI(x, y, dir)
             rot = 0,
             lastvars = cells[y][x].lastvars
         }
-        return
-    end
-
-    if cells[y][x].kaiFOOD >= 75 and cells[by][bx].ctype == 0 then --I LOVE REPRODUCING ON A FULL STOMACH!
-        cells[by][bx] = {
-            ctype = kaiID,
-            rot = 0,
-            lastvars = cells[by][bx].lastvars,
-            kaiFOOD = 69
-        }
-        cells[y][x].kaiFOOD = 50
         return
     end
 

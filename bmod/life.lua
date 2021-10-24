@@ -506,8 +506,11 @@ end
 
 function AddLife()
   local brainTexture = "bmod/brain/texture.png"
-  if config['bmod_other_brain_texture'] == 'true' then brainTexture = "bmod/brain/improved.png" end
+  local cancerbrainTexture = "bmod/brain/cancer.png"
+  if config['bmod_other_brain_texture'] == 'true' then brainTexture = "bmod/brain/shittier.png" end
+  if config['bmod_other_brain_texture'] == 'true' then cancerbrainTexture = "bmod/brain/shittiercancer.png" end
   brainID = addCell("BM life brain", brainTexture)
+  cancerbrainID = addCell("BM life cancer brain", cancerbrainTexture)
 
   local showKarls = (config['bmod_show_karls'] ~= 'true')
 

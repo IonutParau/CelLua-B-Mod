@@ -1,5 +1,7 @@
 -- Code by UndefinedMonitor
 
+require("bmod.brain.script")
+
 function clamp(n, min, max)
   return math.min(math.max(n, min), max)
 end
@@ -497,18 +499,18 @@ end
 function AddLife()
   local showKarls = (config['bmod_show_karls'] ~= 'true')
 
-  local karlPushability = (function() return true end)
+  local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
 
-  iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png", karlPushability, "trash", showKarls)
-  killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png", karlPushability, "trash", showKarls)
-  karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png", karlPushability, "trash", showKarls)
-  karlbon8ID = addCell("BM life karl-bon8", "bmod/karls/karl-bon8.png", karlPushability, "trash", showKarls)
-  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karls/karl-pulsor.png", karlPushability, "trash", showKarls)
-  healKarlID = addCell("BM life karl-heal", "bmod/karls/karl-heal.png", karlPushability, "trash", showKarls)
-  meanKarlID = addCell("BM life karl-mean", "bmod/karls/karl-mean.png", karlPushability, "trash", showKarls)
-  thunderKarlID = addCell("BM life karl-thunder", "bmod/karls/karl-thunder.png", karlPushability, "trash", showKarls)
-  farmerKarlID = addCell("BM life karl-farmer", "bmod/karls/karl-farmer.png", karlPushability, "trash", showKarls)
-  karlID = addCell("BM life karl", "bmod/karls/karl.png", karlPushability, "trash")
+  iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png", karlOptions)
+  killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png", karlOptions)
+  karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png", karlOptions)
+  karlbon8ID = addCell("BM life karl-bon8", "bmod/karls/karl-bon8.png", karlOptions)
+  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karls/karl-pulsor.png", karlOptions)
+  healKarlID = addCell("BM life karl-heal", "bmod/karls/karl-heal.png", karlOptions)
+  meanKarlID = addCell("BM life karl-mean", "bmod/karls/karl-mean.png", karlOptions)
+  thunderKarlID = addCell("BM life karl-thunder", "bmod/karls/karl-thunder.png", karlOptions)
+  farmerKarlID = addCell("BM life karl-farmer", "bmod/karls/karl-farmer.png", karlOptions)
+  karlID = addCell("BM life karl", "bmod/karls/karl.png", Options.trash)
 
   BMod.bindUpdate(thunderKarlID, DoElectricKarl)
   BMod.bindUpdate(iceKarlID, DoIceKarl)
@@ -523,6 +525,8 @@ function AddLife()
   ToggleFreezability(meanKarlID)
   ToggleFreezability(thunderKarlID)
   ToggleFreezability(iceKarlID)
+
+  brainID = addCell("BM life brain", "bmod/brain/texture.png")
 
   if EdTweaks then
     -- Add editor tweaks support

@@ -5,6 +5,7 @@ require("bmod/leds")
 require("bmod/fastcells")
 require("bmod/diag")
 require("bmod/AI")
+require("bmod.nuke")
 
 -- Cells by UndefinedMonitor#1595
 require("bmod/unstoppabledrill")
@@ -12,6 +13,7 @@ require("bmod/life")
 require("bmod/laser")
 require("bmod.plant.plant")
 require("bmod.heater")
+require("bmod.brain.script")
 -- Rest of code
 
 local halfdelay = false
@@ -189,72 +191,73 @@ end
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
-    triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",function() return true end)
-    bombID = addCell("BM bom","bmod/bomb.png",function() return true end,"enemy")
-    minibombID = addCell("BM minibom","bmod/minibomb.png",function() return true end,"enemy")
-    triplesplitterID = addCell("BM 3split","bmod/triplesplitter.png",function() return true end)
-    splitterID = addCell("BM split","bmod/splitter.png",function() return true end)
-    tunnelID = addCell("BM tunnel","bmod/tunnel.png",function() return true end)
-    trashholeID = addCell("BM trashhole","bmod/trashhole.png",function() return true end)
-	slowmoverID = addCell("BM slowpush","bmod/slowmover.png",function() return true end,"mover")
-    slowpullerID = addCell("BM slowpull","bmod/slowpuller.png",function() return true end,"mover")
-	slowadvancerID = addCell("BM slowpullsh","bmod/slowadvancer.png",function() return true end,"mover")
-	doublegenID = addCell("BM 2gen","bmod/doublegenerator.png",function() return true end)
-	elecoffID = addCell("BM elecoff","bmod/elecoff.png",function() return true end)
-	eleconID = addCell("BM elecon","bmod/elecon.png",function() return true end,"normal",true)
-	redelecoffID = addCell("BM redelecoff","bmod/redelecoff.png",function() return true end)
-	redeleconID = addCell("BM redelecon","bmod/redelecon.png",function() return true end,"normal",true)
-	batteryID = addCell("BM battery","bmod/battery.png",function() return true end)
-	repeaterID = addCell("BM rep","bmod/repeater.png",function() return true end)
-	andID = addCell("BM and","bmod/andgate.png",function() return true end)
-	orID = addCell("BM or","bmod/orgate.png",function() return true end)
-	xorID = addCell("BM xor","bmod/xorgate.png",function() return true end)
-	xnorID = addCell("BM xnor","bmod/xnorgate.png",function() return true end)
-	norID = addCell("BM nor","bmod/norgate.png",function() return true end)
-	nandID = addCell("BM nand","bmod/nandgate.png",function() return true end)
-	notID = addCell("BM not","bmod/notgate.png",function() return true end)
-	crosswireID = addCell("BM wirecross","bmod/crosswire.png",function() return true end)
-	elecgenID = addCell("BM elecgen","bmod/elecgen.png",function() return true end)
-	elecmoveID = addCell("BM elecmove","bmod/elecmover.png",function() return true end,"mover")
-	elecrotcwID = addCell("BM elecrot","bmod/elecrotcw.png",function() return true end)
-	elecrotccwID = addCell("BM elecrotccw","bmod/elecrotccw.png",function() return true end)
-	electunnelID = addCell("BM electunnel","bmod/electunnel.png",function() return true end)
-	mayobottleID = addCell("BM mayobottle","bmod/mayobottle.png",function() return true end)
-	mayomoveID = addCell("BM mayomove","bmod/mayomover.png",function() return true end,"mover")
-	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",function() return true end)
-	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",function() return true end,"mover")
+  triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
+    bombID = addCell("BM bom","bmod/bomb.png",{type = "enemy"})
+    minibombID = addCell("BM minibom","bmod/minibomb.png",{type = "enemy"})
+    triplesplitterID = addCell("BM 3split","bmod/triplesplitter.png",{})
+    splitterID = addCell("BM split","bmod/splitter.png",{})
+    tunnelID = addCell("BM tunnel","bmod/tunnel.png",{})
+    trashholeID = addCell("BM trashhole","bmod/trashhole.png",{})
+	slowmoverID = addCell("BM slowpush","bmod/slowmover.png",{type = "mover"})
+    slowpullerID = addCell("BM slowpull","bmod/slowpuller.png",{type = "mover"})
+	slowadvancerID = addCell("BM slowpullsh","bmod/slowadvancer.png",{type = "mover"})
+	doublegenID = addCell("BM 2gen","bmod/doublegenerator.png",{})
+	elecoffID = addCell("BM elecoff","bmod/elecoff.png",{})
+	eleconID = addCell("BM elecon","bmod/elecon.png",{invisible = true})
+	redelecoffID = addCell("BM redelecoff","bmod/redelecoff.png",{})
+	redeleconID = addCell("BM redelecon","bmod/redelecon.png",{invisible = true})
+	batteryID = addCell("BM battery","bmod/battery.png",{})
+	repeaterID = addCell("BM rep","bmod/repeater.png",{})
+	andID = addCell("BM and","bmod/andgate.png",{})
+	orID = addCell("BM or","bmod/orgate.png",{})
+	xorID = addCell("BM xor","bmod/xorgate.png",{})
+	xnorID = addCell("BM xnor","bmod/xnorgate.png",{})
+	norID = addCell("BM nor","bmod/norgate.png",{})
+	nandID = addCell("BM nand","bmod/nandgate.png",{})
+	notID = addCell("BM not","bmod/notgate.png",{})
+	crosswireID = addCell("BM wirecross","bmod/crosswire.png",{})
+	elecgenID = addCell("BM elecgen","bmod/elecgen.png",{})
+	elecmoveID = addCell("BM elecmove","bmod/elecmover.png",{type = "mover"})
+	elecrotcwID = addCell("BM elecrot","bmod/elecrotcw.png",{})
+	elecrotccwID = addCell("BM elecrotccw","bmod/elecrotccw.png",{})
+	electunnelID = addCell("BM electunnel","bmod/electunnel.png",{})
+	mayobottleID = addCell("BM mayobottle","bmod/mayobottle.png",{})
+	mayomoveID = addCell("BM mayomove","bmod/mayomover.png",{type = "mover"})
+	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",{})
+	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",{type = "mover"})
 	doleds()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
-	birdID = addCell("BM bird","bmod/bird.png",function() return true end)
-	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",function() return true end) -- Added by UndefinedMonitor
+	birdID = addCell("BM bird","bmod/bird.png",{})
+	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",{}) -- Added by UndefinedMonitor
 	BMod.bindUpdate(slowbirdID, doSlowBird)
-	deadslowbirdID = addCell("BM deadslowbird","bmod/deadslowbird.png",function() return true end,"normal",true)
-	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",function() return false end) -- Added by UndefinedMonitor
+	deadslowbirdID = addCell("BM deadslowbird","bmod/deadslowbird.png",{invisible = true})
+	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",{push = function() return false end}) -- Added by UndefinedMonitor
 	BMod.bindUpdate(unstoppabledrillID, DoUnstoppableDrill)
 	adddiamover()
 	addfastcells()
 	adddiamovers()
-	slowermoverID = addCell("BM slowermove","bmod/slowermover.png",function() return true end,"mover")
-	slowerpullerID = addCell("BM slowerpull","bmod/slowerpuller.png",function() return true end,"mover")
-	sloweradvancerID = addCell("BM slowerpullsh","bmod/sloweradvancer.png",function() return true end,"mover")
-	deadbirdID = addCell("BM deadbird","bmod/deadbird.png",function() return true end,"normal",true)
-	bluescreenID = addCell("BM bluescreen","bmod/bluescreenofdoom.png",function() return true end)
-	randomizerID = addCell("BM randomizer","bmod/randomizer.png",function() return true end)
-	ghostmoverID = addCell("BM ghostmover","bmod/ghostmover.png",function() return true end,"mover")
-	ghostcellID = addCell("BM ghostcell","bmod/ghostcell.png",function() return true end)
-	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",function() return true end)
+	slowermoverID = addCell("BM slowermove","bmod/slowermover.png",{type = "mover"})
+	slowerpullerID = addCell("BM slowerpull","bmod/slowerpuller.png",{type = "mover"})
+	sloweradvancerID = addCell("BM slowerpullsh","bmod/sloweradvancer.png",{type = "mover"})
+	deadbirdID = addCell("BM deadbird","bmod/deadbird.png",{invisible = true})
+	bluescreenID = addCell("BM bluescreen","bmod/bluescreenofdoom.png",{})
+	randomizerID = addCell("BM randomizer","bmod/randomizer.png",{})
+	ghostmoverID = addCell("BM ghostmover","bmod/ghostmover.png",{type = "mover"})
+	ghostcellID = addCell("BM ghostcell","bmod/ghostcell.png",{})
+	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",{})
 
 	AddLasers()
+	AddNukes()
 	AddLife()
 	AddPlant()
 
 	addAI()
 
-	spawnerID = addCell("BM spawner", "bmod/spawner.png", function() return true end, "trash")
-	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png", function() return true end, "trash")
+	spawnerID = addCell("BM spawner", "bmod/spawner.png",{type = "trash"})
+	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
 
-	heaterID = addCell("BM heater", "textures/freezer.png", function() return true end)
+	heaterID = addCell("BM heater", "textures/freezer.png",{})
 
 	if EdTweaks ~= nil then
 		local Base = EdTweaks:GetCategory("Base")
@@ -331,6 +334,14 @@ local function init()
 			:SetAlias("Laser (Stronk)")
 		Gntr:AddItem("BM stronker-laser", "Creates 4 copies of itself each tick.")
 			:SetAlias("Laser (Stronker)")
+		Gntr:AddItem("BM nuke1", "Creates a copy of itself in all directions each tick.")
+			:SetAlias("Nuke (Weak)")
+		Gntr:AddItem("BM nuke2", "Creates 2 copies of itself in all directions each tick.")
+			:SetAlias("Nuke (Average)")
+		Gntr:AddItem("BM nuke3", "Creates 5 copies of itself in all directions each tick.")
+			:SetAlias("Nuke (Strong)")
+		Gntr:AddItem("BM nuke4", "Creates 10 copies of itself in all directions each tick.")
+			:SetAlias("Nuke (POWERRR)")
 		Gntr:AddItem("BM mayobottle", "Creates moving Mayonnaise cells in front every other tick, 2 cells away from the output face.")
 			:SetAlias("Mayonnaise Bottle")
 		Gntr:AddItem("BM slowmayobottle", "Creates moving Slow Mayonnaise cells in front every other tick, 2 cells away from the output face.")
@@ -1296,7 +1307,9 @@ local function update(id,x,y,dir)
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
 
-	if id == heaterID then
+	if id == brainID then
+		DoBrain(x, y)
+	elseif id == heaterID then
 		DoHeater(x, y)
 	elseif id == plantID then
 		DoPlant(x, y)
@@ -1567,16 +1580,18 @@ end
 
 local function onPlace(id,x,y,rot,original,originalinit)
 	cells[y][x].elec = 0
-	if id == waterID then
-		Hidrate(x, y)
-	elseif id == plantID and (original.ctype ~= soilID) then
-		cells[y][x] = original
-	elseif (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
+	if (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
 		cells[y][x] = original
 		cells[y][x].spawner_current = id
 		if isinitial then
 			initial[y][x] = originalinit
 		end
+	elseif id == brainID then
+		GiveNeuralNetwork(x, y)
+	elseif id == waterID then
+		Hidrate(x, y)
+	elseif id == plantID and (original.ctype ~= soilID) then
+		cells[y][x] = original
 	elseif id == randomizerID then
 		DoRandomizer(x,y,rot)
 	elseif id == ghostmoverID then
@@ -1632,6 +1647,13 @@ function DoSpawner(x, y, dir)
 	end
 
 	PushCell(x,y,dir,false,1,cells[y][x].spawner_current,dir,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(dir)},false,false)
+
+	if cells[y][x].spawner_current == brainID then
+		local ox, oy = x, y
+		if dir == 0 then ox = x + 1 elseif dir == 2 then ox = x - 1 end
+		if dir == 1 then oy = y + 1 elseif dir == 3 then oy = y - 1 end
+		GiveNeuralNetwork(ox, oy)
+	end
 
 	if useGhost then
 		ghostcells = cells

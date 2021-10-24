@@ -87,6 +87,8 @@ function GiveNeuralNetwork(x, y)
 end
 
 function DoBrain(x, y)
+  if not cells[y][x].brain_nn then GiveNeuralNetwork(x, y) end
+
   local inputs = {}
   local offs = {
     {x = 0, y = 1},
@@ -99,6 +101,7 @@ function DoBrain(x, y)
     local ctype = cells[cy][cx].ctype
     local input = 1
     if ctype == 0 then input = 0 end
+    if ctype == plantID then input = 2 end
     table.insert(inputs, input)
   end
 
@@ -107,5 +110,12 @@ function DoBrain(x, y)
 
   cells[y][x].testvar = dir
 
-  PushCell(x, y, dir)
+  local cx, cy = x, y
+  if dir == 0 then cx = x - 1 elseif dir == 2 then cx = x + 1 end
+  if dir == 0 then cy = y - 1 elseif dir == 2 then cy = y + 1 end
+  if cells[cy][cx].ctype == plantID then
+    cells[cy][cx] = CopyTable(cells[y][x])
+  else
+    PushCell(x, y, dir)
+  end
 end

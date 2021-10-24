@@ -13,6 +13,7 @@ require("bmod.life")
 require("bmod.laser")
 require("bmod.plant.plant")
 require("bmod.heater")
+require("bmod.brain.script")
 -- Rest of code
 
 local halfdelay = false
@@ -190,7 +191,7 @@ end
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
-    triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
+  triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
     bombID = addCell("BM bom","bmod/bomb.png",{type = "enemy"})
     minibombID = addCell("BM minibom","bmod/minibomb.png",{type = "enemy"})
     triplesplitterID = addCell("BM 3split","bmod/triplesplitter.png",{})
@@ -1310,7 +1311,9 @@ local function update(id,x,y,dir)
 	
 	UpdateNukes(id,x,y,dir)
 
-	if id == heaterID then
+	if id == brainID then
+		DoBrain(x, y)
+	elseif id == heaterID then
 		DoHeater(x, y)
 	elseif id == plantID then
 		DoPlant(x, y)
@@ -1581,16 +1584,18 @@ end
 
 local function onPlace(id,x,y,rot,original,originalinit)
 	cells[y][x].elec = 0
-	if id == waterID then
-		Hidrate(x, y)
-	elseif id == plantID and (original.ctype ~= soilID) then
-		cells[y][x] = original
-	elseif (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
+	if (original.ctype == spawnerID or original.ctype == rotateSpawnerID) and id ~= 0 and (id ~= spawnerID and id ~= rotateSpawnerID) then
 		cells[y][x] = original
 		cells[y][x].spawner_current = id
 		if isinitial then
 			initial[y][x] = originalinit
 		end
+	elseif id == brainID then
+		GiveNeuralNetwork(x, y)
+	elseif id == waterID then
+		Hidrate(x, y)
+	elseif id == plantID and (original.ctype ~= soilID) then
+		cells[y][x] = original
 	elseif id == randomizerID then
 		DoRandomizer(x,y,rot)
 	elseif id == ghostmoverID then
@@ -1646,6 +1651,13 @@ function DoSpawner(x, y, dir)
 	end
 
 	PushCell(x,y,dir,false,1,cells[y][x].spawner_current,dir,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(dir)},false,false)
+
+	if cells[y][x].spawner_current == brainID then
+		local ox, oy = x, y
+		if dir == 0 then ox = x + 1 elseif dir == 2 then ox = x - 1 end
+		if dir == 1 then oy = y + 1 elseif dir == 3 then oy = y - 1 end
+		GiveNeuralNetwork(ox, oy)
+	end
 
 	if useGhost then
 		ghostcells = cells

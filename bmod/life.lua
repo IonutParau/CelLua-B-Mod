@@ -1,5 +1,7 @@
 -- Code by UndefinedMonitor
 
+require("bmod.brain.script")
+
 function clamp(n, min, max)
   return math.min(math.max(n, min), max)
 end
@@ -497,7 +499,7 @@ end
 function AddLife()
   local showKarls = (config['bmod_show_karls'] ~= 'true')
 
-  local karlPushability = (function() return true end)
+  local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
 
   iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{move = karlPushability, type = "trash", invisible = showKarls})
   killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{move = karlPushability, type = "trash", invisible = showKarls})
@@ -523,6 +525,8 @@ function AddLife()
   ToggleFreezability(meanKarlID)
   ToggleFreezability(thunderKarlID)
   ToggleFreezability(iceKarlID)
+
+  brainID = addCell("BM life brain", "bmod/brain/texture.png")
 
   if EdTweaks then
     -- Add editor tweaks support

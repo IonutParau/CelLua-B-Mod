@@ -119,3 +119,20 @@ function DoBrain(x, y)
     PushCell(x, y, dir)
   end
 end
+
+function DoBrainCancer(x, y)
+  local offs = {
+    {x=1,y=0},
+    {x=-1,y=0},
+    {x=0,y=1},
+    {x=0,y=-1},
+  }
+  for _, off in ipairs(offs) do
+    local ox = x + off.x
+    local oy = y + off.y
+    if cells[oy][ox].ctype == brainID then
+      cells[oy][ox].ctype = cancerbrainID
+      cells[oy][ox].brain_nn = nil
+    end
+  end
+end

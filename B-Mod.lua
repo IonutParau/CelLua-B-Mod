@@ -1,19 +1,10 @@
 -- Cells by Blendi Goose#0414
-<<<<<<< HEAD
-require("bmod/gates")
-require("bmod/electricstuffs")
-require("bmod/leds")
-require("bmod/fastcells")
-require("bmod/diag")
-require("bmod/AI")
-=======
 require("bmod.gates")
 require("bmod.electricstuffs")
 require("bmod.leds")
 require("bmod.fastcells")
 require("bmod.diag")
 require("bmod.AI")
->>>>>>> f7f21c6fed275afdb9f6a34ee5b25dfa7d1af8e2
 require("bmod.nuke")
 
 -- Cells by UndefinedMonitor#1595
@@ -200,11 +191,7 @@ end
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
-<<<<<<< HEAD
   triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
-=======
-    triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
->>>>>>> f7f21c6fed275afdb9f6a34ee5b25dfa7d1af8e2
     bombID = addCell("BM bom","bmod/bomb.png",{type = "enemy"})
     minibombID = addCell("BM minibom","bmod/minibomb.png",{type = "enemy"})
     triplesplitterID = addCell("BM 3split","bmod/triplesplitter.png",{})

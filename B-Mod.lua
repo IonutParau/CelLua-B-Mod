@@ -13,6 +13,7 @@ require("bmod.life")
 require("bmod.laser")
 require("bmod.plant.plant")
 require("bmod.brain.script")
+require("bmod.big bang.script")
 
 -- Cells by K_______#0086
 require("bmod.kai")
@@ -258,6 +259,8 @@ local function init()
 
 	spawnerID = addCell("BM spawner", "bmod/spawner.png",{type = "trash"})
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
+
+	bigBangID = addCell("BM big-bang", "bmod/big bang/texture.png")
 
 	if EdTweaks ~= nil then
 		local Base = EdTweaks:GetCategory("Base")
@@ -1311,7 +1314,9 @@ local function update(id,x,y,dir)
 	
 	UpdateNukes(id,x,y,dir)
 
-	if id == brainID then
+	if id == bigBangID then
+		DoBingBang(x, y)
+	elseif id == brainID then
 		DoBrain(x, y)
 	elseif id == plantID then
 		DoPlant(x, y)

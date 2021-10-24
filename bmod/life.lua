@@ -541,6 +541,8 @@ function AddLife()
   brainID = addCell("BM life brain", brainTexture)
   cancerbrainID = addCell("BM life cancer brain", cancerbrainTexture)
 
+  BMod.bindUpdate(cancerbrainID, DoBrainCancer)
+
   local showKarls = (config['bmod_show_karls'] ~= 'true')
 
   local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})

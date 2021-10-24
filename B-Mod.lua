@@ -439,7 +439,7 @@ local function init()
 		local lifecat = EdTweaks:GetCategory("Life")
 		lifecat:AddItem("BM AI", "AI robot that does smort stuff.")
 			:SetAlias("AI Car")
-		lifecat:AddItem("BM kai", "AI robot that does slightly less smort stuff.")
+		lifecat:AddItem("BM kai", "This cell comes from the deep dark corners of the universe, it may seem innocent at first (it isn't) but it isn't. It will eat anything from karls to slightly different karls and even water, it can even leech off of brains!")
 			:SetAlias("Kai")
 	end
 end

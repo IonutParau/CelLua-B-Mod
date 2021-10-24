@@ -12,6 +12,12 @@ function DoKAI(x, y, dir)
     local fx,fy
     if dir == 0 then fx = x + 1 elseif dir == 2 then fx = x - 1 else fx = x end
     if dir == 1 then fy = y + 1 elseif dir == 3 then fy = y - 1 else fy = y end
+	
+	
+	    local kx,ky
+    if dir == 0 then kx = x + 2 elseif dir == 2 then kx = x - 2 else kx = x end
+    if dir == 1 then ky = y + 2 elseif dir == 3 then ky = y - 2 else ky = y end
+
 
 
     local lx,ly
@@ -38,7 +44,16 @@ function DoKAI(x, y, dir)
         return
     end
 
-    if cells[fy][fx].ctype == karlID or cells[fy][fx].ctype == waterID then
+    if not offgrid(kx, ky) and (isKarl(cells[ky][kx].ctype) or cells[ky][kx].ctype == waterID) then
+        cells[ky][kx] = {
+            ctype = 0,
+            rot = 0,
+            lastvars = cells[ky][kx].lastvars
+        }
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+	if isKarl(cells[fy][fx].ctype) or cells[fy][fx].ctype == waterID then
         cells[fy][fx] = {
             ctype = 0,
             rot = 0,

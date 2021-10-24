@@ -101,7 +101,7 @@ function DoBrain(x, y)
     local ctype = cells[cy][cx].ctype
     local input = 1
     if ctype == 0 then input = 0 end
-    if ctype == plantID then input = 2 end
+    if ctype == plantID then input = 0.5 end
     table.insert(inputs, input)
   end
 

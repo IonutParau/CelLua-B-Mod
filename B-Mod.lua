@@ -1596,6 +1596,9 @@ local function onPlace(id,x,y,rot,original,originalinit)
 		Hidrate(x, y)
 	elseif id == plantID and (original.ctype ~= soilID) then
 		cells[y][x] = original
+		if isinitial then
+			initial[y][x] = originalinit
+		end
 	elseif id == randomizerID then
 		DoRandomizer(x,y,rot)
 	elseif id == ghostmoverID then

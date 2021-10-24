@@ -497,6 +497,10 @@ function FeedKarl(x, y, amount)
 end
 
 function AddLife()
+  local brainTexture = "bmod/brain/texture.png"
+  if config['bmod_other_brain_texture'] == 'true' then brainTexture = "bmod/brain/improved.png" end
+  brainID = addCell("BM life brain", brainTexture)
+
   local showKarls = (config['bmod_show_karls'] ~= 'true')
 
   local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
@@ -525,8 +529,6 @@ function AddLife()
   ToggleFreezability(meanKarlID)
   ToggleFreezability(thunderKarlID)
   ToggleFreezability(iceKarlID)
-
-  brainID = addCell("BM life brain", "bmod/brain/texture.png")
 
   if EdTweaks then
     -- Add editor tweaks support

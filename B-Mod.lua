@@ -1,16 +1,25 @@
 -- Cells by Blendi Goose#0414
+<<<<<<< HEAD
 require("bmod/gates")
 require("bmod/electricstuffs")
 require("bmod/leds")
 require("bmod/fastcells")
 require("bmod/diag")
 require("bmod/AI")
+=======
+require("bmod.gates")
+require("bmod.electricstuffs")
+require("bmod.leds")
+require("bmod.fastcells")
+require("bmod.diag")
+require("bmod.AI")
+>>>>>>> f7f21c6fed275afdb9f6a34ee5b25dfa7d1af8e2
 require("bmod.nuke")
 
 -- Cells by UndefinedMonitor#1595
-require("bmod/unstoppabledrill")
-require("bmod/life")
-require("bmod/laser")
+require("bmod.unstoppabledrill")
+require("bmod.life")
+require("bmod.laser")
 require("bmod.plant.plant")
 require("bmod.heater")
 require("bmod.brain.script")
@@ -191,7 +200,11 @@ end
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
+<<<<<<< HEAD
   triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
+=======
+    triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
+>>>>>>> f7f21c6fed275afdb9f6a34ee5b25dfa7d1af8e2
     bombID = addCell("BM bom","bmod/bomb.png",{type = "enemy"})
     minibombID = addCell("BM minibom","bmod/minibomb.png",{type = "enemy"})
     triplesplitterID = addCell("BM 3split","bmod/triplesplitter.png",{})
@@ -564,6 +577,7 @@ function SpreadRedElec(y,x)
 	local elec = cells[y][x].elec
 	if not elec then cells[y][x].elec = 0 elec = 0 end
 	if elec >= 1 then
+		cells[y][x].ctype = redeleconID
 		if cells[y][x-1].ctype == redelecoffID then
 			if not cells[y][x-1].elec then cells[y][x-1].elec = 0 end
 			cells[y][x-1].ctype = redeleconID
@@ -623,6 +637,7 @@ function SpreadElec(y,x)
 	local elec = cells[y][x].elec
 	if not elec then cells[y][x].elec = 0 elec = 0 end
 	if elec >= 1 then
+		cells[y][x].ctype = eleconID
 		if cells[y][x-1].ctype == elecoffID then
 			if not cells[y][x-1].elec then cells[y][x-1].elec = 0 end
 			cells[y][x-1].ctype = eleconID
@@ -1306,6 +1321,8 @@ local function update(id,x,y,dir)
 	BMod.updateCell(id, x, y, dir) -- Binding system
 
 	UpdateLasers(id, x, y, dir) -- Lasers by UndefinedMonitor
+	
+	UpdateNukes(id,x,y,dir)
 
 	if id == brainID then
 		DoBrain(x, y)

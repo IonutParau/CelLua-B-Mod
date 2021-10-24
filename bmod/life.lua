@@ -130,16 +130,16 @@ end
 
 -- Mean karl too mean so we must stonp him
 function DoHealKarl(x, y)
-  if cells[y+1][x].ctype == meanKarlID then
+  if cells[y+1][x].ctype == meanKarlID or cells[y+1][x].ctype == killerKarlID then
     cells[y+1][x].ctype = karlID
   end
-  if cells[y-1][x].ctype == meanKarlID then
+  if cells[y-1][x].ctype == meanKarlID or cells[y-1][x].ctype == killerKarlID then
     cells[y-1][x].ctype = karlID
   end
-  if cells[y][x+1].ctype == meanKarlID then
+  if cells[y][x+1].ctype == meanKarlID or cells[y][x+1].ctype == killerKarlID then
     cells[y][x+1].ctype = karlID
   end
-  if cells[y][x-1].ctype == meanKarlID then
+  if cells[y][x-1].ctype == meanKarlID or cells[y][x-1].ctype == killerKarlID then
     cells[y][x-1].ctype = karlID
   end
   DoKarl(x, y)
@@ -232,6 +232,14 @@ function DoKarlMovement(x, y)
   local backup = CopyTable(movement)
 
   for i=1,3 do
+    if x+movement.x == 0 or x+movement.x == width-1 then
+      i = i - 1
+      movement.x = -movement.x
+    end
+    if y+movement.y == 0 or y+movement.y == height-1 then
+      i = i - 1
+      movement.y = -movement.y
+    end
     if cells[y+movement.y][x+movement.x].ctype == 0 or cells[y+movement.y][x+movement.x].ctype == -1 then
       local replicating = false
       if cells[y+movement.y][x+movement.x].ctype == -1 then
@@ -505,16 +513,16 @@ function AddLife()
 
   local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
 
-  iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  karlbon8ID = addCell("BM life karl-bon8", "bmod/karls/karl-bon8.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karls/karl-pulsor.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  healKarlID = addCell("BM life karl-heal", "bmod/karls/karl-heal.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  meanKarlID = addCell("BM life karl-mean", "bmod/karls/karl-mean.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  thunderKarlID = addCell("BM life karl-thunder", "bmod/karls/karl-thunder.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  farmerKarlID = addCell("BM life karl-farmer", "bmod/karls/karl-farmer.png",{move = karlPushability, type = "trash", invisible = showKarls})
-  karlID = addCell("BM life karl", "bmod/karls/karl.png",{move = karlPushability, type = "trash"})
+  iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{move = karlPushability, invisible = showKarls})
+  killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{move = karlPushability, invisible = showKarls})
+  karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png",{move = karlPushability, invisible = showKarls})
+  karlbon8ID = addCell("BM life karl-bon8", "bmod/karls/karl-bon8.png",{move = karlPushability, invisible = showKarls})
+  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karls/karl-pulsor.png",{move = karlPushability, invisible = showKarls})
+  healKarlID = addCell("BM life karl-heal", "bmod/karls/karl-heal.png",{move = karlPushability, invisible = showKarls})
+  meanKarlID = addCell("BM life karl-mean", "bmod/karls/karl-mean.png",{move = karlPushability, invisible = showKarls})
+  thunderKarlID = addCell("BM life karl-thunder", "bmod/karls/karl-thunder.png",{move = karlPushability, invisible = showKarls})
+  farmerKarlID = addCell("BM life karl-farmer", "bmod/karls/karl-farmer.png",{move = karlPushability, invisible = showKarls})
+  karlID = addCell("BM life karl", "bmod/karls/karl.png",{move = karlPushability})
 
   BMod.bindUpdate(thunderKarlID, DoElectricKarl)
   BMod.bindUpdate(iceKarlID, DoIceKarl)

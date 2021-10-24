@@ -439,8 +439,8 @@ local function init()
 		local lifecat = EdTweaks:GetCategory("Life")
 		lifecat:AddItem("BM AI", "AI robot that does smort stuff.")
 			:SetAlias("AI Car")
-		lifecat:AddItem("BM Kai", "AI robot that does slightly less smort stuff.")
-			:SetAlias("AI Car")
+		lifecat:AddItem("BM kai", "AI robot that does slightly less smort stuff.")
+			:SetAlias("Kai")
 	end
 end
 

@@ -189,6 +189,28 @@ local function doSlowBird(x,y,dir)
 	SetChunk(x,y,deadslowbirdID)
 end
 
+local function doFire(x,y)
+	local offs = {
+		{x=1,y=0},
+		{x=-1,y=0},
+		{x=0,y=1},
+		{x=0,y=-1},
+	}
+	for _,off in pairs(offs) do
+		local ox,oy = x+off.x, y+off.y
+		if cells[oy][ox].ctype ~= 0 and cells[oy][ox].ctype ~= 40 and cells[oy][ox].ctype ~= -1  and cells[oy][ox].ctype ~= 11  and cells[oy][ox].ctype ~= 50 and (cells[oy][ox].ctype <= #cellsForIDManagement or canPushCell(ox,oy,x,y,"Fire")) then
+			cells[oy][ox].ctype = fireID
+			cells[oy][ox].updated = true
+			SetChunk(ox,oy,fireID)
+		end
+	end
+	cells[y][x] = {
+		ctype = 0,
+		rot = 0,
+		lastvars = cells[y][x].lastvars
+	}
+end
+
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
@@ -261,6 +283,8 @@ local function init()
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
 
 	bigBangID = addCell("BM big-bang", "bmod/big bang/texture.png")
+
+	fireID = addCell("BM fire", "bmod/fire.png")
 
 	if EdTweaks ~= nil then
 		local Base = EdTweaks:GetCategory("Base")
@@ -364,6 +388,8 @@ local function init()
 		Uniq:AddItem("BM rotate-spawner", "Place a cell on it or push one in and it will start spawning it but also spin.")
 			:SetAlias("Rotation Spawner")
 		Uniq:AddItem("BM bluescreen", "ERROR")
+			:SetAlias("Blue Screen of Death")
+		Uniq:AddItem("BM fire", "Fire, spreads to cells next to it and dissapears 1 tick later")
 			:SetAlias("Blue Screen of Death")
 		local Elct = EdTweaks:AddCategory("Electricity", "Deals with electricity... in cells. Woah.", true, "bmod/elecon")
 		Elct:AddItem("BM elecoff", "Unpowered Electricity Cell")
@@ -1338,6 +1364,8 @@ local function update(id,x,y,dir)
 		DoHealKarl(x, y)
 	elseif id == meanKarlID then
 		DoMeanKarl(x, y)
+	elseif id == fireID then
+		doFire(x,y)
 	elseif id == karlID then
 		DoKarl(x, y)
 	elseif id == elecoffID or id == eleconID then
@@ -1545,8 +1573,10 @@ end
 local function onReset()
 	for y=0,height-1 do
 		if not ghostcells[y] then ghostcells[y] = {} end
+		if not ghostinitial[y] then ghostinitial[y] = {} end
 		for x=0,width-1 do
 			if not ghostcells[y][x] then ghostcells[y][x] = {} end
+			if not ghostinitial[y][x] then ghostinitial[y][x] = {ctype = 0, rot = 0, lastvars = {x,y,0}} end
 			ghostcells[y][x].ctype = ghostinitial[y][x].ctype
 			ghostcells[y][x].rot = ghostinitial[y][x].rot
 			ghostcells[y][x].lastvars = ghostinitial[y][x].lastvars

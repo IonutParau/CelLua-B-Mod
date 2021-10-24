@@ -67,6 +67,7 @@ function DoKarlHate(x, y)
 
     if ctype == kaiID or ctype == brainID or ctype == deadKarlID then
       cells[cy][cx].ctype = 0
+      cells[y][x].karl_must_replicate = true
     end
   end
 end
@@ -216,8 +217,6 @@ function DoKarl(x, y)
 
   local neighborCount = 0
 
-  DoKarlHate(x, y)
-
   if (cells[y+1][x].ctype ~= 0 and cells[y+1][x].ctype ~= -1) or cells[y-1][x].ctype == -1 then
     calcMovement.y = calcMovement.y - 1
     neighborCount = neighborCount + 1
@@ -244,6 +243,8 @@ function DoKarl(x, y)
     cells[y][x].movement = {x = 0, y = 0}
   end
 
+  DoKarlHate(x, y)
+
   -- Movement time
 
   DoKarlMovement(x, y)
@@ -269,9 +270,10 @@ function DoKarlMovement(x, y)
     end
     if cells[y+movement.y][x+movement.x].ctype == 0 or cells[y+movement.y][x+movement.x].ctype == -1 then
       local replicating = false
-      if cells[y+movement.y][x+movement.x].ctype == -1 then
+      if cells[y+movement.y][x+movement.x].ctype == -1 or cells[y][x].karl_must_replicate == true then
         cells[y+movement.y][x+movement.x].ctype = 0
         replicating = true
+        cells[y][x].karl_must_replicate = nil
       end
       local karl = CopyTable(cells[y][x])
       if not replicating then

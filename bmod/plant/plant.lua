@@ -11,17 +11,21 @@ function AddPlant()
 end
 
 function Hidrate(x, y)
-  if cells[y+1][x].ctype == dead_soilID then
-    cells[y+1][x].ctype = soilID
-  end
-  if cells[y-1][x].ctype == dead_soilID then
-    cells[y-1][x].ctype = soilID
-  end
-  if cells[y][x+1].ctype == dead_soilID then
-    cells[y][x+1].ctype = soilID
-  end
-  if cells[y][x-1].ctype == dead_soilID then
-    cells[y][x-1].ctype = soilID
+  local offs = {
+    {x=0,y=1},
+    {x=0,y=-1},
+    {x=1,y=0},
+    {x=-1,y=0},
+  }
+  for _, off in ipairs(offs) do
+    local ox = off.x + x
+    local oy = off.y + y
+
+    if cells[oy][ox].ctype == dead_soilID then
+      cells[oy][ox].ctype = soilID
+    elseif isKarl(cells[oy][ox].ctype) and cells[oy][ox].ctype ~= deadKarlID then
+      cells[oy][ox].ctype = deadKarlID
+    end
   end
 end
 

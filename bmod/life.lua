@@ -50,6 +50,27 @@ farmerKarlID = 0
 -- Mean Karl Mutations
 killerKarlID = 0
 
+deadKarlID = 0
+
+function DoKarlHate(x, y)
+  local offs = {
+    {x=0,y=1},
+    {x=0,y=-1},
+    {x=1,y=0},
+    {x=-1,y=0},
+  }
+
+  for _, off in ipairs(offs) do
+    local cx, cy = x + off.x, y + off.y
+
+    local ctype = cells[cy][cx].ctype
+
+    if ctype == kaiID or ctype == brainID or ctype == deadKarlID then
+      cells[cy][cx].ctype = 0
+    end
+  end
+end
+
 function offgrid(x, y)
   return (x < 0 or x > width-1) or (y < 0 or y > height-1)
 end
@@ -130,17 +151,21 @@ end
 
 -- Mean karl too mean so we must stonp him
 function DoHealKarl(x, y)
-  if cells[y+1][x].ctype == meanKarlID or cells[y+1][x].ctype == killerKarlID then
-    cells[y+1][x].ctype = karlID
-  end
-  if cells[y-1][x].ctype == meanKarlID or cells[y-1][x].ctype == killerKarlID then
-    cells[y-1][x].ctype = karlID
-  end
-  if cells[y][x+1].ctype == meanKarlID or cells[y][x+1].ctype == killerKarlID then
-    cells[y][x+1].ctype = karlID
-  end
-  if cells[y][x-1].ctype == meanKarlID or cells[y][x-1].ctype == killerKarlID then
-    cells[y][x-1].ctype = karlID
+  local offs = {
+    {x=1,y=0},
+    {x=-1,y=0},
+    {x=0,y=1},
+    {x=0,y=-1},
+  }
+  for _, off in ipairs(offs) do
+    local ox, oy = x + off.x, y + off.y
+    if cells[oy][ox].ctype == meanKarlID or cells[oy][ox].ctype == killerKarlID then
+      cells[oy][ox].ctype = karlID
+    elseif cells[oy][ox].ctype == deadbirdID then
+      cells[oy][ox].ctype = birdID
+    elseif cells[oy][ox].ctype == dead_soilID then
+      cells[oy][ox].ctype = soilID
+    end
   end
   DoKarl(x, y)
 end
@@ -190,6 +215,8 @@ function DoKarl(x, y)
   local calcMovement = {x = 0, y = 0}
 
   local neighborCount = 0
+
+  DoKarlHate(x, y)
 
   if (cells[y+1][x].ctype ~= 0 and cells[y+1][x].ctype ~= -1) or cells[y-1][x].ctype == -1 then
     calcMovement.y = calcMovement.y - 1
@@ -437,9 +464,11 @@ function DoKillerKarl(x, y)
 
   for _, off in ipairs(offs) do
     local kx, ky = x + off.x, y + off.y
-    local kid = cells[ky][kx].ctype
-    if isKarl(kid) and kid ~= killerKarlID and kid ~= meanKarlID then
-      cells[ky][kx].ctype = 0
+    if kx > 0 and kx < width-1 and ky > 0 and ky < height-1 then
+      local kid = cells[ky][kx].ctype
+      if (isKarl(kid) and kid ~= killerKarlID and kid ~= meanKarlID) or kid == kaiID or kid == brainID or kid == BModAIID then
+        cells[ky][kx].ctype = 0
+      end
     end
   end
   
@@ -516,6 +545,7 @@ function AddLife()
 
   local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
 
+  deadKarlID = addCell("BM life karl-dead", "bmod/karls/karl-dead.png", Options.invisible)
   iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{move = karlPushability, invisible = showKarls})
   killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{move = karlPushability, invisible = showKarls})
   karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png",{move = karlPushability, invisible = showKarls})

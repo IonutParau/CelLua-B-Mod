@@ -1,4 +1,4 @@
-function DoKAI(x, y, dir)
+function DoKAIwarrior(x, y, dir)
 
     if cells[y][x].kaiFOOD == nil then 
         cells[y][x].kaiFOOD = 69
@@ -18,8 +18,6 @@ function DoKAI(x, y, dir)
     if dir == 0 then kx = x + 2 elseif dir == 2 then kx = x - 2 else kx = x end
     if dir == 1 then ky = y + 2 elseif dir == 3 then ky = y - 2 else ky = y end
 
-
-
     local lx,ly
     if dir == 0 then ly = y - 1 elseif dir == 2 then ly = y + 1 else ly = y end
     if dir == 1 then lx = x + 1 elseif dir == 3 then lx = x - 1 else lx = x end
@@ -27,7 +25,16 @@ function DoKAI(x, y, dir)
     local rx,ry
     if dir == 0 then ry = y + 1 elseif dir == 2 then ry = y - 1 else ry = y end
     if dir == 1 then rx = x - 1 elseif dir == 3 then rx = x + 1 else rx = x end
+	
+	local klx,kly
+    if dir == 0 then kly = y - 2 elseif dir == 2 then kly = y + 2 else kly = y end
+    if dir == 1 then klx = x + 2 elseif dir == 3 then klx = x - 2 else klx = x end
 
+    local krx,kry
+    if dir == 0 then kry = y + 2 elseif dir == 2 then kry = y - 2 else kry = y end
+    if dir == 1 then krx = x - 2 elseif dir == 3 then krx = x + 2 else krx = x end
+	
+	
     if cells[y][x].kaiFOOD >= 75 and cells[by][bx].ctype == 0 then --I LOVE REPRODUCING ON A FULL STOMACH!
 		
 	local mutationChance = love.math.random(1,100)
@@ -98,7 +105,25 @@ function DoKAI(x, y, dir)
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
     end
 	
-	    if cells[fy][fx].ctype == karlID or cells[fy][fx].ctype == waterID then
+	if cells[fy][fx].ctype == killerKarlID or cells[fy][fx].ctype == waterID then
+        cells[fy][fx] = {
+            ctype = 0,
+            rot = 0,
+            lastvars = cells[fy][fx].lastvars
+        }
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+	if cells[ry][rx].ctype == waterID or cells[ry][rx].ctype == killerKarlID then
+        cells[fy][fx] = {
+            ctype = 0,
+            rot = 0,
+            lastvars = cells[fy][fx].lastvars
+        }
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+	if not offgrid(krx,kry) and cells[kry][krx].ctype == waterID then
         cells[fy][fx] = {
             ctype = 0,
             rot = 0,

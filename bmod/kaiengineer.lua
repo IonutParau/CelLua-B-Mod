@@ -1,4 +1,4 @@
-function DoKAI(x, y, dir)
+function DoKAIengineer(x, y, dir)
 
     if cells[y][x].kaiFOOD == nil then 
         cells[y][x].kaiFOOD = 69
@@ -98,13 +98,29 @@ function DoKAI(x, y, dir)
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
     end
 	
-	    if cells[fy][fx].ctype == karlID or cells[fy][fx].ctype == waterID then
-        cells[fy][fx] = {
+	    if not offgrid(kx, ky) and cells[ky][kx].ctype == waterID then
+        cells[ky][kx] = {
             ctype = 0,
+            rot = 0,
+            lastvars = cells[ky][kx].lastvars
+        }
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+	    if cells[fy][fx].ctype == karlID then
+        cells[fy][fx] = {
+            ctype = reprogrammedKarlID,
             rot = 0,
             lastvars = cells[fy][fx].lastvars
         }
-        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+		if cells[fy][fx].ctype == healKarlID then
+        cells[fy][fx] = {
+            ctype = reprogrammedKarlID,
+            rot = 0,
+            lastvars = cells[fy][fx].lastvars
+        }
     end
 
 

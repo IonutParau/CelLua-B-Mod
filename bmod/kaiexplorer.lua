@@ -1,24 +1,16 @@
-function DoKAI(x, y, dir)
+function DoKAIexplorer(x, y, dir)
 
     if cells[y][x].kaiFOOD == nil then 
-        cells[y][x].kaiFOOD = 69
+        cells[y][x].kaiFOOD = 193
     end
 
     local bx,by
     if dir == 0 then bx = x - 1 elseif dir == 2 then bx = x + 1 else bx = x end
     if dir == 1 then by = y - 1 elseif dir == 3 then by = y + 1 else by = y end
 
-
     local fx,fy
     if dir == 0 then fx = x + 1 elseif dir == 2 then fx = x - 1 else fx = x end
     if dir == 1 then fy = y + 1 elseif dir == 3 then fy = y - 1 else fy = y end
-	
-	
-	    local kx,ky
-    if dir == 0 then kx = x + 2 elseif dir == 2 then kx = x - 2 else kx = x end
-    if dir == 1 then ky = y + 2 elseif dir == 3 then ky = y - 2 else ky = y end
-
-
 
     local lx,ly
     if dir == 0 then ly = y - 1 elseif dir == 2 then ly = y + 1 else ly = y end
@@ -28,7 +20,7 @@ function DoKAI(x, y, dir)
     if dir == 0 then ry = y + 1 elseif dir == 2 then ry = y - 1 else ry = y end
     if dir == 1 then rx = x - 1 elseif dir == 3 then rx = x + 1 else rx = x end
 
-    if cells[y][x].kaiFOOD >= 75 and cells[by][bx].ctype == 0 then --I LOVE REPRODUCING ON A FULL STOMACH!
+    if cells[y][x].kaiFOOD >= 202 and cells[by][bx].ctype == 0 then --I LOVE REPRODUCING ON A FULL STOMACH!
 		
 	local mutationChance = love.math.random(1,100)
 		
@@ -87,15 +79,6 @@ function DoKAI(x, y, dir)
     if cells[fy][fx].ctype == brainID then
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 1
         return
-    end
-
-    if not offgrid(kx, ky) and cells[ky][kx].ctype == waterID then
-        cells[ky][kx] = {
-            ctype = 0,
-            rot = 0,
-            lastvars = cells[ky][kx].lastvars
-        }
-        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
     end
 	
 	    if cells[fy][fx].ctype == karlID or cells[fy][fx].ctype == waterID then

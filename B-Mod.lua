@@ -17,6 +17,9 @@ require("bmod.big bang.script")
 
 -- Cells by K_______#0086
 require("bmod.kai")
+require("bmod.kaiwarrior")
+require("bmod.kaiexplorer")
+require("bmod.kaiengineer")
 -- Rest of code
 
 local halfdelay = false
@@ -279,6 +282,10 @@ local function init()
 
 	kaiID = addCell("BM kai","bmod/kai.png",{type = "mover"})
 
+	kaiwarriorID = addCell("BM kaiwarrior","bmod/kaiwarrior.png",{type = "mover"})
+	kaiengineerID = addCell("BM kaiengineer","bmod/kaiengineer.png",{type = "mover"})
+	kaiexplorerID = addCell("BM kaiexplorer","bmod/kaiexplorer.png",{type = "mover"})
+
 	spawnerID = addCell("BM spawner", "bmod/spawner.png",{type = "trash"})
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
 
@@ -344,6 +351,8 @@ local function init()
 			:SetAlias("Bomb")
 		Dstr:AddItem("BM minibom", "This item blows up things up to 1 cell away.")
 			:SetAlias("Mini Bomb")
+		Dstr:AddItem("BM fire", "Fire, spreads to cells next to it and dissapears 1 tick later")
+			:SetAlias("Fire")
 		local Gntr = EdTweaks:GetCategory("Generators")
 		Gntr:AddItem("BM 2gen", "Creates copies of the square face at the arrow faces. cell must be copyable.")
 			:SetAlias("Split Generator")
@@ -388,8 +397,6 @@ local function init()
 		Uniq:AddItem("BM rotate-spawner", "Place a cell on it or push one in and it will start spawning it but also spin.")
 			:SetAlias("Rotation Spawner")
 		Uniq:AddItem("BM bluescreen", "ERROR")
-			:SetAlias("Blue Screen of Death")
-		Uniq:AddItem("BM fire", "Fire, spreads to cells next to it and dissapears 1 tick later")
 			:SetAlias("Blue Screen of Death")
 		local Elct = EdTweaks:AddCategory("Electricity", "Deals with electricity... in cells. Woah.", true, "bmod/elecon")
 		Elct:AddItem("BM elecoff", "Unpowered Electricity Cell")
@@ -437,10 +444,16 @@ local function init()
 		Elct:AddItem("BM wirecross", "Connect electricity top to bottom and left to right.")
 			:SetAlias("Cross Wire")
 		local lifecat = EdTweaks:GetCategory("Life")
-		lifecat:AddItem("BM AI", "AI robot that does smort stuff.")
+		lifecat:AddItem("BM AI", "AI robot that does smort stuff (Also kills killer Karls).")
 			:SetAlias("AI Car")
 		lifecat:AddItem("BM kai", "This cell comes from the deep dark corners of the universe, it may seem innocent at first (it isn't) but it isn't. It will eat anything from karls to slightly different karls and even water, it can even leech off of brains!")
 			:SetAlias("Kai")
+		lifecat:AddItem("BM kaiwarrior", "Has a chance to appear as a mutation to the kai, it is also more powerful.")
+			:SetAlias("Kai Warrior")
+		lifecat:AddItem("BM kaiexplorer", "Has a chance to appear as a mutation to the kai, can sustain itself with less food but is also less powerful.")
+			:SetAlias("Kai Explorer")
+		lifecat:AddItem("BM kaiengineer", "Has a chance to appear as a mutation to the kai, it can reprogram karls.")
+			:SetAlias("Kai Engineer")
 	end
 end
 
@@ -1359,6 +1372,12 @@ local function update(id,x,y,dir)
 		Hidrate(x, y)
 	elseif id == kaiID then
 		DoKAI(x,y,dir)
+	elseif id == kaiengineerID then
+		DoKAIengineer(x,y,dir)
+	elseif id == kaiexplorerID then
+		DoKAIexplorer(x,y,dir)
+	elseif id == kaiwarriorID then
+		DoKAIwarrior(x,y,dir)
 	elseif id == spawnerID or id == rotateSpawnerID then
 		DoSpawner(x, y, dir)
 	elseif id == karlpulsorID then

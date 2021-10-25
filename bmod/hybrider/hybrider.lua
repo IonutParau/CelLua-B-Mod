@@ -25,7 +25,7 @@ function AddHybrids()
   Hybrids.kyle = addCell("BM hybrid kyle", "bmod/hybrider/hybrids/Kyle.png", hybridsOptions)
   Hybrids.kar = addCell("BM hybrid kar", "bmod/hybrider/hybrids/Kar.png", hybridsOptions)
 
-  local briantexture = "bmod/hybrider/hybirds/Brian2.png"
+  local briantexture = "bmod/hybrider/hybrids/Brian2.png"
   local braitexture = "bmod/hybrider/hybrids/Brai1.png"
   local brartexture = "bmod/hybrider/hybrids/Brar1.png"
 

@@ -577,7 +577,7 @@ function AddLife()
 
   if EdTweaks then
     -- Add editor tweaks support
-    local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use simple rules to exist and might even self-replicate (Karls only)", true, "bmod/karl")
+    local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use simple rules to exist and might even self-replicate (Karls only)", true, "bmod/karls/karl")
 
     -- Add items
     LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates."):SetAlias("Karl")
@@ -585,6 +585,9 @@ function AddLife()
     LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
     LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
     LifeCategory:AddItem("BM life karl-pulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon."):SetAlias("Karlpulsor")
+
+    LifeCategory:AddItem("BM life brain", "This cell has a simple randomly generated neural network inside of it (Can cause lag.)."):SetAlias("Brain")
+    LifeCategory:AddItem("BM life cancer brain", "This cell takes over any brain cells next to it."):SetAlias("Cancerous Brain")
 
     if showKarls then
       

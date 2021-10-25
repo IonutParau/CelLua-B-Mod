@@ -623,11 +623,18 @@ function AddLife()
 
   if EdTweaks then
     -- Add editor tweaks support
-    local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use simple rules to exist and might even self-replicate (Karls only)", true, "bmod/karls/karl")
+    local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use rules to exist or interact with other living tiles. Some of them reproduce.", true, "bmod/karls/karl")
 
     -- Add items
     LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also chemosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
 
+    local hybridName = "???"
+    local hybridDesc = "[UNIDENTIFIED, PLEASE FIND OUT MANUALLY]"
+
+    if config['bmod_show_hybrids'] == 'true' then hybridName = "Hybrid Maker" end
+    if config['bmod_show_hybrids'] == 'true' then hybridDesc = "Can combine two living tiles into one hybrid" end
+
+    LifeCategory:AddItem("BM hybrider", hybridDesc):SetAlias(hybridName)
     
     if not showKarls then
       LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")

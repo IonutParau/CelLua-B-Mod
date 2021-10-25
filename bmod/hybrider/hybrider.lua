@@ -39,7 +39,7 @@ function AddHybrids()
   Hybrids.brian = addCell("BM hybrid brian", briantexture, hybridsOptions)
   Hybrids.brai = addCell("BM hybrid brai", braitexture, hybridsOptions)
   Hybrids.brar = addCell("BM hybrid brar", brartexture, hybridsOptions)
-  Hybrids.ai_cai = addCell("BM hybrid aiCAI", "bmod/hybrider/hybrids/AI_cai.png", {type = "mover"})
+  Hybrids.ai_cai = addCell("BM hybrid aiCAI", "bmod/hybrider/hybrids/AI_cai.png", {type = "mover", invisible = (not showHybrids)})
 
   -- Do bindings
   BMod.bindUpdate(Hybrids.kyle, DoKyle)

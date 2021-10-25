@@ -4,7 +4,7 @@ function addAI()
     BModAIID = addCell("BM AI","bmod/AI.png",{type = "mover"})
 end
 
-local function inGrid(x,y)
+function InGrid(x,y)
     if x >= 0 and x <= width-1 then
         if y >= 0 and y <= height-1 then
             return true
@@ -54,22 +54,22 @@ function DoAI(x,y,dir)
     if dir == 0 then bbx = bx - 1 elseif dir == 2 then bbx = bx + 1 else bbx = bx end
 	if dir == 1 then bby = by - 1 elseif dir == 3 then bby = by + 1 else bby = by end
 
-    if inGrid(ffx,ffy) and cells[ffy][ffx].ctype == killerKarlID then
+    if InGrid(ffx,ffy) and cells[ffy][ffx].ctype == killerKarlID then
         cells[ffy][ffx].ctype = deadKarlID
         SetChunk(ffx,ffy,deadKarlID)
     end
 
-    if inGrid(bbx,bby) and cells[bby][bbx].ctype == killerKarlID then
+    if InGrid(bbx,bby) and cells[bby][bbx].ctype == killerKarlID then
         cells[bby][bbx].ctype = deadKarlID
         SetChunk(bbx,bby,deadKarlID)
     end
 
-    if inGrid(rrx,rry) and cells[rry][rrx].ctype == killerKarlID then
+    if InGrid(rrx,rry) and cells[rry][rrx].ctype == killerKarlID then
         cells[rry][rrx].ctype = deadKarlID
         SetChunk(rrx,rry,deadKarlID)
     end
 
-    if inGrid(llx,lly) and cells[lly][llx].ctype == killerKarlID then
+    if InGrid(llx,lly) and cells[lly][llx].ctype == killerKarlID then
         cells[lly][llx].ctype = deadKarlID
         SetChunk(llx,lly,deadKarlID)
     end

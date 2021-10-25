@@ -1703,7 +1703,7 @@ local function onPlace(id,x,y,rot,original,originalinit)
 end
 
 function DoSpawner(x, y, dir)
-	if not cells[y][x].spawner_current or not cells[y][x].spawner_dir_off then return end
+	if not cells[y][x].spawner_current or cells[y][x].spawner_dir_off == nil then return end
 
 	local useGhost = false
 	if cells[y][x].spawner_current == ghostcellID or cells[y][x].spawner_current == ghostmoverID then
@@ -1739,7 +1739,7 @@ end
 function SetSpawner(x, y, food)
 	cells[y][x].spawner_current = food.ctype
 	local dir = cells[y][x].rot
-	cells[y][x].spawner_dir_off = (food.rot - dir) % 4
+	cells[y][x].spawner_dir_off = 0
 end
 
 function onTrashEats(id, x, y, food, foodx, foody)

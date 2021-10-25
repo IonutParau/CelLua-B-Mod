@@ -2,6 +2,16 @@
 
 require("bmod.brain.script")
 
+function IsKAI(id)
+  local label = getCellLabelById(id)
+
+  if string.sub(label, 1, string.len("BM kai")) == "BM kai" then
+    return true
+  end
+
+  return false
+end
+
 function clamp(n, min, max)
   return math.min(math.max(n, min), max)
 end
@@ -67,12 +77,14 @@ function DoKarlHate(x, y)
     {x=1,y=1},
   }
 
+  local id = cells[y][x].ctype
+
   for _, off in ipairs(offs) do
     local cx, cy = x + off.x, y + off.y
 
     local ctype = cells[cy][cx].ctype
 
-    if ctype == kaiID or ctype == deadKarlID then
+    if ctype == deadKarlID or (id == karlID and ctype == kaiexplorerID) then
       cells[cy][cx].ctype = 0
       cells[y][x].karl_must_replicate = true
     end
@@ -484,7 +496,7 @@ function DoKillerKarl(x, y)
     local kx, ky = x + off.x, y + off.y
     if kx > 0 and kx < width-1 and ky > 0 and ky < height-1 then
       local kid = cells[ky][kx].ctype
-      if (isKarl(kid) and kid ~= killerKarlID and kid ~= meanKarlID) or kid == kaiID or kid == brainID or kid == BModAIID then
+      if (isKarl(kid) and kid ~= killerKarlID and kid ~= meanKarlID) or IsKAI(kid) or kid == brainID or kid == BModAIID then
         cells[ky][kx].ctype = 0
       end
     end
@@ -549,10 +561,10 @@ function DoKarlbon8(x, y)
 end
 
 function DoReprogrammedMedic(x, y)
-  if isKarl(cells[y+1][x].ctype) then cells[y+1][x].ctype = 0 end
-  if isKarl(cells[y-1][x].ctype) then cells[y-1][x].ctype = 0 end
-  if isKarl(cells[y][x+1].ctype) then cells[y][x+1].ctype = 0 end
-  if isKarl(cells[y][x-1].ctype) then cells[y][x-1].ctype = 0 end
+  if IsKAI(cells[y+1][x].ctype) then cells[y+1][x].kaiFOOD = cells[y+1][x].kaiFOOD + 30 end
+  if IsKAI(cells[y-1][x].ctype) then cells[y-1][x].kaiFOOD = cells[y-1][x].kaiFOOD + 30 end
+  if IsKAI(cells[y][x+1].ctype) then cells[y][x+1].kaiFOOD = cells[y][x+1].kaiFOOD + 30 end
+  if IsKAI(cells[y][x-1].ctype) then cells[y][x-1].kaiFOOD = cells[y][x-1].kaiFOOD + 30 end
   DoKarl(x, y)
 end
 
@@ -583,6 +595,10 @@ function AddLife()
 
   local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
 
+  local reprogrammedOptions = {invisible = true}
+  reprogrammedKarlID = addCell("BM life karl remade", "bmod/karls/karl-remade.png", reprogrammedOptions)
+  reprogrammedMedicKarlID = addCell("BM life karl-heal remade", "bmod/karls/medic-remade.png", reprogrammedOptions)
+
   deadKarlID = addCell("BM life karl-dead", "bmod/karls/karl-dead.png", Options.invisible)
   iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{push = karlPushability, invisible = showKarls})
   killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{push = karlPushability, invisible = showKarls})
@@ -604,10 +620,6 @@ function AddLife()
   BMod.bindUpdate(deadKarlID, DoDeadKarl)
 
   -- Reprogrammed
-  local reprogrammedOptions = {invisible = true}
-  reprogrammedKarlID = addCell("BM life karl remade", "bmod/karls/karl-remade.png", reprogrammedOptions)
-  reprogrammedMedicKarlID = addCell("BM life karl-heal remade", "bmod/karls/medic-remade.png", reprogrammedOptions)
-
   BMod.bindUpdate(reprogrammedKarlID, DoKarl)
 
   -- Freezability
@@ -626,20 +638,25 @@ function AddLife()
     local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use simple rules to exist and might even self-replicate (Karls only)", true, "bmod/karls/karl")
 
     -- Add items
-    LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates."):SetAlias("Karl")
+    LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
     LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
     LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
     LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
     LifeCategory:AddItem("BM life karl-pulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon."):SetAlias("Karlpulsor")
 
+    
+    if showKarls then
+      LifeCategory:AddItem("BM life karl-farmer", "This Karl will grow plants on hydrated soil."):SetAlias("Farmer Karl")
+      LifeCategory:AddItem("BM life karl-bon8", "This Karl is like Karlbon, except it makes 8-way bonds."):SetAlias("Karlbon8")
+      LifeCategory:AddItem("BM life karl-ice", "This Karl is a Karlbon with bonds so strong no other Karl can escape without help."):SetAlias("Ice Karl")
+      LifeCategory:AddItem("BM life karl-killer", "This Karl will kill other Karls and other life forms."):SetAlias("Killer Karl")
+    end
+    
+    -- Add brain (less importatn the Karls tho)
     LifeCategory:AddItem("BM life brain", "This cell has a simple randomly generated neural network inside of it (Can cause lag.)."):SetAlias("Brain")
     LifeCategory:AddItem("BM life cancer brain", "This cell takes over any brain cells next to it."):SetAlias("Cancerous Brain")
-
-    if showKarls then
-      
-    end
-
-    -- Add plant (less important then Karls tho)
+    
+    -- Add plant (less important then Brains tho, because yes)
     LifeCategory:AddItem("BM plant", "This tile is cool plant. Can only be placed on soil tile."):SetAlias("Plant")
     LifeCategory:AddItem("BM soil", "This tile is soil."):SetAlias("Soil")
     LifeCategory:AddItem("BM dead-soil", "This tile is bad soil."):SetAlias("Bad Soil")

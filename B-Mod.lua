@@ -23,7 +23,7 @@ require("bmod.kaiexplorer")
 require("bmod.kaiengineer")
 -- Rest of code
 
-function inGrid(x,y)
+function InGrid(x,y)
     if x >= 0 and x <= width-1 then
         if y >= 0 and y <= height-1 then
             return true

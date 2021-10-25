@@ -23,6 +23,15 @@ require("bmod.kaiexplorer")
 require("bmod.kaiengineer")
 -- Rest of code
 
+function inGrid(x,y)
+    if x >= 0 and x <= width-1 then
+        if y >= 0 and y <= height-1 then
+            return true
+        end
+    end
+    return false
+end
+
 local halfdelay = false
 
 local delay4 = 0
@@ -202,7 +211,7 @@ local function doFire(x,y)
 	}
 	for _,off in pairs(offs) do
 		local ox,oy = x+off.x, y+off.y
-		if cells[oy][ox].ctype ~= 0 and cells[oy][ox].ctype ~= 40 and cells[oy][ox].ctype ~= -1  and cells[oy][ox].ctype ~= 11  and cells[oy][ox].ctype ~= 50 and (cells[oy][ox].ctype <= #cellsForIDManagement or canPushCell(ox,oy,x,y,"Fire")) then
+		if cells[oy][ox].ctype ~= 0 and cells[oy][ox].ctype ~= 40 and cells[oy][ox].ctype ~= fireID and cells[oy][ox].ctype ~= strongfireID and cells[oy][ox].ctype ~= strongerfireID and cells[oy][ox].ctype ~= -1  and cells[oy][ox].ctype ~= 11  and cells[oy][ox].ctype ~= 50 and (cells[oy][ox].ctype <= #cellsForIDManagement or canPushCell(ox,oy,x,y,"Fire")) then
 			cells[oy][ox].ctype = fireID
 			cells[oy][ox].updated = true
 			SetChunk(ox,oy,fireID)
@@ -214,6 +223,54 @@ local function doFire(x,y)
 		lastvars = cells[y][x].lastvars
 	}
 end
+
+local function doStrongFire(x,y)
+	local offs = {
+		{x=1,y=0},
+		{x=-1,y=0},
+		{x=0,y=1},
+		{x=0,y=-1},
+
+		{x=1,y=1},
+		{x=1,y=-1},
+		{x=-1,y=1},
+		{x=-1,y=-1},
+	}
+	for _,off in pairs(offs) do
+		local ox,oy = x+off.x, y+off.y
+		if cells[oy][ox].ctype ~= 0 and cells[oy][ox].ctype ~= 40 and cells[oy][ox].ctype ~= fireID and cells[oy][ox].ctype ~= strongfireID and cells[oy][ox].ctype ~= strongerfireID and cells[oy][ox].ctype ~= -1  and cells[oy][ox].ctype ~= 11  and cells[oy][ox].ctype ~= 50 and (cells[oy][ox].ctype <= #cellsForIDManagement or canPushCell(ox,oy,x,y,"Fire")) then
+			cells[oy][ox].ctype = strongfireID
+			cells[oy][ox].updated = true
+			SetChunk(ox,oy,strongfireID)
+		end
+	end
+	cells[y][x] = {
+		ctype = 0,
+		rot = 0,
+		lastvars = cells[y][x].lastvars
+	}
+end
+
+local function doStrongerFire(x,y)
+	for offx = -2,2,1 do
+		for offy = -2,2,1 do
+			local ox,oy = x+offx, y+offy
+			if inGrid(ox,oy) then
+				if cells[oy][ox].ctype ~= 0 and cells[oy][ox].ctype ~= 40 and cells[oy][ox].ctype ~= fireID and cells[oy][ox].ctype ~= strongfireID and cells[oy][ox].ctype ~= strongerfireID and cells[oy][ox].ctype ~= -1  and cells[oy][ox].ctype ~= 11  and cells[oy][ox].ctype ~= 50 and (cells[oy][ox].ctype <= #cellsForIDManagement or canPushCell(ox,oy,x,y,"Fire")) then
+					cells[oy][ox].ctype = strongerfireID
+					cells[oy][ox].updated = true
+					SetChunk(ox,oy,strongerfireID)
+				end
+			end
+		end
+	end
+	cells[y][x] = {
+		ctype = 0,
+		rot = 0,
+		lastvars = cells[y][x].lastvars
+	}
+end
+
 
 local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
@@ -275,6 +332,8 @@ local function init()
 	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",{})
 
 	fireID = addCell("BM fire", "bmod/fire.png")
+	strongfireID = addCell("BM strongfire", "bmod/strongfire.png")
+	strongerfireID = addCell("BM strongerfire", "bmod/strongerfire.png")
 
 	AddLasers()
 	AddNukes()
@@ -359,6 +418,10 @@ local function init()
 			:SetAlias("Mini Bomb")
 		Dstr:AddItem("BM fire", "Fire, spreads to cells next to it and dissapears 1 tick later")
 			:SetAlias("Fire")
+		Dstr:AddItem("BM strongfire", "Fire but also spreads diagonally")
+			:SetAlias("Strong Fire")
+		Dstr:AddItem("BM strongerfire", "Fire but spreads in a 5x5 area")
+			:SetAlias("Stronger Fire")
 		local Gntr = EdTweaks:GetCategory("Generators")
 		Gntr:AddItem("BM 2gen", "Creates copies of the square face at the arrow faces. cell must be copyable.")
 			:SetAlias("Split Generator")
@@ -1396,6 +1459,10 @@ local function update(id,x,y,dir)
 		DoMeanKarl(x, y)
 	elseif id == fireID then
 		doFire(x,y)
+	elseif id == strongfireID then
+		doStrongFire(x,y)
+	elseif id == strongerfireID then
+		doStrongerFire(x,y)
 	elseif id == karlID then
 		DoKarl(x, y)
 	elseif id == elecoffID or id == eleconID then

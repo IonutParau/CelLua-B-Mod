@@ -4,15 +4,6 @@ function addAI()
     BModAIID = addCell("BM AI","bmod/AI.png",{type = "mover"})
 end
 
-local function inGrid(x,y)
-    if x >= 0 and x <= width-1 then
-        if y >= 0 and y <= height-1 then
-            return true
-        end
-    end
-    return false
-end
-
 function DoAI(x,y,dir)
     local cx,cy
     if dir == 0 then cx = x + 1 elseif dir == 2 then cx = x - 1 else cx = x end

@@ -629,7 +629,7 @@ function AddLife()
     LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
 
     
-    if showKarls then
+    if not showKarls then
       LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
       LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
       LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")

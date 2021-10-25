@@ -15,7 +15,7 @@ local thunderKarlMutationChance = 2
 
 -- Karlbon mutations
 local karlbon8MutationChance = 2
-local iceKarlMutationChance = 5
+local iceKarlMutationChance = 1
 
 -- Good Karl mutations
 local farmerKarlMutationChance = 5
@@ -50,7 +50,10 @@ farmerKarlID = 0
 -- Mean Karl Mutations
 killerKarlID = 0
 
+-- Interactions
 deadKarlID = 0
+reprogrammedKarlID = 0
+reprogrammedMedicKarlID = 0
 
 function DoKarlHate(x, y)
   local offs = {
@@ -58,6 +61,10 @@ function DoKarlHate(x, y)
     {x=0,y=-1},
     {x=1,y=0},
     {x=-1,y=0},
+    {x=-1,y=-1},
+    {x=1,y=-1},
+    {x=-1,y=1},
+    {x=1,y=1},
   }
 
   for _, off in ipairs(offs) do
@@ -65,7 +72,7 @@ function DoKarlHate(x, y)
 
     local ctype = cells[cy][cx].ctype
 
-    if ctype == kaiID or ctype == brainID or ctype == deadKarlID then
+    if ctype == kaiID or ctype == deadKarlID then
       cells[cy][cx].ctype = 0
       cells[y][x].karl_must_replicate = true
     end
@@ -166,7 +173,10 @@ function DoHealKarl(x, y)
       cells[oy][ox].ctype = birdID
     elseif cells[oy][ox].ctype == dead_soilID then
       cells[oy][ox].ctype = soilID
+    elseif cells[oy][ox].ctype == deadslowbirdID then
+      cells[oy][ox].ctype = slowbirdID
     end
+    SetChunk(ox, oy, cells[oy][ox].ctype)
   end
   DoKarl(x, y)
 end
@@ -411,11 +421,17 @@ function DoKarlReproduction(x, y)
   end
 
   -- Good Karl mutations
-  if cells[y][x].ctype == healKarlID then
+  if cells[y][x].ctype == healKarlID or cells[y][x].ctype == reprogrammedMedicKarlID then
     if love.math.random(1, 100) <= farmerKarlMutationChance then
       cells[y][x].ctype = farmerKarlID
     end
   end
+
+  if cells[y][x].ctype == reprogrammedKarlID then
+    cells[y][x].ctype = kaiID
+  end
+
+  SetChunk(x, y, cells[y][x].ctype)
 end
 
 function DoIceKarl(x, y)
@@ -443,7 +459,7 @@ function DoIceKarl(x, y)
     local fy = y + freeze.y
     local fid = cells[fy][fx].ctype
 
-    if isKarl(fid) and fid ~= iceKarlID then
+    if isKarl(fid) then
       cells[fy][fx].movement = nil
       cells[fy][fx].updated = true
     end
@@ -532,7 +548,25 @@ function DoKarlbon8(x, y)
   DoKarl(x, y)
 end
 
+function DoReprogrammedMedic(x, y)
+  if isKarl(cells[y+1][x].ctype) then cells[y+1][x].ctype = 0 end
+  if isKarl(cells[y-1][x].ctype) then cells[y-1][x].ctype = 0 end
+  if isKarl(cells[y][x+1].ctype) then cells[y][x+1].ctype = 0 end
+  if isKarl(cells[y][x-1].ctype) then cells[y][x-1].ctype = 0 end
+  DoKarl(x, y)
+end
+
 function FeedKarl(x, y, amount)
+end
+
+function DoDeadKarl(x, y)
+  if not cells[y][x].karl_dead_age then cells[y][x].karl_dead_age = 0 end
+  cells[y][x].karl_dead_age = cells[y][x].karl_dead_age + 1
+
+  if cells[y][x].karl_dead_age == 10 then
+    cells[y][x].karl_dead_age = nil
+    cells[y][x].ctype = -1
+  end
 end
 
 function AddLife()
@@ -550,16 +584,16 @@ function AddLife()
   local karlOptions = Options.combine({type = Options.trash}, {invisible = showKarls})
 
   deadKarlID = addCell("BM life karl-dead", "bmod/karls/karl-dead.png", Options.invisible)
-  iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{move = karlPushability, invisible = showKarls})
-  killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{move = karlPushability, invisible = showKarls})
-  karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png",{move = karlPushability, invisible = showKarls})
-  karlbon8ID = addCell("BM life karl-bon8", "bmod/karls/karl-bon8.png",{move = karlPushability, invisible = showKarls})
-  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karls/karl-pulsor.png",{move = karlPushability, invisible = showKarls})
-  healKarlID = addCell("BM life karl-heal", "bmod/karls/karl-heal.png",{move = karlPushability, invisible = showKarls})
-  meanKarlID = addCell("BM life karl-mean", "bmod/karls/karl-mean.png",{move = karlPushability, invisible = showKarls})
-  thunderKarlID = addCell("BM life karl-thunder", "bmod/karls/karl-thunder.png",{move = karlPushability, invisible = showKarls})
-  farmerKarlID = addCell("BM life karl-farmer", "bmod/karls/karl-farmer.png",{move = karlPushability, invisible = showKarls})
-  karlID = addCell("BM life karl", "bmod/karls/karl.png",{move = karlPushability})
+  iceKarlID = addCell("BM life karl-ice", "bmod/karls/karl-ice.png",{push = karlPushability, invisible = showKarls})
+  killerKarlID = addCell("BM life karl-killer", "bmod/karls/karl-killer.png",{push = karlPushability, invisible = showKarls})
+  karlbonID = addCell("BM life karl-bon", "bmod/karls/karl-bon.png",{push = karlPushability, invisible = showKarls})
+  karlbon8ID = addCell("BM life karl-bon8", "bmod/karls/karl-bon8.png",{push = karlPushability, invisible = showKarls})
+  karlpulsorID = addCell("BM life karl-pulsor", "bmod/karls/karl-pulsor.png",{push = karlPushability, invisible = showKarls})
+  healKarlID = addCell("BM life karl-heal", "bmod/karls/karl-heal.png",{push = karlPushability, invisible = showKarls})
+  meanKarlID = addCell("BM life karl-mean", "bmod/karls/karl-mean.png",{push = karlPushability, invisible = showKarls})
+  thunderKarlID = addCell("BM life karl-thunder", "bmod/karls/karl-thunder.png",{push = karlPushability, invisible = showKarls})
+  farmerKarlID = addCell("BM life karl-farmer", "bmod/karls/karl-farmer.png",{push = karlPushability, invisible = showKarls})
+  karlID = addCell("BM life karl", "bmod/karls/karl.png",{push = karlPushability})
 
   BMod.bindUpdate(thunderKarlID, DoElectricKarl)
   BMod.bindUpdate(iceKarlID, DoIceKarl)
@@ -567,6 +601,16 @@ function AddLife()
   BMod.bindUpdate(farmerKarlID, DoFarmerKarl)
   BMod.bindUpdate(karlbon8ID, DoKarlbon8)
 
+  BMod.bindUpdate(deadKarlID, DoDeadKarl)
+
+  -- Reprogrammed
+  local reprogrammedOptions = {invisible = true}
+  reprogrammedKarlID = addCell("BM life karl remade", "bmod/karls/karl-remade.png", reprogrammedOptions)
+  reprogrammedMedicKarlID = addCell("BM life karl-heal remade", "bmod/karls/medic-remade.png", reprogrammedOptions)
+
+  BMod.bindUpdate(reprogrammedKarlID, DoKarl)
+
+  -- Freezability
   ToggleFreezability(karlID)
   ToggleFreezability(karlbonID)
   ToggleFreezability(karlpulsorID)
@@ -574,6 +618,8 @@ function AddLife()
   ToggleFreezability(meanKarlID)
   ToggleFreezability(thunderKarlID)
   ToggleFreezability(iceKarlID)
+  ToggleFreezability(reprogrammedMedicKarlID)
+  ToggleFreezability(reprogrammedKarlID)
 
   if EdTweaks then
     -- Add editor tweaks support

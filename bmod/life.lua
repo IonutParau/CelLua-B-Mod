@@ -84,7 +84,7 @@ function DoKarlHate(x, y)
 
     local ctype = cells[cy][cx].ctype
 
-    if ctype == deadKarlID or (id == karlID and ctype == kaiexplorerID) then
+    if ctype == deadKarlID or (id == karlID and ctype == kaiexplorerID) or (ctype == brainID and (not cells[cy][cx].brain_isleached)) then
       cells[cy][cx].ctype = 0
       cells[y][x].karl_must_replicate = true
     end

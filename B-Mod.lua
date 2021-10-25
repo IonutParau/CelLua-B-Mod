@@ -14,6 +14,7 @@ require("bmod.laser")
 require("bmod.plant.plant")
 require("bmod.brain.script")
 require("bmod.big bang.script")
+require("bmod.hybrider.hybrider")
 
 -- Cells by K_______#0086
 require("bmod.kai")
@@ -336,6 +337,9 @@ local function init()
 
 	AddLasers()
 	AddNukes()
+
+	hybriderID = addCell("BM hybrider", "bmod/hybrider/hybrider.png")
+
 	AddLife()
 	AddPlant()
 
@@ -346,6 +350,8 @@ local function init()
 	kaiwarriorID = addCell("BM kaiwarrior","bmod/kaiwarrior.png",{type = "mover"})
 	kaiengineerID = addCell("BM kaiengineer","bmod/kaiengineer.png",{type = "mover"})
 	kaiexplorerID = addCell("BM kaiexplorer","bmod/kaiexplorer.png",{type = "mover"})
+
+	AddHybrids()
 
 	spawnerID = addCell("BM spawner", "bmod/spawner.png",{type = "trash"})
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})

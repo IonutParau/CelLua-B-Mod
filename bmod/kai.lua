@@ -77,6 +77,8 @@ function DoKAI(x, y, dir)
             kaiFOOD = 69
         }
 		end
+
+        SetChunk(bx, by, cells[by][bx].ctype)
 	end
 		
 		

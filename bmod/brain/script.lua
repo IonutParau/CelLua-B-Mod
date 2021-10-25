@@ -59,7 +59,7 @@ local function GetRandomNeuralNetwork()
   }
 end
 
-local function ResetNLValues(nn)
+function ResetNLValues(nn)
   for _, layer in ipairs(nn) do
     for _, neuron in ipairs(layer) do
       neuron.value = 0
@@ -67,7 +67,7 @@ local function ResetNLValues(nn)
   end
 end
 
-local function ExecuteNeuralNetwork(nn, inputs)
+function ExecuteNeuralNetwork(nn, inputs)
   for i=1,#(nn[1]) do
     nn[1][i].value = inputs[1]
   end
@@ -105,21 +105,27 @@ function DoBrain(x, y)
     table.insert(inputs, input)
   end
 
-  local dir = math.floor(ExecuteNeuralNetwork(cells[y][x].brain_nn, inputs)) % 4
+  local dir = math.floor(ExecuteNeuralNetwork(cells[y][x].brain_nn, inputs)) % 5 - 1
   ResetNLValues(cells[y][x].brain_nn)
 
   cells[y][x].testvar = dir
 
+  if dir < 0 then return end
+
   local cx, cy = x, y
   if dir == 0 then cx = x - 1 elseif dir == 2 then cx = x + 1 end
-  if dir == 0 then cy = y - 1 elseif dir == 2 then cy = y + 1 end
-  if cells[cy][cx].ctype == plantID then
-    cells[cy][cx] = CopyTable(cells[y][x])
+  if dir == 1 then cy = y - 1 elseif dir == 3 then cy = y + 1 end
+  local fx, fy = x, y
+  if dir == 0 then fx = x + 1 elseif dir == 2 then fx = x - 1 end
+  if dir == 1 then fy = y + 1 elseif dir == 3 then fy = y - 1 end
+  if cells[fy][fx].ctype == plantID then
+    cells[fy][fx] = CopyTable(cells[y][x])
+    rotateCell(x, y, 2)
     if love.math.random(1, 100) <= 1 then
-      cells[cy][cx].ctype = cancerbrainID
+      cells[fy][fx].ctype = cancerbrainID
     end
   else
-    PushCell(x, y, dir)
+    PushCell(cx, cy, dir)
   end
 end
 

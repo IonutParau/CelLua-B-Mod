@@ -717,6 +717,11 @@ local function onCellDraw(id,x,y)
 	love.graphics.setColor(1,1,1,0.5)
 	if ghostcells[y][x].ctype ~= 0 and ghostcells[y][x].ctype ~= -1 then love.graphics.draw(tex[ghostcells[y][x].ctype],math.floor(lerp(ghostcells[y][x].lastvars[1],x,itime/delay)*zoom-offx+zoom/2),math.floor(lerp(ghostcells[y][x].lastvars[2],y,itime/delay)*zoom-offy+zoom/2),ghostcells[y][x].rot*math.pi/2,zoom/texsize[ghostcells[y][x].ctype].w,zoom/texsize[ghostcells[y][x].ctype].h,texsize[ghostcells[y][x].ctype].w2,texsize[ghostcells[y][x].ctype].h2) end
 	love.graphics.setColor(1,1,1,1)
+	if (id == spawnerID or id == rotateSpawnerID) then
+		local toSpawn = cells[y][x].spawner_current
+		if not toSpawn then return end
+		love.graphics.draw(tex[toSpawn],math.floor(lerp(cells[y][x].lastvars[1],x,itime/delay)*zoom-offx+zoom/2),math.floor(lerp(cells[y][x].lastvars[2],y,itime/delay)*zoom-offy+zoom/2),lerp(cells[y][x].lastvars[3],cells[y][x].lastvars[3]+((cells[y][x].rot-cells[y][x].lastvars[3]+2)%4-2),itime/delay)*math.pi/2,zoom/texsize[toSpawn].w/4,zoom/texsize[toSpawn].h/4,texsize[toSpawn].w2,texsize[toSpawn].h2)
+	end
 end
 
 local function customdraw()

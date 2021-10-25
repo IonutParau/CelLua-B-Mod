@@ -626,7 +626,7 @@ function AddLife()
     local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use simple rules to exist and might even self-replicate (Karls only)", true, "bmod/karls/karl")
 
     -- Add items
-    LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
+    LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also chemosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
 
     
     if not showKarls then

@@ -18,9 +18,10 @@ Hybrids = {
 }
 
 function AddHybrids()
+  local showHybrids = (config['bmod_show_hybrids'] == 'true')
   BMod.bindUpdate(hybriderID, GetHybrid)
 
-  local hybridsOptions = {invisible = false}
+  local hybridsOptions = {invisible = (not showHybrids)}
 
   Hybrids.kyle = addCell("BM hybrid kyle", "bmod/hybrider/hybrids/Kyle.png", hybridsOptions)
   Hybrids.kar = addCell("BM hybrid kar", "bmod/hybrider/hybrids/Kar.png", hybridsOptions)
@@ -35,10 +36,10 @@ function AddHybrids()
     brartexture = "bmod/hybrider/hybrids/Brar2.png"
   end
 
-  Hybrids.brian = addCell("BN hybrid brian", briantexture, hybridsOptions)
-  Hybrids.brai = addCell("BN hybrid brai", braitexture, hybridsOptions)
-  Hybrids.brar = addCell("BN hybrid brar", brartexture, hybridsOptions)
-  Hybrids.ai_cai = addCell("BN hybrid aiCAI", "bmod/hybrider/hybrids/AI_cai.png", {type = "mover"})
+  Hybrids.brian = addCell("BM hybrid brian", briantexture, hybridsOptions)
+  Hybrids.brai = addCell("BM hybrid brai", braitexture, hybridsOptions)
+  Hybrids.brar = addCell("BM hybrid brar", brartexture, hybridsOptions)
+  Hybrids.ai_cai = addCell("BM hybrid aiCAI", "bmod/hybrider/hybrids/AI_cai.png", {type = "mover"})
 
   -- Do bindings
   BMod.bindUpdate(Hybrids.kyle, DoKyle)
@@ -47,6 +48,17 @@ function AddHybrids()
   BMod.bindUpdate(Hybrids.brian, DoBrian)
   BMod.bindUpdate(Hybrids.brai, DoBrai)
   BMod.bindUpdate(Hybrids.brar, DoBrar)
+
+  if EdTweaks and showHybrids then
+    local HybridCategory = EdTweaks:AddCategory("Hybrids", "These tiles are combinations of other life tiles.", true, string.sub(briantexture, 1, string.len(briantexture)-4))
+
+    HybridCategory:AddItem("BM hybrid kyle", "Karl + KAI. It moves like a Karl, but is water proof and is a parasite to brains."):SetAlias("Kyle")
+    HybridCategory:AddItem("BM hybrid kar", "Karl + AI car. Moves like a Karl, but also kills Killer Karls like a freakin' ninja."):SetAlias("Kar")
+    HybridCategory:AddItem("BM hybrid brian", "Karl + Brain. It is like a brain, but it keeps moving in that direction if it has no inputs to give."):SetAlias("Brian")
+    HybridCategory:AddItem("BM hybrid brai", "KAI + Brain. Its inputs are what a kai would see, and the neural network decides how much to rotate by."):SetAlias("Brai")
+    HybridCategory:AddItem("BM hybrid brar", "AI Car + Brain. It is like a brai but can't self replicate. :("):SetAlias("Brar")
+    HybridCategory:AddItem("BM hybrid aiCAI", "AI Car + KAI. It has the intelligence of an AI car, and can reproduce like a kai."):SetAlias("AI cai")
+  end
 end
 
 function GetHybrid(x, y, dir)

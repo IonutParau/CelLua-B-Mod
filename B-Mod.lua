@@ -273,6 +273,8 @@ local function init()
 	ghostcellID = addCell("BM ghostcell","bmod/ghostcell.png",{})
 	pushmakerID = addCell("BM pushmaker","bmod/pushmaker.png",{})
 
+	fireID = addCell("BM fire", "bmod/fire.png")
+
 	AddLasers()
 	AddNukes()
 	AddLife()
@@ -290,8 +292,6 @@ local function init()
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
 
 	bigBangID = addCell("BM big-bang", "bmod/big bang/texture.png")
-
-	fireID = addCell("BM fire", "bmod/fire.png")
 
 	if EdTweaks ~= nil then
 		local Base = EdTweaks:GetCategory("Base")

@@ -255,7 +255,7 @@ local function doStrongerFire(x,y)
 	for offx = -2,2,1 do
 		for offy = -2,2,1 do
 			local ox,oy = x+offx, y+offy
-			if inGrid(ox,oy) then
+			if InGrid(ox,oy) then
 				if cells[oy][ox].ctype ~= 0 and cells[oy][ox].ctype ~= 40 and cells[oy][ox].ctype ~= fireID and cells[oy][ox].ctype ~= strongfireID and cells[oy][ox].ctype ~= strongerfireID and cells[oy][ox].ctype ~= -1  and cells[oy][ox].ctype ~= 11  and cells[oy][ox].ctype ~= 50 and (cells[oy][ox].ctype <= #cellsForIDManagement or canPushCell(ox,oy,x,y,"Fire")) then
 					cells[oy][ox].ctype = strongerfireID
 					cells[oy][ox].updated = true

@@ -84,7 +84,7 @@ function DoKarlHate(x, y)
 
     local ctype = cells[cy][cx].ctype
 
-    if ctype == deadKarlID or (id == karlID and ctype == kaiexplorerID) then
+    if ctype == deadKarlID or (id == karlID and ctype == kaiexplorerID) or (ctype == brainID and (not cells[cy][cx].brain_isleached)) then
       cells[cy][cx].ctype = 0
       cells[y][x].karl_must_replicate = true
     end
@@ -305,18 +305,6 @@ function DoKarlMovement(x, y)
       else
         -- Reproduction tiem
         DoKarlReproduction(x, y)
-        if love.math.random(1, 100) <= goodKarlMutationChance then
-          cells[y][x].ctype = healKarlID
-        end
-        if love.math.random(1, 100) <= evilKarlMutationChance then
-          cells[y][x].ctype = meanKarlID
-        end
-        if love.math.random(1, 100) <= karlbonMutationChance then
-          cells[y][x].ctype = karlbonID
-        end
-        if love.math.random(1, 100) <= karlpulsorMutationChance then
-          cells[y][x].ctype = karlpulsorID
-        end
       end
       if cells[y][x].ctype == 0 then cells[y][x].movement = nil end
       cells[y+movement.y][x+movement.x] = CopyTable(karl)
@@ -639,13 +627,13 @@ function AddLife()
 
     -- Add items
     LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also kimosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
-    LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
-    LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
-    LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
-    LifeCategory:AddItem("BM life karl-pulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon."):SetAlias("Karlpulsor")
 
     
     if showKarls then
+      LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
+      LifeCategory:AddItem("BM life karl-heal", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl."):SetAlias("Medic Karl")
+      LifeCategory:AddItem("BM life karl-bon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond."):SetAlias("Karlbon")
+      LifeCategory:AddItem("BM life karl-pulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon."):SetAlias("Karlpulsor")
       LifeCategory:AddItem("BM life karl-farmer", "This Karl will grow plants on hydrated soil."):SetAlias("Farmer Karl")
       LifeCategory:AddItem("BM life karl-bon8", "This Karl is like Karlbon, except it makes 8-way bonds."):SetAlias("Karlbon8")
       LifeCategory:AddItem("BM life karl-ice", "This Karl is a Karlbon with bonds so strong no other Karl can escape without help."):SetAlias("Ice Karl")

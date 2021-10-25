@@ -86,6 +86,8 @@ function DoKAI(x, y, dir)
     
     if cells[fy][fx].ctype == brainID then
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 1
+        cells[fy][fx].brain_isleached = true
+        cells[fy][fx].updated = true
         return
     end
 

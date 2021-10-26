@@ -98,7 +98,7 @@ function DoKAIwarrior(x, y, dir)
         return
     end
 
-    if not offgrid(kx, ky) and cells[ky][kx].ctype == waterID then
+    if InGrid(kx, ky) and (cells[ky][kx].ctype == waterID or cells[ky][kx].ctype == killerKarlID) then
         cells[ky][kx] = {
             ctype = 0,
             rot = 0,
@@ -117,7 +117,7 @@ function DoKAIwarrior(x, y, dir)
     end
 	
 	if cells[ry][rx].ctype == waterID or cells[ry][rx].ctype == killerKarlID then
-        cells[fy][fx] = {
+        cells[ry][rx] = {
             ctype = 0,
             rot = 0,
             lastvars = cells[fy][fx].lastvars
@@ -125,11 +125,30 @@ function DoKAIwarrior(x, y, dir)
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
     end
 	
-	if not offgrid(krx,kry) and cells[kry][krx].ctype == waterID then
-        cells[fy][fx] = {
+	if InGrid(krx,kry) and (cells[kry][krx].ctype == waterID or cells[kry][krx].ctype == killerKarlID) then
+        cells[kry][krx] = {
+            ctype = 0,
+            rot = 0,
+            lastvars = cells[kry][krx].lastvars
+        }
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+	
+		if cells[ly][lx].ctype == waterID or cells[ly][lx].ctype == killerKarlID then
+        cells[ly][lx] = {
             ctype = 0,
             rot = 0,
             lastvars = cells[fy][fx].lastvars
+        }
+        cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
+    end
+	
+	if InGrid(klx,kly) and (cells[kly][klx].ctype == waterID or cells[kly][klx].ctype == killerKarlID) then
+        cells[kly][klx] = {
+            ctype = 0,
+            rot = 0,
+            lastvars = cells[kly][klx].lastvars
         }
         cells[y][x].kaiFOOD = cells[y][x].kaiFOOD + 17
     end

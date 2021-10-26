@@ -820,6 +820,11 @@ end
 
 local function onCellDraw(id,x,y)
 	love.graphics.setColor(1,1,1,0.5)
+	if not ghostcells[y] then ghostcells[y] = {} end
+	if not ghostcells[y][x] then ghostcells[y][x] = {ctype = 0, rot = 0, lastvars = {x,y,0}} end
+	if not ghostcells[y][x].rot then ghostcells[y][x].rot = 0 end
+	if not ghostcells[y][x].ctype then ghostcells[y][x].ctype = 0 end
+	if not ghostcells[y][x].lastvars then ghostcells[y][x].lastvars = {x,y,0} end
 	if ghostcells[y][x].ctype ~= 0 and ghostcells[y][x].ctype ~= -1 then love.graphics.draw(tex[ghostcells[y][x].ctype],math.floor(lerp(ghostcells[y][x].lastvars[1],x,itime/delay)*zoom-offx+zoom/2),math.floor(lerp(ghostcells[y][x].lastvars[2],y,itime/delay)*zoom-offy+zoom/2),ghostcells[y][x].rot*math.pi/2,zoom/texsize[ghostcells[y][x].ctype].w,zoom/texsize[ghostcells[y][x].ctype].h,texsize[ghostcells[y][x].ctype].w2,texsize[ghostcells[y][x].ctype].h2) end
 	love.graphics.setColor(1,1,1,1)
 	if (id == spawnerID or id == rotateSpawnerID) then
@@ -1363,7 +1368,15 @@ local function tick()
 	end
 	delay4 = (delay4+1)%4
 	for y=0,height-1 do
+		if not ghostcells[y] then ghostcells[y] = {} end
 		for x=0,width-1 do
+			if not ghostcells[y][x] then 
+			ghostcells[y][x] = {
+				ctype = 0,
+				rot = 0,
+				lastvars = {x,y,0}
+			} 
+			end
 			ghostcells[y][x].updated = false
 			ghostcells[y][x].lastvars = {x,y,ghostcells[y][x].rot}
 		end

@@ -7,7 +7,7 @@ require("bmod.diag")
 require("bmod.AI")
 require("bmod.nuke")
 
--- Cells by UndefinedMonitor#1595
+-- Cells by GuyWithAMonitor#1595
 require("bmod.unstoppabledrill")
 require("bmod.life")
 require("bmod.laser")
@@ -15,6 +15,7 @@ require("bmod.plant.plant")
 require("bmod.brain.script")
 require("bmod.big bang.script")
 require("bmod.hybrider.hybrider")
+require("bmod.fireball.fireballs")
 
 -- Cells by K_______#0086
 require("bmod.kai")
@@ -22,6 +23,14 @@ require("bmod.kaiwarrior")
 require("bmod.kaiexplorer")
 require("bmod.kaiengineer")
 -- Rest of code
+
+function RunModThing(thing, ...)
+	for _, mod in pairs(modcache) do
+		if type(mod[thing]) == "function" then
+			mod[thing](...)
+		end
+	end
+end
 
 function InGrid(x,y)
     if x >= 0 and x <= width-1 then
@@ -333,10 +342,10 @@ local function init()
 	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",{})
-	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",{}) -- Added by UndefinedMonitor
+	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",{})
 	BMod.bindUpdate(slowbirdID, doSlowBird)
 	deadslowbirdID = addCell("BM deadslowbird","bmod/deadslowbird.png",{invisible = true})
-	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",{push = function() return false end}) -- Added by UndefinedMonitor
+	unstoppabledrillID = addCell("BM unstoppable-drill","bmod/unstoppabledriller.png",{push = function() return false end})
 	BMod.bindUpdate(unstoppabledrillID, DoUnstoppableDrill)
 	adddiamover()
 	addfastcells()
@@ -355,6 +364,8 @@ local function init()
 	strongfireID = addCell("BM strongfire", "bmod/strongfire.png")
 	strongerfireID = addCell("BM strongerfire", "bmod/strongerfire.png")
 	strongestfireID = addCell("BM strongestfire", "bmod/strongestfire.png")
+
+	AddFireBalls()
 
 	AddLasers()
 	AddNukes()
@@ -1657,6 +1668,7 @@ end
 
 local function onEnemyDies(id,x,y)
 	if id == bombID then
+		RunModThing("bmod_bomb_dies", id, x, y)
 		playSound("destroy.wav")
         enemyparticles:setPosition(x*20,y*20)
         enemyparticles:emit(50)
@@ -1677,7 +1689,9 @@ local function onEnemyDies(id,x,y)
 				end
 			end
 		end
+		RunModThing("post_bmod_bomb_dies", id, x, y)
 	elseif id == minibombID then
+		RunModThing("bmod_bomb_dies", id, x, y)
 		playSound("destroy.wav")
         enemyparticles:setPosition(x*20,y*20)
         enemyparticles:emit(50)
@@ -1698,6 +1712,7 @@ local function onEnemyDies(id,x,y)
 				end
 			end
 		end
+		RunModThing("post_bmod_bomb_dies", id, x, y)
 	end
 end
 

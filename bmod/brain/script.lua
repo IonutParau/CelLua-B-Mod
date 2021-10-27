@@ -10,12 +10,18 @@ brainID = 0
 --- @field pointer number
 --- @field type number
 --- @field weight number
+--- @field mutate function
 local function Neuron(maxpointer)
   return {
     value = 0,
     pointer = randint(1, maxpointer),
     type = randint(0, 4),
     weight = love.math.random(),
+    mutate = function(self, maxpointer)
+      self.pointer = randint(1, maxpointer)
+      self.type = randint(0, 4)
+      self.weight = self.weight + love.math.random()
+    end,
   }
 end
 
@@ -33,6 +39,14 @@ local function ProcessNeuron(neuron)
   end
   
   return neuron.value, neuron.pointer
+end
+
+function MutateNN(nn)
+  for i=2,#nn do
+    for j=1,#(nn[i]) do
+      nn[i][j]:mutate(#(nn[i+1] or {}))
+    end
+  end
 end
 
 local function GetRandomNeuralNetwork()
@@ -120,6 +134,7 @@ function DoBrain(x, y)
   if dir == 1 then fy = y + 1 elseif dir == 3 then fy = y - 1 end
   if cells[fy][fx].ctype == plantID then
     cells[fy][fx] = CopyTable(cells[y][x])
+    MutateNN(cells[fy][fx].brain_nn)
     rotateCell(x, y, 2)
     if love.math.random(1, 100) <= 1 then
       cells[fy][fx].ctype = cancerbrainID

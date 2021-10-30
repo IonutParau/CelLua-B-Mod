@@ -627,14 +627,6 @@ function AddLife()
 
     -- Add items
     LifeCategory:AddItem("BM life karl", "This tile has basic intelligence. It is also chemosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water."):SetAlias("Karl")
-
-    local hybridName = "???"
-    local hybridDesc = "[UNIDENTIFIED, PLEASE FIND OUT MANUALLY]"
-
-    if config['bmod_show_hybrids'] == 'true' then hybridName = "Hybrid Maker" end
-    if config['bmod_show_hybrids'] == 'true' then hybridDesc = "Can combine two living tiles into one hybrid" end
-
-    LifeCategory:AddItem("BM hybrider", hybridDesc):SetAlias(hybridName)
     
     if not showKarls then
       LifeCategory:AddItem("BM life karl-mean", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread."):SetAlias("Virus Karl")
@@ -646,15 +638,23 @@ function AddLife()
       LifeCategory:AddItem("BM life karl-ice", "This Karl is a Karlbon with bonds so strong no other Karl can escape without help."):SetAlias("Ice Karl")
       LifeCategory:AddItem("BM life karl-killer", "This Karl will kill other Karls and other life forms."):SetAlias("Killer Karl")
     end
+
+    local hybridName = "???"
+    local hybridDesc = "[UNIDENTIFIED, PLEASE FIND OUT MANUALLY]"
+
+    if config['bmod_show_hybrids'] == 'true' then hybridName = "Hybrid Maker" end
+    if config['bmod_show_hybrids'] == 'true' then hybridDesc = "Can combine two living tiles into one hybrid" end
+
+    LifeCategory:AddItem("BM hybrider", hybridDesc):SetAlias(hybridName)
     
     -- Add brain (less importatn the Karls tho)
     LifeCategory:AddItem("BM life brain", "This cell has a simple randomly generated neural network inside of it (Can cause lag.)."):SetAlias("Brain")
     LifeCategory:AddItem("BM life cancer brain", "This cell takes over any brain cells next to it."):SetAlias("Cancerous Brain")
     
     -- Add plant (less important then Brains tho, because yes)
-    LifeCategory:AddItem("BM plant", "This tile is cool plant. Can only be placed on soil tile."):SetAlias("Plant")
+    LifeCategory:AddItem("BM plant", "This tile is cool plant. Can only be placed on soil tile. It will die after a while unless it is hydrated, and if it is hydrated instead of dying it replicates on other good soil. When it dies it turns into bad soil."):SetAlias("Plant")
     LifeCategory:AddItem("BM soil", "This tile is soil."):SetAlias("Soil")
     LifeCategory:AddItem("BM dead-soil", "This tile is bad soil."):SetAlias("Bad Soil")
-    LifeCategory:AddItem("BM water", "This tile makes bad soil good again. Also allows plant to reproduce."):SetAlias("Water")
+    LifeCategory:AddItem("BM water", "This tile makes bad soil good again. Also allows plant to reproduce. It hydrates when it is placed and every tick, and that hydration also kills Karls. It is also food for KAIs."):SetAlias("Water")
   end
 end

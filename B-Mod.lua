@@ -302,7 +302,7 @@ end
 
 
 local function init()
-	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	--if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
   triplegenID = addCell("BM 3gen","bmod/triplegenerator.png",{})
     bombID = addCell("BM bom","bmod/bomb.png",{type = "enemy"})
@@ -339,7 +339,7 @@ local function init()
 	slowmayobottleID = addCell("BM slowmayobottle","bmod/slowmayobottle.png",{})
 	slowmayomoveID = addCell("BM slowmayomove","bmod/slowmayomover.png",{type = "mover"})
 	doleds()
-	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	--if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	birdID = addCell("BM bird","bmod/bird.png",{})
 	slowbirdID = addCell("BM slow-bird","bmod/slowbird.png",{})
@@ -372,8 +372,8 @@ local function init()
 
 	hybriderID = addCell("BM hybrider", "bmod/hybrider/hybrider.png")
 
-	AddLife()
 	AddPlant()
+	AddLife()
 
 	addAI()
 

@@ -3,10 +3,10 @@ Fireballs = {}
 local FireballToFire = {}
 
 function AddFireBalls()
-  Fireballs.smol = addCell("BM fireball", "bmod/fire.png", Options.mover)
-  Fireballs.stronk = addCell("BM fireball-stronk", "bmod/strongfire.png", Options.mover)
-  Fireballs.stronker = addCell("BM fireball-stronker", "bmod/strongerfire.png", Options.mover)
-  Fireballs.stronkest = addCell("BM fireball-stronkest", "bmod/strongestfire.png", Options.mover)
+  Fireballs.smol = addCell("BM fireball", "bmod/fireball/textures/normal.png", Options.mover)
+  Fireballs.stronk = addCell("BM fireball-stronk", "bmod/fireball/textures/strong.png", Options.mover)
+  Fireballs.stronker = addCell("BM fireball-stronker", "bmod/fireball/textures/stronger.png", Options.mover)
+  Fireballs.stronkest = addCell("BM fireball-stronkest", "bmod/fireball/textures/strongest.png", Options.mover)
 
   FireballToFire[Fireballs.smol] = fireID
   FireballToFire[Fireballs.stronk] = strongfireID

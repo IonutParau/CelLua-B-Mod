@@ -621,6 +621,12 @@ function AddLife()
   ToggleFreezability(reprogrammedMedicKarlID)
   ToggleFreezability(reprogrammedKarlID)
 
+  local hybridName = "???"
+  local hybridDesc = "[UNIDENTIFIED, PLEASE FIND OUT MANUALLY]"
+
+  if config['bmod_show_hybrids'] == 'true' then hybridName = "Hybrid Maker" end
+  if config['bmod_show_hybrids'] == 'true' then hybridDesc = "Can combine two living tiles into one hybrid" end
+
   if EdTweaks then
     -- Add editor tweaks support
     local LifeCategory = EdTweaks:AddCategory("Life", "Tiles that use rules to exist or interact with other living tiles. Some of them reproduce.", true, "bmod/karls/karl")
@@ -639,12 +645,6 @@ function AddLife()
       LifeCategory:AddItem("BM life karl-killer", "This Karl will kill other Karls and other life forms."):SetAlias("Killer Karl")
     end
 
-    local hybridName = "???"
-    local hybridDesc = "[UNIDENTIFIED, PLEASE FIND OUT MANUALLY]"
-
-    if config['bmod_show_hybrids'] == 'true' then hybridName = "Hybrid Maker" end
-    if config['bmod_show_hybrids'] == 'true' then hybridDesc = "Can combine two living tiles into one hybrid" end
-
     LifeCategory:AddItem("BM hybrider", hybridDesc):SetAlias(hybridName)
     
     -- Add brain (less importatn the Karls tho)
@@ -656,5 +656,39 @@ function AddLife()
     LifeCategory:AddItem("BM soil", "This tile is soil."):SetAlias("Soil")
     LifeCategory:AddItem("BM dead-soil", "This tile is bad soil."):SetAlias("Bad Soil")
     LifeCategory:AddItem("BM water", "This tile makes bad soil good again. Also allows plant to reproduce. It hydrates when it is placed and every tick, and that hydration also kills Karls. It is also food for KAIs."):SetAlias("Water")
+  end
+
+  if Toolbar then
+    local lifeCat = Toolbar:AddCategory("Life", "Tiles that use rules to exist or interact with other living tiles. Some of them reproduce.", "bmod/karls/karl.png")
+
+    local karlCat
+
+    if showKarls then
+      karlCat = lifeCat
+    else
+      karlCat = lifeCat:AddCategory("Karls", "All the types of karls", "bmod/karls/karl.png")
+    end
+
+    karlCat:AddItem("Karl", "This tile has basic intelligence. It is also chemosynthetic, meaning it eats walls, and when it eats it also replicates. They also die when they are in contact with water.", "BM life karl")
+  
+    if not showKarls then
+      karlCat:AddItem("Virus Karl", "This Karl can appear when a Karl replicates as a mutation. It hosts a virus that can spread.", "BM life karl-mean")
+      karlCat:AddItem("Medic Karl", "This Karl can appear when a Karl replicates as a mutation. It disinfects all karls with a virus from a virus karl.", "BM life karl-heal")
+      karlCat:AddItem("Karlbon", "This Karl can appear when a Karl replicates as a mutation. It is the only Karl with the unique ability to make a 4-way bond.", "BM life karl-bon")
+      karlCat:AddItem("Karlpulsor", "This Karl can appear when a Karl replicates as a mutation. It is the opposite of the Karlbon.", "BM life karl-pulsor")
+      karlCat:AddItem("Farmer Karl", "This Karl will grow plants on hydrated soil.", "BM life karl-farmer")
+      karlCat:AddItem("Karlbon-8", "This Karl is like Karlbon, except it makes 8-way bonds.", "BM life karl-bon8")
+      karlCat:AddItem("Ice Karl", "This Karl is a Karlbon with bonds so strong no other Karl can escape without help.", "BM life karl-ice")
+      karlCat:AddItem("Killer Karl", "This Karl will kill other Karls and other life forms.", "BM life karl-killer")
+    end
+
+    lifeCat:AddItem(hybridName, hybridDesc, hybriderID)
+    lifeCat:AddItem("Brain", "This cell has a simple randomly generated neural network inside of it (Can cause lag.).", "BM life brain")
+    lifeCat:AddItem("Cancerous Brain", "This cell takes over any brain cells next to it.", "BM life cancer brain")
+
+    lifeCat:AddItem("Plant", "This tile is cool plant. Can only be placed on soil tile. It will die after a while unless it is hydrated, and if it is hydrated instead of dying it replicates on other good soil. When it dies it turns into bad soil.", "BM plant")
+    lifeCat:AddItem("Soil", "This tile is soil.", "BM soil")
+    lifeCat:AddItem("Bad Soil", "This tile is bad soil.", "BM dead-soil")
+    lifeCat:AddItem("Water", "This tile makes bad soil good again. Also allows plant to reproduce. It hydrates when it is placed and every tick, and that hydration also kills Karls. It is also food for KAIs.", "BM water")
   end
 end

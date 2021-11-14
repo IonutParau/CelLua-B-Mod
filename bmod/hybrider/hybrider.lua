@@ -59,6 +59,17 @@ function AddHybrids()
     HybridCategory:AddItem("BM hybrid brar", "AI Car + Brain. It is like a brai but can't self replicate. :("):SetAlias("Brar")
     HybridCategory:AddItem("BM hybrid aiCAI", "AI Car + KAI. It has the intelligence of an AI car, and can reproduce like a kai."):SetAlias("AI cai")
   end
+
+  if Toolbar and showHybrids then
+    local HybridCategory = Toolbar:AddCategory("Hybrids", "These tiles are combination of other life tiles", briantexture)
+
+    HybridCategory:AddItem("Kyle", "Karl + KAI. It moves like a Karl, but is water proof and is a parasite to brains.", "BM hybrid kyle")
+    HybridCategory:AddItem("Kar", "Karl + AI car. Moves like a Karl, but also kills Killer Karls like a freakin' ninja.", "BM hybrid kar")
+    HybridCategory:AddItem("Brian", "Karl + Brain. It is like a brain, but it keeps moving in that direction if it has no inputs to give.", "BM hybrid brian")
+    HybridCategory:AddItem("Brai", "KAI + Brain. Its inputs are what a kai would see, and the neural network decides how much to rotate by.", "BM hybrid brai")
+    HybridCategory:AddItem("Brar", "AI Car + Brain. It is like a brai but can't self replicate. :(", "BM hybrid brar")
+    HybridCategory:AddItem("AI cai", "AI Car + KAI. It has the intelligence of an AI car, and can reproduce like a kai.", "BM hybrid aiCAI")
+  end
 end
 
 function GetHybrid(x, y, dir)

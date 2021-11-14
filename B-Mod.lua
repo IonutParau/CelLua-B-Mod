@@ -372,8 +372,8 @@ local function init()
 
 	hybriderID = addCell("BM hybrider", "bmod/hybrider/hybrider.png")
 
-	AddLife()
 	AddPlant()
+	AddLife()
 
 	addAI()
 

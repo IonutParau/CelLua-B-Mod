@@ -25,6 +25,8 @@ function Hidrate(x, y)
       cells[oy][ox].ctype = soilID
     elseif isKarl(cells[oy][ox].ctype) and cells[oy][ox].ctype ~= deadKarlID then
       cells[oy][ox].ctype = deadKarlID
+    elseif cells[oy][ox].ctype == fireID or cells[oy][ox].ctype == strongfireID or cells[oy][ox].ctype == strongerfireID or cells[oy][ox].ctype == strongestfireID then
+      cells[oy][ox].ctype = 0
     end
   end
 end

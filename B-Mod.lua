@@ -212,6 +212,7 @@ local function doSlowBird(x,y,dir)
 end
 
 local function doFire(x,y)
+	if IsHidrated(x, y) then cells[y][x].ctype = 0 return end
 	local offs = {
 		{x=1,y=0},
 		{x=-1,y=0},
@@ -234,6 +235,7 @@ local function doFire(x,y)
 end
 
 local function doStrongFire(x,y)
+	if IsHidrated(x, y) then cells[y][x].ctype = 0 return end
 	local offs = {
 		{x=1,y=0},
 		{x=-1,y=0},
@@ -261,6 +263,7 @@ local function doStrongFire(x,y)
 end
 
 local function doStrongerFire(x,y)
+	if IsHidrated(x, y) then cells[y][x].ctype = 0 return end
 	for offx = -2,2,1 do
 		for offy = -2,2,1 do
 			local ox,oy = x+offx, y+offy
@@ -281,6 +284,7 @@ local function doStrongerFire(x,y)
 end
 
 local function doStrongestFire(x,y)
+	if IsHidrated(x, y) then cells[y][x].ctype = 0 return end
 	for offx = -4,4,1 do
 		for offy = -4,4,1 do
 			local ox,oy = x+offx, y+offy
@@ -370,7 +374,7 @@ local function init()
 	AddLasers()
 	AddNukes()
 
-	hybriderID = addCell("BM hybrider", "bmod/hybrider/hybrider.png")
+	hybriderID = addCell("BM hybrider", "bmod/hybrider/hybrider.png", {updateindex = 1})
 
 	AddPlant()
 	AddLife()

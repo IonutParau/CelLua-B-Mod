@@ -8,6 +8,8 @@ end
 
 hybriderID = 0
 
+local kylefood = 2
+
 Hybrids = {
   kyle = 0,
   kar = 0,
@@ -86,6 +88,11 @@ function GetHybrid(x, y, dir)
   combination[cells[ry][rx].ctype] = true
   combination[cells[ly][lx].ctype] = true
 
+  for k, v in pairs(combination) do
+    if isKarl(k) then combination[karlID] = v end
+    if IsKAI(k) then combination[kaiID] = v end
+  end
+
   function hasCombination(c1, c2)
     return ((combination[c1] ~= nil) and (combination[c2] ~= nil))
   end
@@ -134,36 +141,36 @@ function DoKyle(x, y)
   if cells[y+1][x].ctype == brainID then
     if not cells[y+1][x].kaiFOOD then cells[y+1][x].kaiFOOD = 0 end
     cells[y+1][x].kaiFOOD = cells[y+1][x].kaiFOOD + 1
-    if cells[y+1][x].kaiFOOD >= 17 then
+    if cells[y+1][x].kaiFOOD >= kylefood then
       PushCell(x, y, 3, nil, nil, Hybrids.kyle)
-      cells[y+1][x].kaiFOOD = cells[y+1][x].kaiFOOD - 17
+      cells[y+1][x].kaiFOOD = cells[y+1][x].kaiFOOD - kylefood
     end
     return
   end
   if cells[y-1][x].ctype == brainID then
     if not cells[y-1][x].kaiFOOD then cells[y-1][x].kaiFOOD = 0 end
     cells[y-1][x].kaiFOOD = cells[y-1][x].kaiFOOD + 1
-    if cells[y-1][x].kaiFOOD >= 17 then
+    if cells[y-1][x].kaiFOOD >= kylefood then
       PushCell(x, y, 1, nil, nil, Hybrids.kyle)
-      cells[y-1][x].kaiFOOD = cells[y-1][x].kaiFOOD - 17
+      cells[y-1][x].kaiFOOD = cells[y-1][x].kaiFOOD - kylefood
     end
     return
   end
   if cells[y][x+1].ctype == brainID then
     if not cells[y][x+1].kaiFOOD then cells[y][x+1].kaiFOOD = 0 end
     cells[y][x+1].kaiFOOD = cells[y][x+1].kaiFOOD + 1
-    if cells[y][x+1].kaiFOOD >= 17 then
+    if cells[y][x+1].kaiFOOD >= kylefood then
       PushCell(x, y, 2, nil, nil, Hybrids.kyle)
-      cells[y][x+1].kaiFOOD = cells[y][x+1].kaiFOOD - 17
+      cells[y][x+1].kaiFOOD = cells[y][x+1].kaiFOOD - kylefood
     end
     return
   end
   if cells[y][x-1].ctype == brainID then
     if not cells[y][x-1].kaiFOOD then cells[y][x-1].kaiFOOD = 0 end
     cells[y][x-1].kaiFOOD = cells[y][x-1].kaiFOOD + 1
-    if cells[y][x-1].kaiFOOD >= 17 then
+    if cells[y][x-1].kaiFOOD >= kylefood then
       PushCell(x, y, 0, nil, nil, Hybrids.kyle)
-      cells[y][x-1].kaiFOOD = cells[y][x-1].kaiFOOD - 17
+      cells[y][x-1].kaiFOOD = cells[y][x-1].kaiFOOD - kylefood
     end
     return
   end
@@ -187,6 +194,18 @@ function DoKyle(x, y)
     end
   else
     cells[y][x].movement = {x = 0, y = 0}
+  end
+
+  local movement = cells[y][x].movement
+
+  if movement.y < 0 then
+    cells[y][x].rot = 3
+  elseif movement.y > 0 then
+    cells[y][x].rot = 1
+  elseif movement.x > 0 then
+    cells[y][x].rot = 0
+  elseif movement.x < 0 then
+    cells[y][x].rot = 2
   end
 
   if not cells[y][x].kaiFOOD then cells[y][x].kaiFOOD = 0 end

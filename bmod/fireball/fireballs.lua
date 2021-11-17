@@ -28,6 +28,7 @@ function DoFireBall(x, y, dir)
   if cells[fy][fx].ctype == 0 then
     DoMover(x, y, dir)
   else
-    DoModded(FireballToFire[cells[y][x].ctype], x, y, dir)
+    cells[y][x].ctype = FireballToFire[cells[y][x].ctype]
+    DoModded(x, y, dir)
   end
 end

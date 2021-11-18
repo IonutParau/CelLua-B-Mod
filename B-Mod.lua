@@ -673,7 +673,7 @@ local function init()
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
-	if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	-- if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	gendir = gendir or dir
 	local direction = (dir+2)%4
@@ -953,6 +953,7 @@ local function onCellDraw(id,x,y)
 	if (id == spawnerID or id == rotateSpawnerID) then
 		local toSpawn = cells[y][x].spawner_current
 		if not toSpawn then return end
+		cells[y][x].lastvars = cells[y][x].lastvars or {x, y, cells[y][x].rot}
 		love.graphics.draw(tex[toSpawn],math.floor(lerp(cells[y][x].lastvars[1],x,itime/delay)*zoom-offx+zoom/2),math.floor(lerp(cells[y][x].lastvars[2],y,itime/delay)*zoom-offy+zoom/2),((lerp(cells[y][x].lastvars[3],cells[y][x].lastvars[3]+((cells[y][x].rot-cells[y][x].lastvars[3]+2)%4-2),itime/delay)+(cells[y][x].spawner_dir_off))%4)*math.pi/2,zoom/texsize[toSpawn].w/4,zoom/texsize[toSpawn].h/4,texsize[toSpawn].w2,texsize[toSpawn].h2)
 	end
 end
@@ -1575,9 +1576,9 @@ local function doBird(x,y,dir,state)
 end
 
 local function DoRandomizer(x,y,dir)
-	local type = listorder[math.random(1,#listorder)]
+	local type = love.math.random(-1, #tex)
 	while type == -2 or type == 0 do
-		type = listorder[math.random(1,#listorder)]
+		type = love.math.random(-1, #tex)
 	end
 	cells[y][x].ctype = type
 	SetChunk(x,y,type)

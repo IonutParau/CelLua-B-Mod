@@ -172,6 +172,37 @@ rotateSpawnerID = 0
 local ver2 = "2.0.0"
 local name2 = "B-Mod"
 
+function ReturnDoMover(x,y,dir)
+	cells[y][x].updated = true
+	local cx
+	local cy
+	if dir == 0 then cx = x - 1 elseif dir == 2 then cx = x + 1 else cx = x end
+	if dir == 1 then cy = y - 1 elseif dir == 3 then cy = y + 1 else cy = y end
+	return PushCell(cx,cy,dir,true,0)	--it'll come across itself as it moves and get 1 totalforce
+end
+
+local function doAtomic(x,y,dir)
+	if not ReturnDoMover(x,y,dir) then
+		cells[y][x].ctype = nuke1ID
+		local rcon,lcon,ucon,dcon = true,true,true,true
+		if rcon then
+			if not PushCell(x,y,0,false,1,nuke1ID,0,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(0)},false,false) then rcon = false end
+		end
+		if lcon then
+			if not PushCell(x,y,2,false,1,nuke1ID,0,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(0)},false,false) then lcon = false end
+		end
+		if ucon then
+			if not PushCell(x,y,3,false,1,nuke1ID,0,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(0)},false,false) then lcon = false end
+		end
+		if dcon  then
+			if not PushCell(x,y,1,false,1,nuke1ID,0,true,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(0)},false,false) then dcon = false end
+		end
+		if not dcon and not ucon and not lcon and not rcon then
+			return
+		end
+	end
+end
+
 local function doSlowBird(x,y,dir)
 	local state = slowbirdstate
 	if not halfdelay then return end
@@ -373,6 +404,7 @@ local function init()
 
 	AddLasers()
 	AddNukes()
+	atomicID = addCell("BM atomic", "bmod/atomic.png", {type = "mover"})
 
 	hybriderID = addCell("BM hybrider", "bmod/hybrider/hybrider.png", {updateindex = 1})
 
@@ -393,6 +425,14 @@ local function init()
 	rotateSpawnerID = addCell("BM rotate-spawner", "bmod/spawner_rotate.png",{type = "trash"})
 
 	bigBangID = addCell("BM big-bang", "bmod/big bang/texture.png")
+
+	diodeID = addCell("BM diode", "bmod/diode.png", {type = "diverger"})
+
+	bindDivergerFunction(diodeID, function(x,y,dir)
+		if dir == (0 + cells[y][x].rot)%4 then
+			return dir
+		end
+	end)
 
 	if EdTweaks ~= nil then
 		local Move = EdTweaks:GetCategory("Movement")
@@ -452,6 +492,8 @@ local function init()
 			:SetAlias("Stronger Fireball")
 		Move:AddItem("BM fireball-stronkest", "This cell is a mover that when it hits something turns into strongest fire")
 			:SetAlias("Strongest Fireball")
+		Move:AddItem("BM atomic", "This cell moves forward, but when it hits an immovable wall it explodes into a nuke.")
+			:SetAlias("Atomic Bomb")
 		local Dstr = EdTweaks:GetCategory("Destructors")
 		Dstr:AddItem("BM trashhole", "This cell continuously destroys any cells that are one cell away from this one.")
 			:SetAlias("Trash Hole")
@@ -567,6 +609,9 @@ local function init()
 			:SetAlias("Kai Explorer")
 		lifecat:AddItem("BM kaiengineer", "Has a chance to appear as a mutation to the kai, it can reprogram karls.")
 			:SetAlias("Kai Engineer")
+		local transpocat = EdTweaks:GetCategory("Transposers")
+		transpocat:AddItem("BM diode", "1 way diverger.")
+			:SetAlias("Diode")
 	end
 	if Toolbar then
 		local movecat = Toolbar:GetCategory("Movers")
@@ -594,6 +639,8 @@ local function init()
 		movecat:AddItem("Slow Bird","This cell moves in a serpentine fashion every other tick, covering a 2 cell wide area on its way to the destination. Dies on collision.","BM slow-bird")
 		movecat:AddItem("Pushy Mayo","This cell is functionally similar to the push cell. It is generated from Mayonnaise Bottles.","BM mayomove")
 		movecat:AddItem("Slow-Moving Pushy Mayo","This cell is functionally similar to the slow push cell. It is generated from Slow Mayonnaise Bottles.","BM slowmayomove")
+		movecat:AddItem("Atomic Bomb", "This cell moves forward, but when it hits an immovable wall it explodes into a nuke.", "BM atomic")
+
 		local fballcat = movecat:AddCategory("Fireballs", "Types of fireballs.", "bmod/fireball/textures/normal.png")
 		fballcat:AddItem("Fireball","This cell is a mover that when it hits something turns into fire","BM fireball")
 		fballcat:AddItem("Strong Fireball","This cell is a mover that when it hits something turns into strong fire","BM fireball-stronk")
@@ -669,11 +716,14 @@ local function init()
 		lifecat:AddItem("Kai Warrior","Has a chance to appear as a mutation to the kai, it is also more powerful.","BM kaiwarrior")
 		lifecat:AddItem("Kai Explorer","Has a chance to appear as a mutation to the kai, can sustain itself with less food but is also less powerful.","BM kaiexplorer")
 		lifecat:AddItem("Kai Engineer","Has a chance to appear as a mutation to the kai, it can reprogram karls.","BM kaiengineer")
+
+		local divcat = Toolbar:GetCategory("Divergers")
+		divcat:AddItem("Diode", "1 way diverger.", "BM diode")
 	end
 end
 
 function DoMayoGenerator(x,y,dir,gendir,istwist,dontupdate)
-	-- if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
+	--if not checkVersion("B-Mod",ver2) then error("stop being dumbass") end
 	if not (name == name2) then error("stop being dumbass") end
 	gendir = gendir or dir
 	local direction = (dir+2)%4
@@ -824,7 +874,7 @@ end
 function SpreadRedElec(y,x)
 	local elec = cells[y][x].elec
 	if not elec then cells[y][x].elec = 0 elec = 0 end
-	if elec >= 1 then
+	if elec > 1 then
 		if cells[y][x].ctype == redeleconID or cells[y][x].ctype == redelecoffID then cells[y][x].ctype = redeleconID end
 		if cells[y][x-1].ctype == redelecoffID then
 			if not cells[y][x-1].elec then cells[y][x-1].elec = 0 end
@@ -884,7 +934,7 @@ end
 function SpreadElec(y,x)
 	local elec = cells[y][x].elec
 	if not elec then cells[y][x].elec = 0 elec = 0 end
-	if elec >= 1 then
+	if elec > 1 then
 		if cells[y][x].ctype == eleconID or cells[y][x].ctype == elecoffID then cells[y][x].ctype = eleconID end
 		if cells[y][x-1].ctype == elecoffID then
 			if not cells[y][x-1].elec then cells[y][x-1].elec = 0 end
@@ -1774,6 +1824,8 @@ local function update(id,x,y,dir)
 		DoAI(x,y,dir)
 	elseif id == electunnelID then
 		electunnel(x,y,dir)
+	elseif id == atomicID then
+		doAtomic(x,y,dir)
 	end
 	--cells[y][x].testvar = tostring(halfdelay)
 	--cells[y][x].testvar = tostring(cells[y][x].ctype)

@@ -1,7 +1,7 @@
-local nuke1ID
-local nuke2ID
-local nuke3ID
-local nuke4ID
+nuke1ID = 0
+nuke2ID = 0
+nuke3ID = 0
+nuke4ID = 0
 
 function AddNukes()
     nuke1ID = addCell("BM nuke1","bmod/nuke.png",{})
